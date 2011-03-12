@@ -17,6 +17,7 @@ Return an SSHKey object from an existing RSA Private Key
 Both of these will return an SSHKey object with the following methods:
 
   # Returns an OpenSSL::PKey::RSA key object
+  # See http://www.ruby-doc.org/stdlib/libdoc/openssl/rdoc/classes/OpenSSL/PKey/RSA.html
   k.key_object
   # => -----BEGIN RSA PRIVATE KEY-----\nMIIEowI
   
@@ -26,7 +27,7 @@ Both of these will return an SSHKey object with the following methods:
   
   # Returns the RSA Public Key as a string
   k.rsa_public_key
-  # => ""-----BEGIN RSA PUBLIC KEY-----\nMIIBCg"
+  # => "-----BEGIN RSA PUBLIC KEY-----\nMIIBCg"
   
   # Returns the SSH Public Key as a string
   k.ssh_public_key
