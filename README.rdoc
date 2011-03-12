@@ -1,0 +1,41 @@
+= sshkey
+
+Generate private/public SSH keys using Ruby without the `ssh-keygen` system command.
+
+  gem install sshkey
+  
+== Usage
+
+Generate an SSH Keypair with foo@bar.com as the comment
+
+  k = SSHKey.generate("foo@bar.com")
+  
+Return an SSHKey object from an existing RSA Private Key
+
+  k = SSHKey.new(File.read("~/.ssh/id_rsa"), "foo@bar.com")
+
+Both of these will return an SSHKey object with the following methods:
+
+  # Returns an OpenSSL::PKey::RSA key object
+  k.key_object
+  # => -----BEGIN RSA PRIVATE KEY-----\nMIIEowI
+  
+  # Returns the RSA Private Key as a string
+  k.rsa_private_key
+  # => "-----BEGIN RSA PRIVATE KEY-----\nMIIEowI"
+  
+  # Returns the RSA Public Key as a string
+  k.rsa_public_key
+  # => ""-----BEGIN RSA PUBLIC KEY-----\nMIIBCg"
+  
+  # Returns the SSH Public Key as a string
+  k.ssh_public_key
+  # => "ssh-rsa AAAAB3NzaC1yc2EA...."
+  
+  # Returns the comment as a string
+  k.comment
+  # => "foo@bar.com"
+
+== Copyright
+
+Copyright (c) 2011 James Miller
