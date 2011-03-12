@@ -74,7 +74,7 @@ EOF
   def test_private_key1
     assert_equal SSH_PRIVATE_KEY1, @key1.rsa_private_key
   end
-  
+
   def test_private_key2
     assert_equal SSH_PRIVATE_KEY2, @key2.rsa_private_key
   end
@@ -82,7 +82,7 @@ EOF
   def test_ssh_public_key_decoded1
     assert_equal Base64.strict_decode64(SSH_PUBLIC_KEY1), @key1.send(:ssh_public_key_conversion)
   end
-  
+
   def test_ssh_public_key_decoded2
     assert_equal Base64.strict_decode64(SSH_PUBLIC_KEY2), @key2.send(:ssh_public_key_conversion)
   end
@@ -90,14 +90,14 @@ EOF
   def test_ssh_public_key_encoded1
     assert_equal SSH_PUBLIC_KEY1, Base64.strict_encode64(@key1.send(:ssh_public_key_conversion))
   end
-  
+
   def test_ssh_public_key_encoded2
     assert_equal SSH_PUBLIC_KEY2, Base64.strict_encode64(@key2.send(:ssh_public_key_conversion))
   end
-  
+
   def test_ssh_public_key_output
-    expected1 = "ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEArfTA/lKVR84IMc9ZzXOCHr8DVtR8hzWuEVHF6KElavRHlk14g0SZu3m908Ejm/XF3EfNHjX9wN+62IMA0QBxkBMFCuLF+U/oeUs0NoDdAEKxjj4n6lq6Ss8aLct+anMy7D1jwvOLbcwV54w1d5JDdlZVdZ6AvHm9otwJq6rNpDgdmXY4HgC2nM9csFpuy0cDpL6fdJx9lcNL2RnkRC4+RMsIB+PxDw0j3vDi04dYLBXMGYjyeGH+mIFpL3PTPXGXwL2XDYXZ2H4SQX6bOoKmazTXq6QXuEB665njh1GxXldoIMcSshoJL0hrk3WrTOG22N2CQA+IfHgrXJ+A+QUzKQ== me@example.com"
-    expected2 = "ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAxl6TpN7uFiY/JZ8qDnD7UrxDP+ABeh2PVg8Du1LEgXNk0+YWCeP5S6oHklqaWeDlbmAs1oHsBwCMAVpMa5tgONOLvz4JgwgkiqQEbKR8ofWJ+LADUElvqRVGmGiNEMLI6GJWeneL4sjmbb8d6U+M53c6iWG0si9XE5m7teBQSsCl0Tk3qMIkQGw5zpJeCXjZ8KpJhIJRYgexFkGgPlYRV+UYIhxpUW90t0Ra5i6JOFYwq98k5S/6SJIZQ/A9F4JNzwLw3eVxZj0yVHWxkGz1+TyELNY1kOyMxnZaqSfGzSQJTrnIXpdweVHuYh1LtOgedRQhCyiELeSMGwio1vRPKw== me@example.com"
+    expected1 = "ssh-rsa #{SSH_PUBLIC_KEY1} me@example.com"
+    expected2 = "ssh-rsa #{SSH_PUBLIC_KEY2} me@example.com"
     assert_equal expected1, @key1.ssh_public_key
     assert_equal expected2, @key2.ssh_public_key
   end
