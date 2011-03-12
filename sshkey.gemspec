@@ -8,7 +8,7 @@ Gem::Specification.new do |s|
   s.platform    = Gem::Platform::RUBY
   s.authors     = ["James Miller"]
   s.email       = ["bensie@gmail.com"]
-  s.homepage    = ""
+  s.homepage    = "https://github.com/bensie/sshkey"
   s.summary     = %q{SSH private/public key generator in Ruby}
   s.description = %q{Generate private/public SSH keys using Ruby without the ssh-keygen system command.}
 
