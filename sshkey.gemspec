@@ -9,8 +9,8 @@ Gem::Specification.new do |s|
   s.authors     = ["James Miller"]
   s.email       = ["bensie@gmail.com"]
   s.homepage    = ""
-  s.summary     = %q{TODO: Write a gem summary}
-  s.description = %q{TODO: Write a gem description}
+  s.summary     = %q{SSH private/public key generator in Ruby}
+  s.description = %q{Generate private/public SSH keys using Ruby without the ssh-keygen system command.}
 
   s.rubyforge_project = "sshkey"
 
