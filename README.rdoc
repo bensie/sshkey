@@ -3,6 +3,8 @@
 Generate private/public SSH keys using Ruby without the `ssh-keygen` system command.
 
   gem install sshkey
+
+Current requires Ruby 1.9.
   
 == Usage
 
