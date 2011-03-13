@@ -4,7 +4,7 @@ Generate private/public SSH keys using Ruby without the `ssh-keygen` system comm
 
   gem install sshkey
 
-Current requires Ruby 1.9.
+Currently requires Ruby 1.9.
   
 == Usage
 
