@@ -3,18 +3,18 @@ require 'base64'
 
 class SSHKey
 
-  def self.generate(comment)
-    SSHKey.new(OpenSSL::PKey::RSA.generate(2048), comment)
+  def self.generate(options = {})
+    SSHKey.new(OpenSSL::PKey::RSA.generate(2048).to_pem, options)
   end
 
   attr_reader :key_object, :comment, :rsa_private_key, :rsa_public_key, :ssh_public_key
 
-  def initialize(key_object, comment)
-    @key_object = key_object
-    @comment = comment
-    @rsa_private_key = key_object.to_pem
-    @rsa_public_key = key_object.public_key.to_pem
-    @ssh_public_key = ["ssh-rsa", Base64.strict_encode64(ssh_public_key_conversion), @comment].join(" ")
+  def initialize(private_key, options = {})
+    @key_object = OpenSSL::PKey::RSA.new(private_key)
+    @comment = options[:comment] || ""
+    @rsa_private_key = @key_object.to_pem
+    @rsa_public_key = @key_object.public_key.to_pem
+    @ssh_public_key = ["ssh-rsa", Base64.strict_encode64(ssh_public_key_conversion), @comment].join(" ").strip
   end
 
   private

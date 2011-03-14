@@ -67,8 +67,9 @@ EOF
   FINGERPRINT = "2a:89:84:c9:29:05:d1:f8:49:79:1c:ba:73:99:eb:af"
 
   def setup
-    @key1 = SSHKey.new(OpenSSL::PKey::RSA.new(SSH_PRIVATE_KEY1), "me@example.com")
-    @key2 = SSHKey.new(OpenSSL::PKey::RSA.new(SSH_PRIVATE_KEY2), "me@example.com")
+    @key1 = SSHKey.new(SSH_PRIVATE_KEY1, :comment => "me@example.com")
+    @key2 = SSHKey.new(SSH_PRIVATE_KEY2, :comment => "me@example.com")
+    @key_without_comment = SSHKey.new(SSH_PRIVATE_KEY1)
   end
 
   def test_private_key1
@@ -98,8 +99,10 @@ EOF
   def test_ssh_public_key_output
     expected1 = "ssh-rsa #{SSH_PUBLIC_KEY1} me@example.com"
     expected2 = "ssh-rsa #{SSH_PUBLIC_KEY2} me@example.com"
+    expected3 = "ssh-rsa #{SSH_PUBLIC_KEY1}"
     assert_equal expected1, @key1.ssh_public_key
     assert_equal expected2, @key2.ssh_public_key
+    assert_equal expected3, @key_without_comment.ssh_public_key
   end
 
   def test_exponent
@@ -115,7 +118,9 @@ EOF
   def test_to_byte_array
     ba1 = @key1.send(:to_byte_array, 35)
     ba2 = @key1.send(:to_byte_array, 65537)
+    ba3 = [0, 1, 255, 256, -1, -128, -256].map{|i| @key1.send(:to_byte_array, i)}
     assert_equal [35], ba1
     assert_equal [1, 0, 1], ba2
+    assert_equal [[0], [1], [0, 255], [1, 0], [255], [128], [255, 0]], ba3
   end
 end
