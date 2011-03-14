@@ -8,13 +8,13 @@ Currently requires Ruby 1.9.
   
 == Usage
 
-Generate an SSH Keypair with foo@bar.com as the comment
+Generate an SSH Keypair with foo@bar.com as the comment - providing a comment is optional
 
-  k = SSHKey.generate("foo@bar.com")
+  k = SSHKey.generate(:comment => "foo@bar.com")
   
-Return an SSHKey object from an existing RSA Private Key
+Return an SSHKey object from an existing RSA Private Key (provided as a string)
 
-  k = SSHKey.new(File.read("~/.ssh/id_rsa"), "foo@bar.com")
+  k = SSHKey.new(File.read("~/.ssh/id_rsa"), :comment => "foo@bar.com")
 
 Both of these will return an SSHKey object with the following methods:
 
