@@ -39,6 +39,10 @@ Both of these will return an SSHKey object with the following methods:
   k.comment
   # => "foo@bar.com"
 
+  # Returns the fingerprint as a string
+  k.fingerprint
+  # => "2a:89:84:c9:29:05:d1:f8:49:79:1c:ba:73:99:eb:af"
+
 == Copyright
 
 Copyright (c) 2011 James Miller
