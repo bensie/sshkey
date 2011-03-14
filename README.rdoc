@@ -21,15 +21,15 @@ Both of these will return an SSHKey object with the following methods:
   # Returns an OpenSSL::PKey::RSA key object
   # See http://www.ruby-doc.org/stdlib/libdoc/openssl/rdoc/classes/OpenSSL/PKey/RSA.html
   k.key_object
-  # => -----BEGIN RSA PRIVATE KEY-----\nMIIEowI
+  # => -----BEGIN RSA PRIVATE KEY-----\nMIIEowI...
   
   # Returns the RSA Private Key as a string
   k.rsa_private_key
-  # => "-----BEGIN RSA PRIVATE KEY-----\nMIIEowI"
+  # => "-----BEGIN RSA PRIVATE KEY-----\nMIIEowI..."
   
   # Returns the RSA Public Key as a string
   k.rsa_public_key
-  # => "-----BEGIN RSA PUBLIC KEY-----\nMIIBCg"
+  # => "-----BEGIN RSA PUBLIC KEY-----\nMIIBCg..."
   
   # Returns the SSH Public Key as a string
   k.ssh_public_key
