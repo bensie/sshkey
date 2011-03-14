@@ -1,5 +1,6 @@
 require 'openssl'
 require 'base64'
+require 'digest/md5'
 
 class SSHKey
 
@@ -7,7 +8,7 @@ class SSHKey
     SSHKey.new(OpenSSL::PKey::RSA.generate(2048).to_pem, options)
   end
 
-  attr_reader :key_object, :comment, :rsa_private_key, :rsa_public_key, :ssh_public_key
+  attr_reader :key_object, :comment, :rsa_private_key, :rsa_public_key, :ssh_public_key, :fingerprint
 
   def initialize(private_key, options = {})
     @key_object = OpenSSL::PKey::RSA.new(private_key)
@@ -15,6 +16,7 @@ class SSHKey
     @rsa_private_key = @key_object.to_pem
     @rsa_public_key = @key_object.public_key.to_pem
     @ssh_public_key = ["ssh-rsa", Base64.strict_encode64(ssh_public_key_conversion), @comment].join(" ").strip
+    @fingerprint = Digest::MD5.hexdigest(ssh_public_key_conversion).gsub(/(.{2})(?=.)/, '\1:\2')
   end
 
   private
