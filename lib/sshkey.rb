@@ -16,7 +16,11 @@ class SSHKey
     @rsa_private_key   = @key_object.to_pem
     @rsa_public_key    = @key_object.public_key.to_pem
     raw_ssh_public_key = ssh_public_key_conversion
-    @ssh_public_key    = ["ssh-rsa", Base64.strict_encode64(raw_ssh_public_key), @comment].join(" ").strip
+    @ssh_public_key    = [
+      "ssh-rsa",
+      Base64.encode64(raw_ssh_public_key).gsub("\n", ""),
+      @comment,
+    ].join(" ").strip
     @fingerprint       = Digest::MD5.hexdigest(raw_ssh_public_key).gsub(/(.{2})(?=.)/, '\1:\2')
   end
 
