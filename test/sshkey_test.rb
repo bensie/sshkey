@@ -82,19 +82,19 @@ EOF
   end
 
   def test_ssh_public_key_decoded1
-    assert_equal Base64.strict_decode64(SSH_PUBLIC_KEY1), @key1.send(:ssh_public_key_conversion)
+    assert_equal Base64.decode64(SSH_PUBLIC_KEY1), @key1.send(:ssh_public_key_conversion)
   end
 
   def test_ssh_public_key_decoded2
-    assert_equal Base64.strict_decode64(SSH_PUBLIC_KEY2), @key2.send(:ssh_public_key_conversion)
+    assert_equal Base64.decode64(SSH_PUBLIC_KEY2), @key2.send(:ssh_public_key_conversion)
   end
 
   def test_ssh_public_key_encoded1
-    assert_equal SSH_PUBLIC_KEY1, Base64.strict_encode64(@key1.send(:ssh_public_key_conversion))
+    assert_equal SSH_PUBLIC_KEY1, Base64.encode64(@key1.send(:ssh_public_key_conversion)).gsub("\n", "")
   end
 
   def test_ssh_public_key_encoded2
-    assert_equal SSH_PUBLIC_KEY2, Base64.strict_encode64(@key2.send(:ssh_public_key_conversion))
+    assert_equal SSH_PUBLIC_KEY2, Base64.encode64(@key2.send(:ssh_public_key_conversion)).gsub("\n", "")
   end
 
   def test_ssh_public_key_output
