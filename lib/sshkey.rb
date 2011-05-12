@@ -8,20 +8,27 @@ class SSHKey
     SSHKey.new(OpenSSL::PKey::RSA.generate(2048).to_pem, options)
   end
 
-  attr_reader :key_object, :comment, :rsa_private_key, :rsa_public_key, :ssh_public_key, :fingerprint
+  attr_reader :key_object, :comment
 
   def initialize(private_key, options = {})
-    @key_object        = OpenSSL::PKey::RSA.new(private_key)
-    @comment           = options[:comment] || ""
-    @rsa_private_key   = @key_object.to_pem
-    @rsa_public_key    = @key_object.public_key.to_pem
-    raw_ssh_public_key = ssh_public_key_conversion
-    @ssh_public_key    = [
-      "ssh-rsa",
-      Base64.encode64(raw_ssh_public_key).gsub("\n", ""),
-      @comment,
-    ].join(" ").strip
-    @fingerprint       = Digest::MD5.hexdigest(raw_ssh_public_key).gsub(/(.{2})(?=.)/, '\1:\2')
+    @key_object = OpenSSL::PKey::RSA.new(private_key)
+    @comment    = options[:comment] || ""
+  end
+
+  def rsa_private_key
+    key_object.to_pem
+  end
+
+  def rsa_public_key
+    key_object.public_key.to_pem
+  end
+
+  def ssh_public_key
+    ["ssh-rsa", Base64.encode64(ssh_public_key_conversion).gsub("\n", ""), @comment].join(" ").strip
+  end
+
+  def fingerprint
+    Digest::MD5.hexdigest(ssh_public_key_conversion).gsub(/(.{2})(?=.)/, '\1:\2')
   end
 
   private
