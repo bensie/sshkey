@@ -4,7 +4,7 @@ Generate private/public SSH keys using Ruby without the `ssh-keygen` system comm
 
   gem install sshkey
 
-Tested on Ruby 1.8.7 and 1.9.2 (MRI).  Ruby must be compiled with OpenSSL support.
+Tested on the following Rubies: MRI 1.8.7 and 1.9.2, Rubinius, JRuby.  Ruby must be compiled with OpenSSL support.
 
 == Usage
 
