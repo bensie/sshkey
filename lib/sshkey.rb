@@ -24,7 +24,7 @@ class SSHKey
   end
 
   def ssh_public_key
-    ["ssh-rsa", Base64.encode64(ssh_public_key_conversion).gsub("\n", ""), @comment].join(" ").strip
+    ["ssh-rsa", Base64.encode64(ssh_public_key_conversion).gsub("\n", ""), comment].join(" ").strip
   end
 
   def fingerprint
@@ -41,8 +41,8 @@ class SSHKey
   # For instance, the "ssh-rsa" string is encoded as the following byte array
   # [0, 0, 0, 7, 's', 's', 'h', '-', 'r', 's', 'a']
   def ssh_public_key_conversion
-    e = @key_object.public_key.e.to_i
-    n = @key_object.public_key.n.to_i
+    e = key_object.public_key.e.to_i
+    n = key_object.public_key.n.to_i
 
     out = [0,0,0,7].pack("c*")
     out += "ssh-rsa"
