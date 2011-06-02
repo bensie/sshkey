@@ -137,6 +137,29 @@ EOF
     assert_equal expected4, @key_without_comment.ssh_public_key
   end
 
+  def test_ssh_public_key_validation
+    expected1 = "ssh-rsa #{SSH_PUBLIC_KEY1} me@example.com"
+    expected2 = "ssh-rsa #{SSH_PUBLIC_KEY2} me@example.com"
+    expected3 = "ssh-dss #{SSH_PUBLIC_KEY3} me@example.com"
+    expected4 = "ssh-rsa #{SSH_PUBLIC_KEY1}"
+    invalid1 = "ssh-rsa #{SSH_PUBLIC_KEY1}= me@example.com"
+    invalid2 = "ssh-rsa #{SSH_PUBLIC_KEY2}= me@example.com"
+    invalid3 = "ssh-dss #{SSH_PUBLIC_KEY3}= me@example.com"
+    invalid4 = "ssh-rsa A#{SSH_PUBLIC_KEY1}"
+    invalid5 = "ssh-rsa #{SSH_PUBLIC_KEY3} me@example.com"
+
+    assert SSHKey.valid?(expected1)
+    assert SSHKey.valid?(expected2)
+    assert SSHKey.valid?(expected3)
+    assert SSHKey.valid?(expected4)
+
+    assert !SSHKey.valid?(invalid1)
+    assert !SSHKey.valid?(invalid2)
+    assert !SSHKey.valid?(invalid3)
+    assert !SSHKey.valid?(invalid4)
+    assert !SSHKey.valid?(invalid5)
+  end
+
   def test_exponent
     assert_equal 35, @key1.key_object.e.to_i
     assert_equal 35, @key2.key_object.e.to_i
