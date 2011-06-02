@@ -1,7 +1,7 @@
 sshkey
 ======
 
-Generate private/public SSH keys using Ruby without the `ssh-keygen` system command.
+Generate private and public SSH keys (RSA and DSA supported) using Ruby without the `ssh-keygen` system command.
 
 	gem install sshkey
 
@@ -10,19 +10,16 @@ Tested on the following Rubies: MRI 1.8.7 and 1.9.2, Rubinius, JRuby.  Ruby must
 Usage
 -----
 
-Generate an SSH RSA Keypair with foo@bar.com as the comment - providing a comment is optional
+When generating a new keypair the default key type is RSA, but you can supply the type (RSA or DSA) in the options.
+You can also (optionally) supply a comment:
 
 ``` ruby
-k = SSHKey.generate(:comment => "foo@bar.com")
+k = SSHKey.generate
+
+k = SSHKey.generate(:type => "DSA", :comment => "foo@bar.com")
 ```
 
-Generate an SSH DSA Keypair with foo@bar.com as the comment - providing a comment is optional
-
-``` ruby
-k = SSHKey.generate(:type => "dsa", :comment => "foo@bar.com")
-```
-
-Return an SSHKey object from an existing RSA Private Key (provided as a string)
+Return an SSHKey object from an existing RSA or DSA private key (provided as a string)
 
 ``` ruby
 k = SSHKey.new(File.read("~/.ssh/id_rsa"), :comment => "foo@bar.com")
@@ -32,7 +29,8 @@ Both of these will return an SSHKey object with the following methods:
 
 ``` ruby
 # Returns an OpenSSL::PKey::RSA or OpenSSL::PKey::DSA key object
-# See http://www.ruby-doc.org/stdlib/libdoc/openssl/rdoc/classes/OpenSSL/PKey/RSA.html
+# http://www.ruby-doc.org/stdlib/libdoc/openssl/rdoc/classes/OpenSSL/PKey/RSA.html
+# http://www.ruby-doc.org/stdlib/libdoc/openssl/rdoc/classes/OpenSSL/PKey/DSA.html
 k.key_object
 # => -----BEGIN RSA PRIVATE KEY-----\nMIIEowI...
 
