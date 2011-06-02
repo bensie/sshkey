@@ -92,14 +92,17 @@ EOF
 
   def test_private_key1
     assert_equal SSH_PRIVATE_KEY1, @key1.private_key
+    assert_equal SSH_PRIVATE_KEY1, @key1.rsa_private_key
   end
 
   def test_private_key2
     assert_equal SSH_PRIVATE_KEY2, @key2.private_key
+    assert_equal SSH_PRIVATE_KEY2, @key2.rsa_private_key
   end
 
   def test_private_key3
     assert_equal SSH_PRIVATE_KEY3, @key3.private_key
+    assert_equal SSH_PRIVATE_KEY3, @key3.dsa_private_key
   end
 
   def test_ssh_public_key_decoded1

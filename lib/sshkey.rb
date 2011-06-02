@@ -73,6 +73,25 @@ class SSHKey
     key_object.public_key.to_pem
   end
 
+  ########################
+  # Backward compatibility
+  def rsa_private_key
+    private_key if type == "rsa"
+  end
+
+  def rsa_public_key
+    public_key if type == "rsa"
+  end
+
+  def dsa_private_key
+    private_key if type == "dsa"
+  end
+
+  def dsa_public_key
+    public_key if type == "dsa"
+  end
+  ########################
+
   def ssh_public_key
     [SSH_TYPES[type], Base64.encode64(ssh_public_key_conversion).gsub("\n", ""), comment].join(" ").strip
   end
