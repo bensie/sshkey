@@ -1,0 +1,67 @@
+sshkey
+======
+
+Generate private/public SSH keys using Ruby without the `ssh-keygen` system command.
+
+	gem install sshkey
+
+Tested on the following Rubies: MRI 1.8.7 and 1.9.2, Rubinius, JRuby.  Ruby must be compiled with OpenSSL support.
+
+Usage
+-----
+
+Generate an SSH RSA Keypair with foo@bar.com as the comment - providing a comment is optional
+
+``` ruby
+k = SSHKey.generate(:comment => "foo@bar.com")
+```
+
+Generate an SSH DSA Keypair with foo@bar.com as the comment - providing a comment is optional
+
+``` ruby
+k = SSHKey.generate(:type => "dsa", :comment => "foo@bar.com")
+```
+
+Return an SSHKey object from an existing RSA Private Key (provided as a string)
+
+``` ruby
+k = SSHKey.new(File.read("~/.ssh/id_rsa"), :comment => "foo@bar.com")
+```
+
+Both of these will return an SSHKey object with the following methods:
+
+``` ruby
+# Returns an OpenSSL::PKey::RSA or OpenSSL::PKey::DSA key object
+# See http://www.ruby-doc.org/stdlib/libdoc/openssl/rdoc/classes/OpenSSL/PKey/RSA.html
+k.key_object
+# => -----BEGIN RSA PRIVATE KEY-----\nMIIEowI...
+
+# Returns the Private Key as a string
+k.private_key
+# => "-----BEGIN RSA PRIVATE KEY-----\nMIIEowI..."
+
+# Returns the Public Key as a string
+k.public_key
+# => "-----BEGIN RSA PUBLIC KEY-----\nMIIBCg..."
+
+# Returns the SSH Public Key as a string
+k.ssh_public_key
+# => "ssh-rsa AAAAB3NzaC1yc2EA...."
+
+# Returns the comment as a string
+k.comment
+# => "foo@bar.com"
+
+# Returns the fingerprint as a string
+k.fingerprint
+# => "2a:89:84:c9:29:05:d1:f8:49:79:1c:ba:73:99:eb:af"
+
+# Validates SSH Public Key
+SSHKey.valid? "ssh-rsa AAAAB3NzaC1yc2EA...."
+# => true
+```
+
+Copyright
+---------
+
+Copyright (c) 2011 James Miller
