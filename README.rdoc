@@ -8,9 +8,13 @@ Tested on the following Rubies: MRI 1.8.7 and 1.9.2, Rubinius, JRuby.  Ruby must
 
 == Usage
 
-Generate an SSH Keypair with foo@bar.com as the comment - providing a comment is optional
+Generate an SSH RSA Keypair with foo@bar.com as the comment - providing a comment is optional
 
   k = SSHKey.generate(:comment => "foo@bar.com")
+
+Generate an SSH DSA Keypair with foo@bar.com as the comment - providing a comment is optional
+
+  k = SSHKey.generate(:type => "dsa", :comment => "foo@bar.com")
 
 Return an SSHKey object from an existing RSA Private Key (provided as a string)
 
@@ -18,17 +22,17 @@ Return an SSHKey object from an existing RSA Private Key (provided as a string)
 
 Both of these will return an SSHKey object with the following methods:
 
-  # Returns an OpenSSL::PKey::RSA key object
+  # Returns an OpenSSL::PKey::RSA or OpenSSL::PKey::DSA key object
   # See http://www.ruby-doc.org/stdlib/libdoc/openssl/rdoc/classes/OpenSSL/PKey/RSA.html
   k.key_object
   # => -----BEGIN RSA PRIVATE KEY-----\nMIIEowI...
 
-  # Returns the RSA Private Key as a string
-  k.rsa_private_key
+  # Returns the Private Key as a string
+  k.private_key
   # => "-----BEGIN RSA PRIVATE KEY-----\nMIIEowI..."
 
-  # Returns the RSA Public Key as a string
-  k.rsa_public_key
+  # Returns the Public Key as a string
+  k.public_key
   # => "-----BEGIN RSA PUBLIC KEY-----\nMIIBCg..."
 
   # Returns the SSH Public Key as a string
@@ -42,6 +46,10 @@ Both of these will return an SSHKey object with the following methods:
   # Returns the fingerprint as a string
   k.fingerprint
   # => "2a:89:84:c9:29:05:d1:f8:49:79:1c:ba:73:99:eb:af"
+
+  # Validates SSH Public Key
+  SSHKey.valid? "ssh-rsa AAAAB3NzaC1yc2EA...."
+  # => true
 
 == Copyright
 
