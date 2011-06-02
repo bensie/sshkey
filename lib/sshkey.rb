@@ -3,7 +3,7 @@ require 'base64'
 require 'digest/md5'
 
 class SSHKey
-  SSH_TYPES = {"rsa" => "ssh-rsa", "dsa" => "ssh-dss"}
+  SSH_TYPES      = {"rsa" => "ssh-rsa", "dsa" => "ssh-dss"}
   SSH_CONVERSION = {"rsa" => ["e", "n"], "dsa" => ["p", "q", "g", "pub_key"]}
 
   attr_reader :key_object, :comment, :type
@@ -44,11 +44,20 @@ class SSHKey
     false
   end
 
+  def self.from_byte_array(byte_array, expected_size = nil)
+    num = 0
+    raise "Byte array too short" if !expected_size.nil? && expected_size != byte_array.size
+    byte_array.reverse.each_with_index do |item, index|
+      num += item * 256**(index)
+    end
+    num
+  end
+
   def initialize(private_key, options = {})
     begin
       @key_object = OpenSSL::PKey::RSA.new(private_key)
       @type = "rsa"
-    rescue 
+    rescue
       @key_object = OpenSSL::PKey::DSA.new(private_key)
       @type = "dsa"
     end
@@ -112,12 +121,4 @@ class SSHKey
     result.reverse
   end
 
-  def self.from_byte_array(byte_array, expected_size = nil)
-    num = 0
-    raise "Byte array too short" if !expected_size.nil? && expected_size != byte_array.size
-    byte_array.reverse.each_with_index do |item, index|
-      num += item * 256**(index)
-    end
-    num
-  end
 end

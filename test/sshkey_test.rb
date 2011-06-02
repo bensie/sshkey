@@ -142,11 +142,11 @@ EOF
     expected2 = "ssh-rsa #{SSH_PUBLIC_KEY2} me@example.com"
     expected3 = "ssh-dss #{SSH_PUBLIC_KEY3} me@example.com"
     expected4 = "ssh-rsa #{SSH_PUBLIC_KEY1}"
-    invalid1 = "ssh-rsa #{SSH_PUBLIC_KEY1}= me@example.com"
-    invalid2 = "ssh-rsa #{SSH_PUBLIC_KEY2}= me@example.com"
-    invalid3 = "ssh-dss #{SSH_PUBLIC_KEY3}= me@example.com"
-    invalid4 = "ssh-rsa A#{SSH_PUBLIC_KEY1}"
-    invalid5 = "ssh-rsa #{SSH_PUBLIC_KEY3} me@example.com"
+    invalid1  = "ssh-rsa #{SSH_PUBLIC_KEY1}= me@example.com"
+    invalid2  = "ssh-rsa #{SSH_PUBLIC_KEY2}= me@example.com"
+    invalid3  = "ssh-dss #{SSH_PUBLIC_KEY3}= me@example.com"
+    invalid4  = "ssh-rsa A#{SSH_PUBLIC_KEY1}"
+    invalid5  = "ssh-rsa #{SSH_PUBLIC_KEY3} me@example.com"
 
     assert SSHKey.valid?(expected1)
     assert SSHKey.valid?(expected2)
