@@ -40,6 +40,8 @@ class SSHKey
     end
 
     SSH_CONVERSION[type].size == data.size
+  rescue
+    false
   end
 
   def initialize(private_key, options = {})
