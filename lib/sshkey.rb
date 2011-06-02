@@ -3,28 +3,43 @@ require 'base64'
 require 'digest/md5'
 
 class SSHKey
+  SSH_TYPES = {"rsa" => "ssh-rsa", "dsa" => "ssh-dss"}
+  SSH_CONVERTION = {"rsa" => ["e", "n"], "dsa" => ["p", "q", "g", "pub_key"]}
+
+  attr_reader :key_object, :comment, :type
 
   def self.generate(options = {})
-    SSHKey.new(OpenSSL::PKey::RSA.generate(2048).to_pem, options)
+    type = options[:type] || "rsa"
+    case type
+    when "rsa" then SSHKey.new(OpenSSL::PKey::RSA.generate(2048).to_pem, options)
+    when "dsa" then SSHKey.new(OpenSSL::PKey::DSA.generate(2048).to_pem, options)
+    else
+      raise "Unknown key type #{type}"
+    end
   end
-
-  attr_reader :key_object, :comment
 
   def initialize(private_key, options = {})
-    @key_object = OpenSSL::PKey::RSA.new(private_key)
-    @comment    = options[:comment] || ""
+    begin
+      @key_object = OpenSSL::PKey::RSA.new(private_key)
+      @type = "rsa"
+    rescue 
+      @key_object = OpenSSL::PKey::DSA.new(private_key)
+      @type = "dsa"
+    end
+
+    @comment = options[:comment] || ""
   end
 
-  def rsa_private_key
+  def private_key
     key_object.to_pem
   end
 
-  def rsa_public_key
+  def public_key
     key_object.public_key.to_pem
   end
 
   def ssh_public_key
-    ["ssh-rsa", Base64.encode64(ssh_public_key_conversion).gsub("\n", ""), comment].join(" ").strip
+    [SSH_TYPES[type], Base64.encode64(ssh_public_key_conversion).gsub("\n", ""), comment].join(" ").strip
   end
 
   def fingerprint
@@ -41,15 +56,14 @@ class SSHKey
   # For instance, the "ssh-rsa" string is encoded as the following byte array
   # [0, 0, 0, 7, 's', 's', 'h', '-', 'r', 's', 'a']
   def ssh_public_key_conversion
-    e = key_object.public_key.e.to_i
-    n = key_object.public_key.n.to_i
-
     out = [0,0,0,7].pack("c*")
-    out += "ssh-rsa"
-    out += encode_unsigned_int_32(to_byte_array(e).length).pack("c*")
-    out += to_byte_array(e).pack("c*")
-    out += encode_unsigned_int_32(to_byte_array(n).length).pack("c*")
-    out += to_byte_array(n).pack("c*")
+    out += SSH_TYPES[type]
+
+    SSH_CONVERTION[type].each do |method|
+      byte_array = to_byte_array(key_object.public_key.send(method).to_i)
+      out += encode_unsigned_int_32(byte_array.length).pack("c*")
+      out += byte_array.pack("c*")
+    end
 
     return out
   end

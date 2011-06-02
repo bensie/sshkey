@@ -60,25 +60,46 @@ HU3kTCfT6sypRi9zDQafIIyqYFgaOezr2eRRFRojQZqzHjtuFUeKLrKf7R9bzwwx
 DPlNgYq8p4FOY5ZOL/ZOxUHW4vKRewURJttnxzw+LEy0T1FyAE0=
 -----END RSA PRIVATE KEY-----
 EOF
+  SSH_PRIVATE_KEY3 = <<-EOF
+-----BEGIN DSA PRIVATE KEY-----
+MIIBvAIBAAKBgQC8lcuXcFcIC9wsV87L6PAwYefKgK0CwTSD1v3/aabZsu4w+UF8
+zsPtdsNP8+JWfOp3KFbrUTH+ODgAXF/aL4UZfpbsQe446ZFV8v6dmWqj23sk0FLX
+U5l2tsuJ9OdyXetVXjBvoiz+/r4k/iG/esvWlVGEHwq5eYXgQ1GfXABY3QIVAMVe
+c7skmkUrCR6iivgZYYe3PQPZAoGBAKnpdEVATtDGOW9w2evSf5kc1InzdTurcJOH
+q9qYdCaa8rlMGaIS6XFWcKqBlpj0Mv2R5ldW90bU/RllGvh1KinTIRVTsf4qtZIV
+Xy4vN8IYzDL1493nKndMsxsRh50rI1Snn2tssAix64eJ5VFSGlyOYEKYDMlWzHK6
+Jg3tVmc6AoGBAIwTRPAEcroqOzaebiVspFcmsXxDQ4wXQZQdho1ExW6FKS8s7/6p
+ItmZYXTvJDwLXgq2/iK1fRRcKk2PJEaSuJR7WeNGsJKfWmQ2UbOhqA3wWLDazIZt
+cMKjFzD0hM4E8qgjHjMvKDE6WgT6SFP+tqx3nnh7pJWwsbGjSMQexpyRAhQLhz0l
+GzM8qwTcXd06uIZAJdTHIQ==
+-----END DSA PRIVATE KEY-----
+EOF
 
   SSH_PUBLIC_KEY1 = 'AAAAB3NzaC1yc2EAAAABIwAAAQEArfTA/lKVR84IMc9ZzXOCHr8DVtR8hzWuEVHF6KElavRHlk14g0SZu3m908Ejm/XF3EfNHjX9wN+62IMA0QBxkBMFCuLF+U/oeUs0NoDdAEKxjj4n6lq6Ss8aLct+anMy7D1jwvOLbcwV54w1d5JDdlZVdZ6AvHm9otwJq6rNpDgdmXY4HgC2nM9csFpuy0cDpL6fdJx9lcNL2RnkRC4+RMsIB+PxDw0j3vDi04dYLBXMGYjyeGH+mIFpL3PTPXGXwL2XDYXZ2H4SQX6bOoKmazTXq6QXuEB665njh1GxXldoIMcSshoJL0hrk3WrTOG22N2CQA+IfHgrXJ+A+QUzKQ=='
   SSH_PUBLIC_KEY2 = 'AAAAB3NzaC1yc2EAAAABIwAAAQEAxl6TpN7uFiY/JZ8qDnD7UrxDP+ABeh2PVg8Du1LEgXNk0+YWCeP5S6oHklqaWeDlbmAs1oHsBwCMAVpMa5tgONOLvz4JgwgkiqQEbKR8ofWJ+LADUElvqRVGmGiNEMLI6GJWeneL4sjmbb8d6U+M53c6iWG0si9XE5m7teBQSsCl0Tk3qMIkQGw5zpJeCXjZ8KpJhIJRYgexFkGgPlYRV+UYIhxpUW90t0Ra5i6JOFYwq98k5S/6SJIZQ/A9F4JNzwLw3eVxZj0yVHWxkGz1+TyELNY1kOyMxnZaqSfGzSQJTrnIXpdweVHuYh1LtOgedRQhCyiELeSMGwio1vRPKw=='
+  SSH_PUBLIC_KEY3 = 'AAAAB3NzaC1kc3MAAACBALyVy5dwVwgL3CxXzsvo8DBh58qArQLBNIPW/f9pptmy7jD5QXzOw+12w0/z4lZ86ncoVutRMf44OABcX9ovhRl+luxB7jjpkVXy/p2ZaqPbeyTQUtdTmXa2y4n053Jd61VeMG+iLP7+viT+Ib96y9aVUYQfCrl5heBDUZ9cAFjdAAAAFQDFXnO7JJpFKwkeoor4GWGHtz0D2QAAAIEAqel0RUBO0MY5b3DZ69J/mRzUifN1O6twk4er2ph0JpryuUwZohLpcVZwqoGWmPQy/ZHmV1b3RtT9GWUa+HUqKdMhFVOx/iq1khVfLi83whjMMvXj3ecqd0yzGxGHnSsjVKefa2ywCLHrh4nlUVIaXI5gQpgMyVbMcromDe1WZzoAAACBAIwTRPAEcroqOzaebiVspFcmsXxDQ4wXQZQdho1ExW6FKS8s7/6pItmZYXTvJDwLXgq2/iK1fRRcKk2PJEaSuJR7WeNGsJKfWmQ2UbOhqA3wWLDazIZtcMKjFzD0hM4E8qgjHjMvKDE6WgT6SFP+tqx3nnh7pJWwsbGjSMQexpyR'
 
   KEY1_FINGERPRINT = "2a:89:84:c9:29:05:d1:f8:49:79:1c:ba:73:99:eb:af"
   KEY2_FINGERPRINT = "3c:af:74:87:cc:cc:a1:12:05:1a:09:b7:7b:ce:ed:ce"
+  KEY3_FINGERPRINT = "14:f6:6a:12:96:be:44:32:e6:3c:77:43:94:52:f5:7a"
 
   def setup
     @key1 = SSHKey.new(SSH_PRIVATE_KEY1, :comment => "me@example.com")
     @key2 = SSHKey.new(SSH_PRIVATE_KEY2, :comment => "me@example.com")
+    @key3 = SSHKey.new(SSH_PRIVATE_KEY3, :comment => "me@example.com")
     @key_without_comment = SSHKey.new(SSH_PRIVATE_KEY1)
   end
 
   def test_private_key1
-    assert_equal SSH_PRIVATE_KEY1, @key1.rsa_private_key
+    assert_equal SSH_PRIVATE_KEY1, @key1.private_key
   end
 
   def test_private_key2
-    assert_equal SSH_PRIVATE_KEY2, @key2.rsa_private_key
+    assert_equal SSH_PRIVATE_KEY2, @key2.private_key
+  end
+
+  def test_private_key3
+    assert_equal SSH_PRIVATE_KEY3, @key3.private_key
   end
 
   def test_ssh_public_key_decoded1
@@ -89,6 +110,10 @@ EOF
     assert_equal Base64.decode64(SSH_PUBLIC_KEY2), @key2.send(:ssh_public_key_conversion)
   end
 
+  def test_ssh_public_key_decoded3
+    assert_equal Base64.decode64(SSH_PUBLIC_KEY3), @key3.send(:ssh_public_key_conversion)
+  end
+
   def test_ssh_public_key_encoded1
     assert_equal SSH_PUBLIC_KEY1, Base64.encode64(@key1.send(:ssh_public_key_conversion)).gsub("\n", "")
   end
@@ -97,13 +122,19 @@ EOF
     assert_equal SSH_PUBLIC_KEY2, Base64.encode64(@key2.send(:ssh_public_key_conversion)).gsub("\n", "")
   end
 
+  def test_ssh_public_key_encoded3
+    assert_equal SSH_PUBLIC_KEY3, Base64.encode64(@key3.send(:ssh_public_key_conversion)).gsub("\n", "")
+  end
+
   def test_ssh_public_key_output
     expected1 = "ssh-rsa #{SSH_PUBLIC_KEY1} me@example.com"
     expected2 = "ssh-rsa #{SSH_PUBLIC_KEY2} me@example.com"
-    expected3 = "ssh-rsa #{SSH_PUBLIC_KEY1}"
+    expected3 = "ssh-dss #{SSH_PUBLIC_KEY3} me@example.com"
+    expected4 = "ssh-rsa #{SSH_PUBLIC_KEY1}"
     assert_equal expected1, @key1.ssh_public_key
     assert_equal expected2, @key2.ssh_public_key
-    assert_equal expected3, @key_without_comment.ssh_public_key
+    assert_equal expected3, @key3.ssh_public_key
+    assert_equal expected4, @key_without_comment.ssh_public_key
   end
 
   def test_exponent
@@ -119,6 +150,7 @@ EOF
   def test_fingerprint
     assert_equal KEY1_FINGERPRINT, @key1.fingerprint
     assert_equal KEY2_FINGERPRINT, @key2.fingerprint
+    assert_equal KEY3_FINGERPRINT, @key3.fingerprint
   end
 
   def test_to_byte_array
