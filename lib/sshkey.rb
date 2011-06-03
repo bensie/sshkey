@@ -3,6 +3,7 @@ require 'base64'
 require 'digest/md5'
 
 class SSHKey
+  DEFAULT_BITS   = 2048
   SSH_TYPES      = {"rsa" => "ssh-rsa", "dsa" => "ssh-dss"}
   SSH_CONVERSION = {"rsa" => ["e", "n"], "dsa" => ["p", "q", "g", "pub_key"]}
 
@@ -10,9 +11,10 @@ class SSHKey
 
   def self.generate(options = {})
     type = options[:type] || "rsa"
+    bits = options[:bits] || DEFAULT_BITS
     case type.downcase
-    when "rsa" then SSHKey.new(OpenSSL::PKey::RSA.generate(2048).to_pem, options)
-    when "dsa" then SSHKey.new(OpenSSL::PKey::DSA.generate(2048).to_pem, options)
+    when "rsa" then SSHKey.new(OpenSSL::PKey::RSA.generate(bits).to_pem, options)
+    when "dsa" then SSHKey.new(OpenSSL::PKey::DSA.generate(bits).to_pem, options)
     else
       raise "Unknown key type #{type}"
     end
