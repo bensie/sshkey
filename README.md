@@ -10,13 +10,13 @@ Tested on the following Rubies: MRI 1.8.7 and 1.9.2, Rubinius, JRuby.  Ruby must
 Usage
 -----
 
-When generating a new keypair the default key type is RSA, but you can supply the type (RSA or DSA) in the options.
+When generating a new keypair the default key type is 2048-bit RSA, but you can supply the `type` (RSA or DSA) and `bits` in the options.
 You can also (optionally) supply a comment:
 
 ``` ruby
 k = SSHKey.generate
 
-k = SSHKey.generate(:type => "DSA", :comment => "foo@bar.com")
+k = SSHKey.generate(:type => "DSA", :bits => 1024, :comment => "foo@bar.com")
 ```
 
 Return an SSHKey object from an existing RSA or DSA private key (provided as a string)
