@@ -11,7 +11,7 @@ Usage
 -----
 
 When generating a new keypair the default key type is 2048-bit RSA, but you can supply the `type` (RSA or DSA) and `bits` in the options.
-You can also (optionally) supply a comment:
+You can also (optionally) supply a `comment`:
 
 ``` ruby
 k = SSHKey.generate
