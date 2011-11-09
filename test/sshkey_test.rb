@@ -155,16 +155,16 @@ EOF
     invalid4  = "ssh-rsa A#{SSH_PUBLIC_KEY1}"
     invalid5  = "ssh-rsa #{SSH_PUBLIC_KEY3} me@example.com"
 
-    assert SSHKey.valid?(expected1)
-    assert SSHKey.valid?(expected2)
-    assert SSHKey.valid?(expected3)
-    assert SSHKey.valid?(expected4)
+    assert SSHKey.valid_ssh_public_key?(expected1)
+    assert SSHKey.valid_ssh_public_key?(expected2)
+    assert SSHKey.valid_ssh_public_key?(expected3)
+    assert SSHKey.valid_ssh_public_key?(expected4)
 
-    assert !SSHKey.valid?(invalid1)
-    assert !SSHKey.valid?(invalid2)
-    assert !SSHKey.valid?(invalid3)
-    assert !SSHKey.valid?(invalid4)
-    assert !SSHKey.valid?(invalid5)
+    assert !SSHKey.valid_ssh_public_key?(invalid1)
+    assert !SSHKey.valid_ssh_public_key?(invalid2)
+    assert !SSHKey.valid_ssh_public_key?(invalid3)
+    assert !SSHKey.valid_ssh_public_key?(invalid4)
+    assert !SSHKey.valid_ssh_public_key?(invalid5)
   end
 
   def test_exponent

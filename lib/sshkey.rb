@@ -46,11 +46,6 @@ class SSHKey
     false
   end
 
-  def self.valid?(ssh_public_key)
-    puts "DEPRECATION WARNING: SSHKey.valid? has been renamed to SSHKey.valid_ssh_public_key? for clarity. SSHKey.valid? will be removed in 1.3."
-    valid_ssh_public_key?(ssh_public_key)
-  end
-
   def self.from_byte_array(byte_array, expected_size = nil)
     num = 0
     raise "Byte array too short" if !expected_size.nil? && expected_size != byte_array.size
