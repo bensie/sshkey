@@ -19,8 +19,8 @@ class SSHKey
     end
   end
 
-  def self.valid?(ssh_key)
-    ssh_type, encoded_key = ssh_key.split(" ")
+  def self.valid_ssh_public_key?(ssh_public_key)
+    ssh_type, encoded_key = ssh_public_key.split(" ")
     type = SSH_TYPES.invert[ssh_type]
     prefix = [0,0,0,7].pack("C*")
     decoded = Base64.decode64(encoded_key)
@@ -43,6 +43,11 @@ class SSHKey
     SSH_CONVERSION[type].size == data.size
   rescue
     false
+  end
+
+  def self.valid?(ssh_public_key)
+    puts "DEPRECATION WARNING: SSHKey.valid? has been renamed to SSHKey.valid_ssh_public_key? for clarity. SSHKey.valid? will be removed in 1.3."
+    valid_ssh_public_key?(ssh_public_key)
   end
 
   def self.from_byte_array(byte_array, expected_size = nil)
