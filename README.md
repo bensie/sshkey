@@ -1,7 +1,7 @@
 sshkey
 ======
 
-Generate private and public SSH keys (RSA and DSA supported) using Ruby without the `ssh-keygen` system command.
+Generate private and public SSH keys (RSA and DSA supported) using pure Ruby.
 
 	gem install sshkey
 
@@ -52,12 +52,12 @@ k.ssh_public_key
 k.comment
 # => "foo@bar.com"
 
-# Returns the fingerprint as a string
+# Returns the MD5 fingerprint as a string
 k.fingerprint
 # => "2a:89:84:c9:29:05:d1:f8:49:79:1c:ba:73:99:eb:af"
 
 # Validates SSH Public Key
-SSHKey.valid? "ssh-rsa AAAAB3NzaC1yc2EA...."
+SSHKey.valid_ssh_public_key? "ssh-rsa AAAAB3NzaC1yc2EA...."
 # => true
 ```
 
