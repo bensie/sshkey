@@ -9,6 +9,17 @@ class SSHKey
 
   attr_reader :key_object, :comment, :type
 
+  # Generate a new keypair and return an SSHKey object
+  #
+  # The default behavior when providing no options will generate a 2048-bit RSA
+  # keypair.
+  #
+  # ==== Parameters
+  # * options<~Hash>:
+  #   * :type<~String> - "rsa" or "dsa", "rsa" by default
+  #   * :bits<~Integer> - Bit length
+  #   * :comment<~String> - Comment to use for the public key, defaults to ""
+  #
   def self.generate(options = {})
     type = options[:type] || "rsa"
     bits = options[:bits] || 2048
@@ -20,6 +31,13 @@ class SSHKey
     end
   end
 
+  # Validate an existing SSH public key
+  #
+  # Returns true or false depending on the validity of the public key provided
+  #
+  # ==== Parameters
+  # * ssh_public_key<~String> - "ssh-rsa AAAAB3NzaC1yc2EA...."
+  #
   def self.valid_ssh_public_key?(ssh_public_key)
     ssh_type, encoded_key = ssh_public_key.split(" ")
     type = SSH_TYPES.invert[ssh_type]
@@ -55,6 +73,13 @@ class SSHKey
     num
   end
 
+  # Create a new SSHKey object
+  #
+  # ==== Parameters
+  # * private_key - Existing RSA or DSA private key
+  # * options<~Hash>
+  #   * :comment<~String> - Comment to use for the public key, defaults to ""
+  #
   def initialize(private_key, options = {})
     begin
       @key_object = OpenSSL::PKey::RSA.new(private_key)
@@ -67,52 +92,50 @@ class SSHKey
     @comment = options[:comment] || ""
   end
 
+  # Fetch the RSA/DSA private key
+  #
+  # rsa_private_key and dsa_private_key are aliased for backward compatibility
   def private_key
     key_object.to_pem
   end
+  alias_method :rsa_private_key, :private_key
+  alias_method :dsa_private_key, :private_key
 
+  # Fetch the RSA/DSA public key
+  #
+  # rsa_public_key and dsa_public_key are aliased for backward compatibility
   def public_key
     key_object.public_key.to_pem
   end
+  alias_method :rsa_public_key, :public_key
+  alias_method :dsa_public_key, :public_key
 
-  ########################
-  # Backward compatibility
-  def rsa_private_key
-    private_key if type == "rsa"
-  end
-
-  def rsa_public_key
-    public_key if type == "rsa"
-  end
-
-  def dsa_private_key
-    private_key if type == "dsa"
-  end
-
-  def dsa_public_key
-    public_key if type == "dsa"
-  end
-  ########################
-
+  # SSH public key
   def ssh_public_key
     [SSH_TYPES[type], Base64.encode64(ssh_public_key_conversion).gsub("\n", ""), comment].join(" ").strip
   end
 
+  # Fingerprints
+  #
+  # MD5 fingerprint for the given SSH public key
   def md5_fingerprint
     Digest::MD5.hexdigest(ssh_public_key_conversion).gsub(/(.{2})(?=.)/, '\1:\2')
   end
   alias_method :fingerprint, :md5_fingerprint
 
+  # SHA1 fingerprint for the given SSH public key
   def sha1_fingerprint
     Digest::SHA1.hexdigest(ssh_public_key_conversion).gsub(/(.{2})(?=.)/, '\1:\2')
   end
 
   private
 
+  # SSH Public Key Conversion
+  #
   # All data type encoding is defined in the section #5 of RFC #4251.
-  # String and mpint (multiple precision integer) types are encoded this way :
+  # String and mpint (multiple precision integer) types are encoded this way:
   # 4-bytes word: data length (unsigned big-endian 32 bits integer)
-  # n bytes     : binary representation of the data
+  # n bytes: binary representation of the data
 
   # For instance, the "ssh-rsa" string is encoded as the following byte array
   # [0, 0, 0, 7, 's', 's', 'h', '-', 'r', 's', 'a']
