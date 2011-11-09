@@ -79,9 +79,13 @@ EOF
   SSH_PUBLIC_KEY2 = 'AAAAB3NzaC1yc2EAAAABIwAAAQEAxl6TpN7uFiY/JZ8qDnD7UrxDP+ABeh2PVg8Du1LEgXNk0+YWCeP5S6oHklqaWeDlbmAs1oHsBwCMAVpMa5tgONOLvz4JgwgkiqQEbKR8ofWJ+LADUElvqRVGmGiNEMLI6GJWeneL4sjmbb8d6U+M53c6iWG0si9XE5m7teBQSsCl0Tk3qMIkQGw5zpJeCXjZ8KpJhIJRYgexFkGgPlYRV+UYIhxpUW90t0Ra5i6JOFYwq98k5S/6SJIZQ/A9F4JNzwLw3eVxZj0yVHWxkGz1+TyELNY1kOyMxnZaqSfGzSQJTrnIXpdweVHuYh1LtOgedRQhCyiELeSMGwio1vRPKw=='
   SSH_PUBLIC_KEY3 = 'AAAAB3NzaC1kc3MAAACBALyVy5dwVwgL3CxXzsvo8DBh58qArQLBNIPW/f9pptmy7jD5QXzOw+12w0/z4lZ86ncoVutRMf44OABcX9ovhRl+luxB7jjpkVXy/p2ZaqPbeyTQUtdTmXa2y4n053Jd61VeMG+iLP7+viT+Ib96y9aVUYQfCrl5heBDUZ9cAFjdAAAAFQDFXnO7JJpFKwkeoor4GWGHtz0D2QAAAIEAqel0RUBO0MY5b3DZ69J/mRzUifN1O6twk4er2ph0JpryuUwZohLpcVZwqoGWmPQy/ZHmV1b3RtT9GWUa+HUqKdMhFVOx/iq1khVfLi83whjMMvXj3ecqd0yzGxGHnSsjVKefa2ywCLHrh4nlUVIaXI5gQpgMyVbMcromDe1WZzoAAACBAIwTRPAEcroqOzaebiVspFcmsXxDQ4wXQZQdho1ExW6FKS8s7/6pItmZYXTvJDwLXgq2/iK1fRRcKk2PJEaSuJR7WeNGsJKfWmQ2UbOhqA3wWLDazIZtcMKjFzD0hM4E8qgjHjMvKDE6WgT6SFP+tqx3nnh7pJWwsbGjSMQexpyR'
 
-  KEY1_FINGERPRINT = "2a:89:84:c9:29:05:d1:f8:49:79:1c:ba:73:99:eb:af"
-  KEY2_FINGERPRINT = "3c:af:74:87:cc:cc:a1:12:05:1a:09:b7:7b:ce:ed:ce"
-  KEY3_FINGERPRINT = "14:f6:6a:12:96:be:44:32:e6:3c:77:43:94:52:f5:7a"
+  KEY1_MD5_FINGERPRINT = "2a:89:84:c9:29:05:d1:f8:49:79:1c:ba:73:99:eb:af"
+  KEY2_MD5_FINGERPRINT = "3c:af:74:87:cc:cc:a1:12:05:1a:09:b7:7b:ce:ed:ce"
+  KEY3_MD5_FINGERPRINT = "14:f6:6a:12:96:be:44:32:e6:3c:77:43:94:52:f5:7a"
+
+  KEY1_SHA1_FINGERPRINT = "e4:f9:79:f2:fe:d6:be:2d:ef:2e:c2:fa:aa:f8:b0:17:34:fe:0d:c0"
+  KEY2_SHA1_FINGERPRINT = "9a:52:78:2b:6b:cb:39:b7:85:ed:90:8a:28:62:aa:b3:98:88:e6:07"
+  KEY3_SHA1_FINGERPRINT = "15:68:c6:72:ac:18:d1:fc:ab:a2:b7:b5:8c:d1:fe:8f:b9:ae:a9:47"
 
   def setup
     @key1 = SSHKey.new(SSH_PRIVATE_KEY1, :comment => "me@example.com")
@@ -174,9 +178,14 @@ EOF
   end
 
   def test_fingerprint
-    assert_equal KEY1_FINGERPRINT, @key1.fingerprint
-    assert_equal KEY2_FINGERPRINT, @key2.fingerprint
-    assert_equal KEY3_FINGERPRINT, @key3.fingerprint
+    assert_equal KEY1_MD5_FINGERPRINT, @key1.md5_fingerprint
+    assert_equal KEY1_MD5_FINGERPRINT, @key1.fingerprint # Aliased method
+    assert_equal KEY2_MD5_FINGERPRINT, @key2.md5_fingerprint
+    assert_equal KEY3_MD5_FINGERPRINT, @key3.md5_fingerprint
+
+    assert_equal KEY1_SHA1_FINGERPRINT, @key1.sha1_fingerprint
+    assert_equal KEY2_SHA1_FINGERPRINT, @key2.sha1_fingerprint
+    assert_equal KEY3_SHA1_FINGERPRINT, @key3.sha1_fingerprint
   end
 
   def test_to_byte_array

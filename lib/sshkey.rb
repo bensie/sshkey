@@ -1,6 +1,7 @@
 require 'openssl'
 require 'base64'
 require 'digest/md5'
+require 'digest/sha1'
 
 class SSHKey
   SSH_TYPES      = {"rsa" => "ssh-rsa", "dsa" => "ssh-dss"}
@@ -97,8 +98,13 @@ class SSHKey
     [SSH_TYPES[type], Base64.encode64(ssh_public_key_conversion).gsub("\n", ""), comment].join(" ").strip
   end
 
-  def fingerprint
+  def md5_fingerprint
     Digest::MD5.hexdigest(ssh_public_key_conversion).gsub(/(.{2})(?=.)/, '\1:\2')
+  end
+  alias_method :fingerprint, :md5_fingerprint
+
+  def sha1_fingerprint
+    Digest::SHA1.hexdigest(ssh_public_key_conversion).gsub(/(.{2})(?=.)/, '\1:\2')
   end
 
   private
