@@ -53,8 +53,12 @@ k.comment
 # => "foo@bar.com"
 
 # Returns the MD5 fingerprint as a string
-k.fingerprint
+k.md5_fingerprint
 # => "2a:89:84:c9:29:05:d1:f8:49:79:1c:ba:73:99:eb:af"
+
+# Returns the SHA1 fingerprint as a string
+k.sha1_fingerprint
+# => "e4:f9:79:f2:fe:d6:be:2d:ef:2e:c2:fa:aa:f8:b0:17:34:fe:0d:c0"
 
 # Validates SSH Public Key
 SSHKey.valid_ssh_public_key? "ssh-rsa AAAAB3NzaC1yc2EA...."
