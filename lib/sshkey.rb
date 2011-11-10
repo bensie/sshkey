@@ -8,6 +8,7 @@ class SSHKey
   SSH_CONVERSION = {"rsa" => ["e", "n"], "dsa" => ["p", "q", "g", "pub_key"]}
 
   attr_reader :key_object, :comment, :type
+  attr_accessor :passphrase
 
   # Generate a new keypair and return an SSHKey object
   #
@@ -19,15 +20,18 @@ class SSHKey
   #   * :type<~String> - "rsa" or "dsa", "rsa" by default
   #   * :bits<~Integer> - Bit length
   #   * :comment<~String> - Comment to use for the public key, defaults to ""
+  #   * :passphrase<~String> - Encrypt the key with this passphrase
   #
   def self.generate(options = {})
-    type = options[:type] || "rsa"
-    bits = options[:bits] || 2048
+    type   = options[:type] || "rsa"
+    bits   = options[:bits] || 2048
+    cipher = OpenSSL::Cipher::Cipher.new("AES-128-CBC") if options[:passphrase]
+
     case type.downcase
-    when "rsa" then SSHKey.new(OpenSSL::PKey::RSA.generate(bits).to_pem, options)
-    when "dsa" then SSHKey.new(OpenSSL::PKey::DSA.generate(bits).to_pem, options)
+    when "rsa" then SSHKey.new(OpenSSL::PKey::RSA.generate(bits).to_pem(cipher, options[:passphrase]), options)
+    when "dsa" then SSHKey.new(OpenSSL::PKey::DSA.generate(bits).to_pem(cipher, options[:passphrase]), options)
     else
-      raise "Unknown key type #{type}"
+      raise "Unknown key type: #{type}"
     end
   end
 
@@ -79,17 +83,18 @@ class SSHKey
   # * private_key - Existing RSA or DSA private key
   # * options<~Hash>
   #   * :comment<~String> - Comment to use for the public key, defaults to ""
+  #   * :passphrase<~String> - If the key is encrypted, supply the passphrase
   #
   def initialize(private_key, options = {})
+    @passphrase = options[:passphrase]
+    @comment    = options[:comment] || ""
     begin
-      @key_object = OpenSSL::PKey::RSA.new(private_key)
+      @key_object = OpenSSL::PKey::RSA.new(private_key, passphrase)
       @type = "rsa"
     rescue
-      @key_object = OpenSSL::PKey::DSA.new(private_key)
+      @key_object = OpenSSL::PKey::DSA.new(private_key, passphrase)
       @type = "dsa"
     end
-
-    @comment = options[:comment] || ""
   end
 
   # Fetch the RSA/DSA private key
@@ -100,6 +105,14 @@ class SSHKey
   end
   alias_method :rsa_private_key, :private_key
   alias_method :dsa_private_key, :private_key
+
+  # Fetch the encrypted RSA/DSA private key using the passphrase provided
+  #
+  # If no passphrase is set, returns the unencrypted private key
+  def encrypted_private_key
+    return private_key unless passphrase
+    key_object.to_pem(OpenSSL::Cipher::Cipher.new("AES-128-CBC"), passphrase)
+  end
 
   # Fetch the RSA/DSA public key
   #
