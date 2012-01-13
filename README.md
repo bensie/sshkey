@@ -68,4 +68,4 @@ SSHKey.valid_ssh_public_key? "ssh-rsa AAAAB3NzaC1yc2EA...."
 Copyright
 ---------
 
-Copyright (c) 2011 James Miller
+Copyright (c) 2012 James Miller

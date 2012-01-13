@@ -10,71 +10,75 @@ class SSHKey
   attr_reader :key_object, :comment, :type
   attr_accessor :passphrase
 
-  # Generate a new keypair and return an SSHKey object
-  #
-  # The default behavior when providing no options will generate a 2048-bit RSA
-  # keypair.
-  #
-  # ==== Parameters
-  # * options<~Hash>:
-  #   * :type<~String> - "rsa" or "dsa", "rsa" by default
-  #   * :bits<~Integer> - Bit length
-  #   * :comment<~String> - Comment to use for the public key, defaults to ""
-  #   * :passphrase<~String> - Encrypt the key with this passphrase
-  #
-  def self.generate(options = {})
-    type   = options[:type] || "rsa"
-    bits   = options[:bits] || 2048
-    cipher = OpenSSL::Cipher::Cipher.new("AES-128-CBC") if options[:passphrase]
+  class << self
+    # Generate a new keypair and return an SSHKey object
+    #
+    # The default behavior when providing no options will generate a 2048-bit RSA
+    # keypair.
+    #
+    # ==== Parameters
+    # * options<~Hash>:
+    #   * :type<~String> - "rsa" or "dsa", "rsa" by default
+    #   * :bits<~Integer> - Bit length
+    #   * :comment<~String> - Comment to use for the public key, defaults to ""
+    #   * :passphrase<~String> - Encrypt the key with this passphrase
+    #
+    def generate(options = {})
+      type   = options[:type] || "rsa"
+      bits   = options[:bits] || 2048
+      cipher = OpenSSL::Cipher::Cipher.new("AES-128-CBC") if options[:passphrase]
 
-    case type.downcase
-    when "rsa" then SSHKey.new(OpenSSL::PKey::RSA.generate(bits).to_pem(cipher, options[:passphrase]), options)
-    when "dsa" then SSHKey.new(OpenSSL::PKey::DSA.generate(bits).to_pem(cipher, options[:passphrase]), options)
-    else
-      raise "Unknown key type: #{type}"
-    end
-  end
-
-  # Validate an existing SSH public key
-  #
-  # Returns true or false depending on the validity of the public key provided
-  #
-  # ==== Parameters
-  # * ssh_public_key<~String> - "ssh-rsa AAAAB3NzaC1yc2EA...."
-  #
-  def self.valid_ssh_public_key?(ssh_public_key)
-    ssh_type, encoded_key = ssh_public_key.split(" ")
-    type = SSH_TYPES.invert[ssh_type]
-    prefix = [0,0,0,7].pack("C*")
-    decoded = Base64.decode64(encoded_key)
-
-    # Base64 decoding is too permissive, so we should validate if encoding is correct
-    return false unless Base64.encode64(decoded).gsub("\n", "") == encoded_key
-    return false unless decoded.sub!(/^#{prefix}#{ssh_type}/, "")
-
-    unpacked = decoded.unpack("C*")
-    data = []
-    index = 0
-    until unpacked[index].nil?
-      datum_size = from_byte_array unpacked[index..index+4-1], 4
-      index = index + 4
-      datum = from_byte_array unpacked[index..index+datum_size-1], datum_size
-      data << datum
-      index = index + datum_size
+      case type.downcase
+      when "rsa" then SSHKey.new(OpenSSL::PKey::RSA.generate(bits).to_pem(cipher, options[:passphrase]), options)
+      when "dsa" then SSHKey.new(OpenSSL::PKey::DSA.generate(bits).to_pem(cipher, options[:passphrase]), options)
+      else
+        raise "Unknown key type: #{type}"
+      end
     end
 
-    SSH_CONVERSION[type].size == data.size
-  rescue
-    false
-  end
+    # Validate an existing SSH public key
+    #
+    # Returns true or false depending on the validity of the public key provided
+    #
+    # ==== Parameters
+    # * ssh_public_key<~String> - "ssh-rsa AAAAB3NzaC1yc2EA...."
+    #
+    def valid_ssh_public_key?(ssh_public_key)
+      ssh_type, encoded_key = ssh_public_key.split(" ")
+      type = SSH_TYPES.invert[ssh_type]
+      prefix = [0,0,0,7].pack("C*")
+      decoded = Base64.decode64(encoded_key)
 
-  def self.from_byte_array(byte_array, expected_size = nil)
-    num = 0
-    raise "Byte array too short" if !expected_size.nil? && expected_size != byte_array.size
-    byte_array.reverse.each_with_index do |item, index|
-      num += item * 256**(index)
+      # Base64 decoding is too permissive, so we should validate if encoding is correct
+      return false unless Base64.encode64(decoded).gsub("\n", "") == encoded_key
+      return false unless decoded.sub!(/^#{prefix}#{ssh_type}/, "")
+
+      unpacked = decoded.unpack("C*")
+      data = []
+      index = 0
+      until unpacked[index].nil?
+        datum_size = from_byte_array unpacked[index..index+4-1], 4
+        index = index + 4
+        datum = from_byte_array unpacked[index..index+datum_size-1], datum_size
+        data << datum
+        index = index + datum_size
+      end
+
+      SSH_CONVERSION[type].size == data.size
+    rescue
+      false
     end
-    num
+
+    private
+
+    def from_byte_array(byte_array, expected_size = nil)
+      num = 0
+      raise "Byte array too short" if !expected_size.nil? && expected_size != byte_array.size
+      byte_array.reverse.each_with_index do |item, index|
+        num += item * 256**(index)
+      end
+      num
+    end
   end
 
   # Create a new SSHKey object
