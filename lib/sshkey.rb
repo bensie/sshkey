@@ -25,7 +25,11 @@ class SSHKey
     #
     def generate(options = {})
       type   = options[:type] || "rsa"
-      bits   = options[:bits] || 2048
+
+      # JRuby modulus size must range from 512 to 1024
+      default_bits = type == "rsa" ? 2048 : 1024
+
+      bits   = options[:bits] || default_bits
       cipher = OpenSSL::Cipher::Cipher.new("AES-128-CBC") if options[:passphrase]
 
       case type.downcase
@@ -95,7 +99,7 @@ class SSHKey
     begin
       @key_object = OpenSSL::PKey::RSA.new(private_key, passphrase)
       @type = "rsa"
-    rescue
+    rescue Exception
       @key_object = OpenSSL::PKey::DSA.new(private_key, passphrase)
       @type = "dsa"
     end
