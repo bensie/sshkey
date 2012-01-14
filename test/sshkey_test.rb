@@ -75,71 +75,6 @@ GzM8qwTcXd06uIZAJdTHIQ==
 -----END DSA PRIVATE KEY-----
 EOF
 
-  ENCRYPTED_PRIVATE_KEY = <<-EOF
------BEGIN RSA PRIVATE KEY-----
-Proc-Type: 4,ENCRYPTED
-DEK-Info: AES-128-CBC,3514D8812B519059944A811726594515
-
-fSr1v51I65MZrSs7u12nype6RH6NS15xN5FDPaPKV++EBPxysEzicU5QHDt/aHa3
-t87nXkra1M400+zNgFcfi5Ga7w5SBmqEjdNgwhUV2/j1Yqqlr5c7l804OfIPxdE6
-ELoWH7pen72JnlZe6gXq495W96QTg3IzIWdiKEbKJlEwrNBligqT7GB2mup8nY1D
-o71R07dIrvfDy3xVgCoRjX4LKUilO6nRnwVCFRgVQTEVKclqt8NiSFGMjzv3iekR
-f1fJ8Wm6CiST8zdetIXgMnHEK1KELhNeMhI/42Tn/gHPDsckBiKLtM+85OOT92wh
-L9o/KUySdcsb/ld0yT/kAc99/wqNitHAqUEcLshIWDVhqoT1XK46hEuRN782AN2U
-shQKirF8QFopYF+u9K2Q0mr1EsYaBWOFFBR7EiwFvEYOx+ad6qGQGPcxWhbf6eCU
-D///9g1g5q8nWb80UH9Hw1aMhIA+VTlIasM6XJKmGr1LapxlrYsqRovPwkgOQg01
-jhSV1fy10bbaFBwd9qTdTTVqa368/e3/TxF2VKhDaqoy5lqvRqKzGJxi3ubzDuz9
-m3qRTCgy1v3XI5DgcjWt5xC5gZLHjKf79fQKRJjuEnWALahpDVWQ6PRCuqPfyph5
-/vVqGHqvA53HJ9pmXz4J9qtQQ2gkYRj1m2tlRJjtGRMqnAj7bpcDKIrdLudOiWB0
-FXwmsXljzPaf/SPUa+tGg7jbh+Jq+72vdpo1ijJtLXhWQAJasIbvSXOVHbZ6YhJj
-vES98gJPzevqemS//C1DMrr0ci6pM9ciT2szkrg71zRacnfqrjeZUI7qHKAsRbD5
-258Jj6BeFPeQSrUg8sqQdoPxVTNnVr2bOB5SNfh7gqLanPksi6Kr7XNIzsYP5Wzf
-ADAElPdcRRwYc2kLVqugZTMLSn1r8rQjEyQ8/TT2QefI4ma8mCrBKgqYX+SDbhMJ
-+KUrah0jCgj86z6fSNkNHaKuzvGCovZsJHXt2SoIWVYWVUz91IHPKXXycIqvf3Yj
-9HFpJRAPh30MYBgiImCJjmk8tqKGn0Tc80vOsrKMlVuMIIu2eNrddrnHUzSbjIHr
-tTtSDvsJ/Bn/6+Ox77U/FKg6s6/6PxOA1a+ffKkBXB/g4jS5CfGZl1owb3kX91C/
-a+bcNWp07DsaTaZd/0UEL2gIvaEuCULgyIvmnBPCOY6Pc5GGegWEJne/sk7j9W4I
-59YtVfcSXiovYR/QEywytfN/tfPxKfUoqNMIxLkukjFYz4Zzk5kXEeI+1lcry398
-UQSaOboSDKY6boX4rWgiiqyn5LN+47eAIZPO+zsWXky16F04JpT7V7XqZPXQn7vI
-pMAoPCkT4qE9Gp2CcSj2l2CoZ3ZA5lOs6Wvxuz0q1zd0uSe8O81/3rnw28DthDQO
-SuzrY0HinPEFomwMGbfhosB5kOmBXEk7XbSWWHhK0QG63CYqp5caUst2Mie21b0Y
-FgFTrS1VqUiqDjCmt8F8UCPQS89aFm096wqtmwDO+VWKanuHUUShtTPlYyLe1RTm
-wqh1BBa05ydM0Vf1NagFB4JNT1qSIL5x4XtkOFwqcdXWYvwYfT8PkZjX/kz+W7jb
------END RSA PRIVATE KEY-----
-EOF
-
-  DECRYPTED_PRIVATE_KEY = <<-EOF
------BEGIN RSA PRIVATE KEY-----
-MIIEpAIBAAKCAQEA33H9u4rG0SVMzK8PFyIi30kVHvogmpKVOQL2g2tozi2GipkA
-imzoCW9jIx1jo6zo0kMKCbMdJCNUc93tQxkJAAWA07WYwE9z+J6MC/3urb4Q0UAZ
-orlNyN3pPP8ATFIQomd0wW/EHwbmknlJOIZY4MNUQpNJunnBAAzZyLef6+sbLzQZ
-wc0/vgtmatoCxh4mZWFuFMopkMqScYDKxL30xXXPRGfJvAVWZDnY3ErJSe7uyefI
-Zo/lp4tsH5XGMcFm+nLs++nJjYZ6Ud/ie1g+ZCJv5Qit1m7zCVjiJ4RVMC/4yTb7
-CO8n4PhX8gR9d1DRPVvlKa1sZfQeULEIXMniKQIDAQABAoIBAQDEXS74s5rJjhgS
-AP4n/E3dICK5mGMytAMDmUD+eVQfbQ7BmnhJLjA0qnjbESbRXlE1Bsk5gPjpG0tK
-kAvEXan1JOD0LLDSwIBQSzUUDNLGSTQKUGS3BlX/YlVoz0h5ydzofDa1D/2wrqXO
-r1vTmu1ciQvxffLbN8iOvLxfkk+uSMhqnhf/q3WVinu+VALPg8e/v3p4VbnSfP4D
-eClBiMKEKRFdsa9xBxShijcX1HxjIvp3zDgb127fo2iFw09PIHUZCUo6M77iGrQY
-mscoA+5q1qSyD6Btw0EkKK55ytNMC2T+KfGYV0ySwhadmM+5+G64etvNGCn/j7CU
-rhuRhMlpAoGBAPiJlcWaNVw3ttlea+jllxnaCEOmG29NGWxw080XRvjSIrltPAiE
-8e4FynAMx49aXKsaB8Df2WspdKBxHJgv1U0sapADwxlMO8erj2eDSRqy6bwnI4CT
-T+vvo2vdmkvkV0D9RskXCi5tgTO5FYnf7CjON6JLkg83V3vzyjsKlvDzAoGBAOYn
-iC50OdZ84U58wQUsvwXFuyzMQX9r+h0jL2tIDv/yYlMWg9tNt0HkGUOo7H1ZVhdL
-9Z1B0Ztl2qoJipcQvhzfwdo4XwuLk7D0bOAfZo9YMbU5Jqy+rqE5yv/P4wa7ba4S
-uUQYvSuv54CtiOZDFyK8dU7y9mm+no3Fvrd9RwdzAoGANzlLACctqBnxFQd37r3k
-/yeFIpLsEaUN+xxu02lSqcL3WEA/UJ1JrFu5CYCtbtrjMFmOU3rpsnf5pBS+B8rJ
-GGbAHtPXK+3Wcp1aNePkAHy0lswThWQ2I/SRWUxaFnbcNGKSsefeqUZHqRh9Aq+w
-p7h6gCNOhvcDB1W6H7hQpaUCgYEAyBRDygaWJUVI5N+FOUduBMmhb09d/TTUKTJm
-TcBF8fE30v12wVZtYqW15ODcPhhExFnverc2Tf6cukczKSKP8y/+KQPqdHHxgdrr
-L2d81E6aX+4AFhpqW5SPShXiSf70WWjDkFRlV65C9dVmdq6KVVM6M9j5qHHjCmKG
-6qLI9csCgYBuhFwwI9DiYvJPR1LJZnJtE0qZiTwpmCjU2LoBRsywvuBeyXtwpmIM
-5IgfgXXLK5qK/+cp9047T5rzT6ndu5fNZINPzynA8tNhTtHXK8l/GT/iq8Rd6AcM
-WJmIe8EnUDhHqg7Z2h5tGpX1QPMSA4G8RGPPyrcd3v0G/PZ6pFALlQ==
------END RSA PRIVATE KEY-----
-EOF
-
-  DECRYPTED_KEY_FINGERPRINT = "2e:ba:06:b1:c7:13:37:24:6f:2d:3a:ba:45:e2:b4:78"
-
   SSH_PUBLIC_KEY1 = 'AAAAB3NzaC1yc2EAAAABIwAAAQEArfTA/lKVR84IMc9ZzXOCHr8DVtR8hzWuEVHF6KElavRHlk14g0SZu3m908Ejm/XF3EfNHjX9wN+62IMA0QBxkBMFCuLF+U/oeUs0NoDdAEKxjj4n6lq6Ss8aLct+anMy7D1jwvOLbcwV54w1d5JDdlZVdZ6AvHm9otwJq6rNpDgdmXY4HgC2nM9csFpuy0cDpL6fdJx9lcNL2RnkRC4+RMsIB+PxDw0j3vDi04dYLBXMGYjyeGH+mIFpL3PTPXGXwL2XDYXZ2H4SQX6bOoKmazTXq6QXuEB665njh1GxXldoIMcSshoJL0hrk3WrTOG22N2CQA+IfHgrXJ+A+QUzKQ=='
   SSH_PUBLIC_KEY2 = 'AAAAB3NzaC1yc2EAAAABIwAAAQEAxl6TpN7uFiY/JZ8qDnD7UrxDP+ABeh2PVg8Du1LEgXNk0+YWCeP5S6oHklqaWeDlbmAs1oHsBwCMAVpMa5tgONOLvz4JgwgkiqQEbKR8ofWJ+LADUElvqRVGmGiNEMLI6GJWeneL4sjmbb8d6U+M53c6iWG0si9XE5m7teBQSsCl0Tk3qMIkQGw5zpJeCXjZ8KpJhIJRYgexFkGgPlYRV+UYIhxpUW90t0Ra5i6JOFYwq98k5S/6SJIZQ/A9F4JNzwLw3eVxZj0yVHWxkGz1+TyELNY1kOyMxnZaqSfGzSQJTrnIXpdweVHuYh1LtOgedRQhCyiELeSMGwio1vRPKw=='
   SSH_PUBLIC_KEY3 = 'AAAAB3NzaC1kc3MAAACBALyVy5dwVwgL3CxXzsvo8DBh58qArQLBNIPW/f9pptmy7jD5QXzOw+12w0/z4lZ86ncoVutRMf44OABcX9ovhRl+luxB7jjpkVXy/p2ZaqPbeyTQUtdTmXa2y4n053Jd61VeMG+iLP7+viT+Ib96y9aVUYQfCrl5heBDUZ9cAFjdAAAAFQDFXnO7JJpFKwkeoor4GWGHtz0D2QAAAIEAqel0RUBO0MY5b3DZ69J/mRzUifN1O6twk4er2ph0JpryuUwZohLpcVZwqoGWmPQy/ZHmV1b3RtT9GWUa+HUqKdMhFVOx/iq1khVfLi83whjMMvXj3ecqd0yzGxGHnSsjVKefa2ywCLHrh4nlUVIaXI5gQpgMyVbMcromDe1WZzoAAACBAIwTRPAEcroqOzaebiVspFcmsXxDQ4wXQZQdho1ExW6FKS8s7/6pItmZYXTvJDwLXgq2/iK1fRRcKk2PJEaSuJR7WeNGsJKfWmQ2UbOhqA3wWLDazIZtcMKjFzD0hM4E8qgjHjMvKDE6WgT6SFP+tqx3nnh7pJWwsbGjSMQexpyR'
@@ -156,7 +91,6 @@ EOF
     @key1 = SSHKey.new(SSH_PRIVATE_KEY1, :comment => "me@example.com")
     @key2 = SSHKey.new(SSH_PRIVATE_KEY2, :comment => "me@example.com")
     @key3 = SSHKey.new(SSH_PRIVATE_KEY3, :comment => "me@example.com")
-    @key_encrypted = SSHKey.new(ENCRYPTED_PRIVATE_KEY, :passphrase => "password")
     @key_without_comment = SSHKey.new(SSH_PRIVATE_KEY1)
   end
 
@@ -189,20 +123,6 @@ EOF
   def test_private_key3
     assert_equal SSH_PRIVATE_KEY3, @key3.private_key
     assert_equal SSH_PRIVATE_KEY3, @key3.dsa_private_key
-  end
-
-  def test_encrypted_private_key_can_be_decrypted
-    assert_equal DECRYPTED_PRIVATE_KEY, @key_encrypted.private_key
-  end
-
-  def test_encrypted_private_key_matches_when_reencrypted
-    key = SSHKey.new(@key_encrypted.encrypted_private_key, :passphrase => "password")
-    assert_equal DECRYPTED_PRIVATE_KEY, key.private_key
-    assert_equal DECRYPTED_KEY_FINGERPRINT, key.md5_fingerprint
-  end
-
-  def test_unencrypted_private_key_returns_private_key_when_asked_for_encrypted
-    assert_equal SSH_PRIVATE_KEY1, @key1.encrypted_private_key
   end
 
   def test_ssh_public_key_decoded1
@@ -291,5 +211,87 @@ EOF
     assert_equal [35], ba1
     assert_equal [1, 0, 1], ba2
     assert_equal [[0], [1], [0, 255], [1, 0], [255], [128], [255, 0]], ba3
+  end
+end
+
+class SSHKeyEncryptedTest < Test::Unit::TestCase
+
+  ENCRYPTED_PRIVATE_KEY = <<-EOF
+-----BEGIN RSA PRIVATE KEY-----
+Proc-Type: 4,ENCRYPTED
+DEK-Info: AES-128-CBC,3514D8812B519059944A811726594515
+
+fSr1v51I65MZrSs7u12nype6RH6NS15xN5FDPaPKV++EBPxysEzicU5QHDt/aHa3
+t87nXkra1M400+zNgFcfi5Ga7w5SBmqEjdNgwhUV2/j1Yqqlr5c7l804OfIPxdE6
+ELoWH7pen72JnlZe6gXq495W96QTg3IzIWdiKEbKJlEwrNBligqT7GB2mup8nY1D
+o71R07dIrvfDy3xVgCoRjX4LKUilO6nRnwVCFRgVQTEVKclqt8NiSFGMjzv3iekR
+f1fJ8Wm6CiST8zdetIXgMnHEK1KELhNeMhI/42Tn/gHPDsckBiKLtM+85OOT92wh
+L9o/KUySdcsb/ld0yT/kAc99/wqNitHAqUEcLshIWDVhqoT1XK46hEuRN782AN2U
+shQKirF8QFopYF+u9K2Q0mr1EsYaBWOFFBR7EiwFvEYOx+ad6qGQGPcxWhbf6eCU
+D///9g1g5q8nWb80UH9Hw1aMhIA+VTlIasM6XJKmGr1LapxlrYsqRovPwkgOQg01
+jhSV1fy10bbaFBwd9qTdTTVqa368/e3/TxF2VKhDaqoy5lqvRqKzGJxi3ubzDuz9
+m3qRTCgy1v3XI5DgcjWt5xC5gZLHjKf79fQKRJjuEnWALahpDVWQ6PRCuqPfyph5
+/vVqGHqvA53HJ9pmXz4J9qtQQ2gkYRj1m2tlRJjtGRMqnAj7bpcDKIrdLudOiWB0
+FXwmsXljzPaf/SPUa+tGg7jbh+Jq+72vdpo1ijJtLXhWQAJasIbvSXOVHbZ6YhJj
+vES98gJPzevqemS//C1DMrr0ci6pM9ciT2szkrg71zRacnfqrjeZUI7qHKAsRbD5
+258Jj6BeFPeQSrUg8sqQdoPxVTNnVr2bOB5SNfh7gqLanPksi6Kr7XNIzsYP5Wzf
+ADAElPdcRRwYc2kLVqugZTMLSn1r8rQjEyQ8/TT2QefI4ma8mCrBKgqYX+SDbhMJ
++KUrah0jCgj86z6fSNkNHaKuzvGCovZsJHXt2SoIWVYWVUz91IHPKXXycIqvf3Yj
+9HFpJRAPh30MYBgiImCJjmk8tqKGn0Tc80vOsrKMlVuMIIu2eNrddrnHUzSbjIHr
+tTtSDvsJ/Bn/6+Ox77U/FKg6s6/6PxOA1a+ffKkBXB/g4jS5CfGZl1owb3kX91C/
+a+bcNWp07DsaTaZd/0UEL2gIvaEuCULgyIvmnBPCOY6Pc5GGegWEJne/sk7j9W4I
+59YtVfcSXiovYR/QEywytfN/tfPxKfUoqNMIxLkukjFYz4Zzk5kXEeI+1lcry398
+UQSaOboSDKY6boX4rWgiiqyn5LN+47eAIZPO+zsWXky16F04JpT7V7XqZPXQn7vI
+pMAoPCkT4qE9Gp2CcSj2l2CoZ3ZA5lOs6Wvxuz0q1zd0uSe8O81/3rnw28DthDQO
+SuzrY0HinPEFomwMGbfhosB5kOmBXEk7XbSWWHhK0QG63CYqp5caUst2Mie21b0Y
+FgFTrS1VqUiqDjCmt8F8UCPQS89aFm096wqtmwDO+VWKanuHUUShtTPlYyLe1RTm
+wqh1BBa05ydM0Vf1NagFB4JNT1qSIL5x4XtkOFwqcdXWYvwYfT8PkZjX/kz+W7jb
+-----END RSA PRIVATE KEY-----
+EOF
+
+  DECRYPTED_PRIVATE_KEY = <<-EOF
+-----BEGIN RSA PRIVATE KEY-----
+MIIEpAIBAAKCAQEA33H9u4rG0SVMzK8PFyIi30kVHvogmpKVOQL2g2tozi2GipkA
+imzoCW9jIx1jo6zo0kMKCbMdJCNUc93tQxkJAAWA07WYwE9z+J6MC/3urb4Q0UAZ
+orlNyN3pPP8ATFIQomd0wW/EHwbmknlJOIZY4MNUQpNJunnBAAzZyLef6+sbLzQZ
+wc0/vgtmatoCxh4mZWFuFMopkMqScYDKxL30xXXPRGfJvAVWZDnY3ErJSe7uyefI
+Zo/lp4tsH5XGMcFm+nLs++nJjYZ6Ud/ie1g+ZCJv5Qit1m7zCVjiJ4RVMC/4yTb7
+CO8n4PhX8gR9d1DRPVvlKa1sZfQeULEIXMniKQIDAQABAoIBAQDEXS74s5rJjhgS
+AP4n/E3dICK5mGMytAMDmUD+eVQfbQ7BmnhJLjA0qnjbESbRXlE1Bsk5gPjpG0tK
+kAvEXan1JOD0LLDSwIBQSzUUDNLGSTQKUGS3BlX/YlVoz0h5ydzofDa1D/2wrqXO
+r1vTmu1ciQvxffLbN8iOvLxfkk+uSMhqnhf/q3WVinu+VALPg8e/v3p4VbnSfP4D
+eClBiMKEKRFdsa9xBxShijcX1HxjIvp3zDgb127fo2iFw09PIHUZCUo6M77iGrQY
+mscoA+5q1qSyD6Btw0EkKK55ytNMC2T+KfGYV0ySwhadmM+5+G64etvNGCn/j7CU
+rhuRhMlpAoGBAPiJlcWaNVw3ttlea+jllxnaCEOmG29NGWxw080XRvjSIrltPAiE
+8e4FynAMx49aXKsaB8Df2WspdKBxHJgv1U0sapADwxlMO8erj2eDSRqy6bwnI4CT
+T+vvo2vdmkvkV0D9RskXCi5tgTO5FYnf7CjON6JLkg83V3vzyjsKlvDzAoGBAOYn
+iC50OdZ84U58wQUsvwXFuyzMQX9r+h0jL2tIDv/yYlMWg9tNt0HkGUOo7H1ZVhdL
+9Z1B0Ztl2qoJipcQvhzfwdo4XwuLk7D0bOAfZo9YMbU5Jqy+rqE5yv/P4wa7ba4S
+uUQYvSuv54CtiOZDFyK8dU7y9mm+no3Fvrd9RwdzAoGANzlLACctqBnxFQd37r3k
+/yeFIpLsEaUN+xxu02lSqcL3WEA/UJ1JrFu5CYCtbtrjMFmOU3rpsnf5pBS+B8rJ
+GGbAHtPXK+3Wcp1aNePkAHy0lswThWQ2I/SRWUxaFnbcNGKSsefeqUZHqRh9Aq+w
+p7h6gCNOhvcDB1W6H7hQpaUCgYEAyBRDygaWJUVI5N+FOUduBMmhb09d/TTUKTJm
+TcBF8fE30v12wVZtYqW15ODcPhhExFnverc2Tf6cukczKSKP8y/+KQPqdHHxgdrr
+L2d81E6aX+4AFhpqW5SPShXiSf70WWjDkFRlV65C9dVmdq6KVVM6M9j5qHHjCmKG
+6qLI9csCgYBuhFwwI9DiYvJPR1LJZnJtE0qZiTwpmCjU2LoBRsywvuBeyXtwpmIM
+5IgfgXXLK5qK/+cp9047T5rzT6ndu5fNZINPzynA8tNhTtHXK8l/GT/iq8Rd6AcM
+WJmIe8EnUDhHqg7Z2h5tGpX1QPMSA4G8RGPPyrcd3v0G/PZ6pFALlQ==
+-----END RSA PRIVATE KEY-----
+EOF
+
+  DECRYPTED_KEY_FINGERPRINT = "2e:ba:06:b1:c7:13:37:24:6f:2d:3a:ba:45:e2:b4:78"
+
+  def setup
+    @key_encrypted = SSHKey.new(ENCRYPTED_PRIVATE_KEY, :passphrase => "password")
+  end
+
+  def test_encrypted_private_key_can_be_decrypted
+    assert_equal DECRYPTED_PRIVATE_KEY, @key_encrypted.private_key
+  end
+
+  def test_encrypted_private_key_matches_when_reencrypted
+    key = SSHKey.new(@key_encrypted.encrypted_private_key, :passphrase => "password")
+    assert_equal DECRYPTED_PRIVATE_KEY, key.private_key
+    assert_equal DECRYPTED_KEY_FINGERPRINT, key.md5_fingerprint
   end
 end
