@@ -1,4 +1,4 @@
-sshkey
+SSHKey
 ======
 
 Generate private and public SSH keys (RSA and DSA supported) using pure Ruby.
