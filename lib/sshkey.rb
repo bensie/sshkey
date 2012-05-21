@@ -99,7 +99,7 @@ class SSHKey
     begin
       @key_object = OpenSSL::PKey::RSA.new(private_key, passphrase)
       @type = "rsa"
-    rescue Exception
+    rescue
       @key_object = OpenSSL::PKey::DSA.new(private_key, passphrase)
       @type = "dsa"
     end
