@@ -13,12 +13,12 @@ Usage
 -----
 
 When generating a new keypair the default key type is 2048-bit RSA, but you can supply the `type` (RSA or DSA) and `bits` in the options.
-You can also (optionally) supply a `comment`:
+You can also (optionally) supply a `comment` or `passphrase`:
 
 ``` ruby
 k = SSHKey.generate
 
-k = SSHKey.generate(:type => "DSA", :bits => 1024, :comment => "foo@bar.com")
+k = SSHKey.generate(:type => "DSA", :bits => 1024, :comment => "foo@bar.com", :passphrase => "foobar")
 ```
 
 Return an SSHKey object from an existing RSA or DSA private key (provided as a string)
@@ -39,6 +39,10 @@ k.key_object
 # Returns the Private Key as a string
 k.private_key
 # => "-----BEGIN RSA PRIVATE KEY-----\nMIIEowI..."
+
+# Return the Private Key in encrypted form if a passphrase was provided
+k.encrypted_private_key
+# => "-----BEGIN RSA PRIVATE KEY-----\nProc-Type: 4,ENCRYPTED..."
 
 # Returns the Public Key as a string
 k.public_key
