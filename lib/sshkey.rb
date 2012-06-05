@@ -33,8 +33,8 @@ class SSHKey
       cipher = OpenSSL::Cipher::Cipher.new("AES-128-CBC") if options[:passphrase]
 
       case type.downcase
-      when "rsa" then SSHKey.new(OpenSSL::PKey::RSA.generate(bits).to_pem(cipher, options[:passphrase]), options)
-      when "dsa" then SSHKey.new(OpenSSL::PKey::DSA.generate(bits).to_pem(cipher, options[:passphrase]), options)
+      when "rsa" then new(OpenSSL::PKey::RSA.generate(bits).to_pem(cipher, options[:passphrase]), options)
+      when "dsa" then new(OpenSSL::PKey::DSA.generate(bits).to_pem(cipher, options[:passphrase]), options)
       else
         raise "Unknown key type: #{type}"
       end
@@ -72,15 +72,17 @@ class SSHKey
     rescue
       false
     end
-    
+
     # Fingerprints
+    #
+    # Accepts either a public or private key
     #
     # MD5 fingerprint for the given SSH key
     def md5_fingerprint(key)
       if key.match(/PRIVATE/)
-        SSHKey.new(key).md5_fingerprint
+        new(key).md5_fingerprint
       else
-        Digest::MD5.hexdigest(Base64.decode64(key.chomp.gsub(/ssh-[dr]s[as] /, ''))).gsub(/(.{2})(?=.)/, '\1:\2')
+        Digest::MD5.hexdigest(decoded_key(key)).gsub(fingerprint_regex, '\1:\2')
       end
     end
     alias_method :fingerprint, :md5_fingerprint
@@ -88,9 +90,9 @@ class SSHKey
     # SHA1 fingerprint for the given SSH key
     def sha1_fingerprint(key)
       if key.match(/PRIVATE/)
-        SSHKey.new(key).sha1_fingerprint
+        new(key).sha1_fingerprint
       else
-        Digest::SHA1.hexdigest(Base64.decode64(key.chomp.gsub(/ssh-[dr]s[as] /, ''))).gsub(/(.{2})(?=.)/, '\1:\2')
+        Digest::SHA1.hexdigest(decoded_key(key)).gsub(fingerprint_regex, '\1:\2')
       end
     end
 
@@ -103,6 +105,14 @@ class SSHKey
         num += item * 256**(index)
       end
       num
+    end
+
+    def decoded_key(key)
+      Base64.decode64(key.chomp.gsub(/ssh-[dr]s[as] /, ''))
+    end
+
+    def fingerprint_regex
+      /(.{2})(?=.)/
     end
   end
 
