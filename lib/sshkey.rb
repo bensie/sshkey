@@ -72,6 +72,27 @@ class SSHKey
     rescue
       false
     end
+    
+    # Fingerprints
+    #
+    # MD5 fingerprint for the given SSH key
+    def md5_fingerprint(key)
+      if key.match(/PRIVATE/)
+        SSHKey.new(key).md5_fingerprint
+      else
+        Digest::MD5.hexdigest(Base64.decode64(key.chomp.gsub(/ssh-[dr]s[as] /, ''))).gsub(/(.{2})(?=.)/, '\1:\2')
+      end
+    end
+    alias_method :fingerprint, :md5_fingerprint
+
+    # SHA1 fingerprint for the given SSH key
+    def sha1_fingerprint(key)
+      if key.match(/PRIVATE/)
+        SSHKey.new(key).sha1_fingerprint
+      else
+        Digest::SHA1.hexdigest(Base64.decode64(key.chomp.gsub(/ssh-[dr]s[as] /, ''))).gsub(/(.{2})(?=.)/, '\1:\2')
+      end
+    end
 
     private
 
