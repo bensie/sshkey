@@ -117,10 +117,10 @@ class SSHKey
     end
 
     def parse_ssh_public_key(public_key)
-      parsed = public_key.split(" ").reverse
+      parsed = public_key.split(" ")
       parsed.each_with_index do |el, index|
-        break parsed[(index-1)..index] if !SSH_TYPES.invert[el].nil?
-      end.reverse
+        break parsed[index..(index+1)] if !SSH_TYPES.invert[el].nil?
+      end
     end
   end
 
