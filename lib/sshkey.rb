@@ -48,7 +48,8 @@ class SSHKey
     # * ssh_public_key<~String> - "ssh-rsa AAAAB3NzaC1yc2EA...."
     #
     def valid_ssh_public_key?(ssh_public_key)
-      ssh_type, encoded_key = ssh_public_key.split(" ")
+      ssh_type, encoded_key = parse_ssh_public_key(ssh_public_key)
+
       type = SSH_TYPES.invert[ssh_type]
       prefix = [0,0,0,7].pack("C*")
       decoded = Base64.decode64(encoded_key)
@@ -113,6 +114,13 @@ class SSHKey
 
     def fingerprint_regex
       /(.{2})(?=.)/
+    end
+
+    def parse_ssh_public_key(public_key)
+      parsed = public_key.split(" ").reverse
+      parsed.each_with_index do |el, index|
+        break parsed[(index-1)..index] if !SSH_TYPES.invert[el].nil?
+      end.reverse
     end
   end
 
