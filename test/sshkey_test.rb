@@ -165,6 +165,7 @@ EOF
     expected2 = "ssh-rsa #{SSH_PUBLIC_KEY2} me@example.com"
     expected3 = "ssh-dss #{SSH_PUBLIC_KEY3} me@example.com"
     expected4 = "ssh-rsa #{SSH_PUBLIC_KEY1}"
+    expected5 = %Q{from="trusted.eng.cam.ac.uk",no-port-forwarding,no-pty" ssh-rsa #{SSH_PUBLIC_KEY1}}
     invalid1  = "ssh-rsa #{SSH_PUBLIC_KEY1}= me@example.com"
     invalid2  = "ssh-rsa #{SSH_PUBLIC_KEY2}= me@example.com"
     invalid3  = "ssh-dss #{SSH_PUBLIC_KEY3}= me@example.com"
@@ -175,6 +176,7 @@ EOF
     assert SSHKey.valid_ssh_public_key?(expected2)
     assert SSHKey.valid_ssh_public_key?(expected3)
     assert SSHKey.valid_ssh_public_key?(expected4)
+    assert SSHKey.valid_ssh_public_key?(expected5)
 
     assert !SSHKey.valid_ssh_public_key?(invalid1)
     assert !SSHKey.valid_ssh_public_key?(invalid2)
