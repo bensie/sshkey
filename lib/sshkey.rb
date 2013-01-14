@@ -7,8 +7,8 @@ class SSHKey
   SSH_TYPES      = {"rsa" => "ssh-rsa", "dsa" => "ssh-dss"}
   SSH_CONVERSION = {"rsa" => ["e", "n"], "dsa" => ["p", "q", "g", "pub_key"]}
 
-  attr_reader :key_object, :comment, :type
-  attr_accessor :passphrase
+  attr_reader :key_object, :type
+  attr_accessor :passphrase, :comment
 
   class << self
     # Generate a new keypair and return an SSHKey object
@@ -109,7 +109,7 @@ class SSHKey
     end
 
     def decoded_key(key)
-      Base64.decode64(key.chomp.gsub(/ssh-[dr]s[as] /, ''))
+      Base64.decode64(key.split(/\s/)[1].chomp)
     end
 
     def fingerprint_regex
