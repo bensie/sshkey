@@ -224,6 +224,7 @@ EOF
     assert_equal 2048, @key1.bits
     assert_equal 2048, @key2.bits
     assert_equal 1024, @key3.bits
+    assert_equal 512, SSHKey.generate(bits: 512).bits
   end
 
   def test_to_byte_array

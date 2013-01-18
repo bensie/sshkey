@@ -190,7 +190,7 @@ class SSHKey
 
   # Determine the length (bits) of the key as an integer
   def bits
-    key_object.to_text[14..18].to_i
+    key_object.to_text.match(/Private-Key:\s\((\d*)\sbit\)/)[1].to_i
   end
 
   private
