@@ -188,6 +188,11 @@ class SSHKey
     Digest::SHA1.hexdigest(ssh_public_key_conversion).gsub(/(.{2})(?=.)/, '\1:\2')
   end
 
+  # Determine the length (bits) of the key as an integer
+  def bits
+    key_object.to_text[14..18].to_i
+  end
+
   private
 
   # SSH Public Key Conversion
