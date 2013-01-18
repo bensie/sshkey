@@ -1,9 +1,4 @@
 class SSHKey
-  # Number of bits in private key
-  def size
-    # TODO implement this correctly
-    type == "rsa" ? 2048 : 1024
-  end
 
   # Randomart fingerprint visualization compatible with OpenSSH
   def randomart
@@ -33,7 +28,7 @@ class SSHKey
     field[fieldsize_x / 2][fieldsize_y / 2] = num_bytes - 1
     field[x][y] = num_bytes
     augmentation_string = " .o+=*BOX@%&#/^SE"
-    output = "+--#{sprintf("[%4s %4u]", type.upcase, size)}----+\n"
+    output = "+--#{sprintf("[%4s %4u]", type.upcase, bits)}----+\n"
     fieldsize_y.times do |y|
       output << "|"
       fieldsize_x.times do |x|
