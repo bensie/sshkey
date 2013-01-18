@@ -2,6 +2,7 @@ require 'openssl'
 require 'base64'
 require 'digest/md5'
 require 'digest/sha1'
+require 'sshkey/randomart'
 
 class SSHKey
   SSH_TYPES      = {"rsa" => "ssh-rsa", "dsa" => "ssh-dss"}

@@ -87,6 +87,48 @@ EOF
   KEY2_SHA1_FINGERPRINT = "9a:52:78:2b:6b:cb:39:b7:85:ed:90:8a:28:62:aa:b3:98:88:e6:07"
   KEY3_SHA1_FINGERPRINT = "15:68:c6:72:ac:18:d1:fc:ab:a2:b7:b5:8c:d1:fe:8f:b9:ae:a9:47"
 
+  KEY1_RANDOMART = <<-EOF.rstrip
++--[ RSA 2048]----+
+|o+ o..           |
+|..+.o            |
+| ooo             |
+|.++. o           |
+|+o+ +   S        |
+|.. + o .         |
+|  . + .          |
+|   . .           |
+|    Eo.          |
++-----------------+
+EOF
+
+  KEY2_RANDOMART = <<-EOF.rstrip
++--[ RSA 2048]----+
+|  ..o..          |
+|   ..+ .         |
+|    o   .        |
+|     . o         |
+|    . o S .      |
+|     + o O o     |
+|      + + O .    |
+|       = o .     |
+|       .E        |
++-----------------+
+EOF
+
+  KEY3_RANDOMART = <<-EOF.rstrip
++--[ DSA 1024]----+
+|       .=o.      |
+|      .+.o .     |
+|    + =.o . .    |
+|   + * + . .     |
+|    + = S . E    |
+|     + = . .     |
+|      .          |
+|                 |
+|                 |
++-----------------+
+EOF
+
   def setup
     @key1 = SSHKey.new(SSH_PRIVATE_KEY1, :comment => "me@example.com")
     @key2 = SSHKey.new(SSH_PRIVATE_KEY2, :comment => "me@example.com")
@@ -224,6 +266,12 @@ EOF
     assert_equal 2048, @key1.bits
     assert_equal 2048, @key2.bits
     assert_equal 1024, @key3.bits
+  end
+
+  def test_randomart
+    assert_equal KEY1_RANDOMART, @key1.randomart
+    assert_equal KEY2_RANDOMART, @key2.randomart
+    assert_equal KEY3_RANDOMART, @key3.randomart
   end
 
   def test_to_byte_array
