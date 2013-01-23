@@ -103,7 +103,7 @@ k.sha1_fingerprint
 
 #### Randomart
 
-Generate OpenSSH compatible ASCII art fingerprints - see http://www.opensource.apple.com/source/OpenSSH/OpenSSH-175/openssh/key.c (key_fingerprint_randomart function)
+Generate [OpenSSH compatible](http://www.opensource.apple.com/source/OpenSSH/OpenSSH-175/openssh/key.c) ASCII art fingerprints
 
 ```ruby
 puts k.randomart
@@ -122,10 +122,7 @@ puts k.randomart
 
 #### Original OpenSSL key object
 
-Return the original `OpenSSL::PKey::RSA` or `OpenSSL::PKey::DSA` object.
-
-http://www.ruby-doc.org/stdlib/libdoc/openssl/rdoc/classes/OpenSSL/PKey/RSA.html
-http://www.ruby-doc.org/stdlib/libdoc/openssl/rdoc/classes/OpenSSL/PKey/DSA.html
+Return the original [OpenSSL::PKey::RSA](http://www.ruby-doc.org/stdlib/libdoc/openssl/rdoc/classes/OpenSSL/PKey/RSA.html) or [OpenSSL::PKey::DSA](http://www.ruby-doc.org/stdlib/libdoc/openssl/rdoc/classes/OpenSSL/PKey/DSA.html) object.
 
 ```ruby
 k.key_object
