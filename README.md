@@ -73,6 +73,15 @@ k.comment = "me@me.com"
 # => "me@me.com"
 ```
 
+#### Bit length
+
+Determine the strength of the key in bits as an integer. 
+
+```ruby
+k.bits
+# => 2048
+```
+
 #### Fingerprints
 
 It is often helpful to use a fingerprint to visually or programmatically check if one key
