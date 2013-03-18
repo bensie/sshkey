@@ -202,12 +202,36 @@ EOF
     assert_equal expected4, @key_without_comment.ssh_public_key
   end
 
+  def test_public_key_directives
+    @key1.directives = "no-pty"
+    assert_equal ["no-pty"], @key1.directives
+
+    @key1.directives = ["no-pty"]
+    assert_equal ["no-pty"], @key1.directives
+
+    @key1.directives = [
+      "no-port-forwarding",
+      "no-X11-forwarding",
+      "no-agent-forwarding",
+      "no-pty",
+      "command='/home/user/bin/authprogs'"
+    ]
+    expected1 = "no-port-forwarding,no-X11-forwarding,no-agent-forwarding,no-pty,command='/home/user/bin/authprogs' ssh-rsa #{SSH_PUBLIC_KEY1} me@example.com"
+    assert_equal expected1, @key1.ssh_public_key
+    assert SSHKey.valid_ssh_public_key?(expected1)
+
+    @key2.directives = "no-pty"
+    expected2 = "no-pty ssh-rsa #{SSH_PUBLIC_KEY2} me@example.com"
+    assert_equal expected2, @key2.ssh_public_key
+    assert SSHKey.valid_ssh_public_key?(expected2)
+  end
+
   def test_ssh_public_key_validation
     expected1 = "ssh-rsa #{SSH_PUBLIC_KEY1} me@example.com"
     expected2 = "ssh-rsa #{SSH_PUBLIC_KEY2} me@example.com"
     expected3 = "ssh-dss #{SSH_PUBLIC_KEY3} me@example.com"
     expected4 = "ssh-rsa #{SSH_PUBLIC_KEY1}"
-    expected5 = %Q{from="trusted.eng.cam.ac.uk",no-port-forwarding,no-pty" ssh-rsa #{SSH_PUBLIC_KEY1}}
+    expected5 = %Q{from="trusted.eng.cam.ac.uk",no-port-forwarding,no-pty ssh-rsa #{SSH_PUBLIC_KEY1}}
     invalid1  = "ssh-rsa #{SSH_PUBLIC_KEY1}= me@example.com"
     invalid2  = "ssh-rsa #{SSH_PUBLIC_KEY2}= me@example.com"
     invalid3  = "ssh-dss #{SSH_PUBLIC_KEY3}= me@example.com"

@@ -7,9 +7,6 @@ class SSHKey
   SSH_TYPES      = {"rsa" => "ssh-rsa", "dsa" => "ssh-dss"}
   SSH_CONVERSION = {"rsa" => ["e", "n"], "dsa" => ["p", "q", "g", "pub_key"]}
 
-  attr_reader :key_object, :type
-  attr_accessor :passphrase, :comment
-
   class << self
     # Generate a new keypair and return an SSHKey object
     #
@@ -124,6 +121,9 @@ class SSHKey
     end
   end
 
+  attr_reader :key_object, :type
+  attr_accessor :passphrase, :comment
+
   # Create a new SSHKey object
   #
   # ==== Parameters
@@ -131,10 +131,12 @@ class SSHKey
   # * options<~Hash>
   #   * :comment<~String> - Comment to use for the public key, defaults to ""
   #   * :passphrase<~String> - If the key is encrypted, supply the passphrase
+  #   * :directives<~Array> - Options prefixed to the public key
   #
   def initialize(private_key, options = {})
     @passphrase = options[:passphrase]
     @comment    = options[:comment] || ""
+    self.directives = options[:directives]
     begin
       @key_object = OpenSSL::PKey::RSA.new(private_key, passphrase)
       @type = "rsa"
@@ -172,7 +174,7 @@ class SSHKey
 
   # SSH public key
   def ssh_public_key
-    [SSH_TYPES[type], Base64.encode64(ssh_public_key_conversion).gsub("\n", ""), comment].join(" ").strip
+    [directives.join(",").strip, SSH_TYPES[type], Base64.encode64(ssh_public_key_conversion).gsub("\n", ""), comment].join(" ").strip
   end
 
   # Fingerprints
@@ -249,6 +251,11 @@ class SSHKey
     output << "+#{"-" * fieldsize_x}+"
     output
   end
+
+  def directives=(directives)
+    @directives = Array[directives].flatten
+  end
+  attr_reader :directives
 
   private
 
