@@ -101,6 +101,29 @@ k.sha1_fingerprint
 # => "e4:f9:79:f2:fe:d6:be:2d:ef:2e:c2:fa:aa:f8:b0:17:34:fe:0d:c0"
 ```
 
+#### Public Key Directives
+
+Add optional directives prefixed to the public key that will be enforced when a key is authenticated.
+
+Accepts a string or an array of strings.
+
+```ruby
+k.directives = "no-pty"
+# => ["no-pty"]
+
+k.directives = [
+  "no-port-forwarding",
+  "no-X11-forwarding",
+  "no-agent-forwarding",
+  "no-pty",
+  "command='/home/user/bin/authprogs'"
+]
+# => ["no-port-forwarding", "no-X11-forwarding", "no-agent-forwarding", "no-pty", "command='/home/user/bin/authprogs'"]
+
+k.ssh_public_key
+# => "no-port-forwarding,no-X11-forwarding,no-agent-forwarding,no-pty,command='/home/user/bin/authprogs' ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC9HuXvYJPtQE/o/7TYi63yAopsrJ6TP+lDGdyQ+nVVp+5ojAIy9h8/h99UlNxjkiFT2YhI3Fl/pgNDRO4PVo6tlgb3CwiAZjSdeE5RnF79Dkj5XsM4j+FLMoXtbRw0K9ok9RKjz6ygIs1JDmaOdXexFnq4nAYU3fSLUa6WoccqTHe8bFuJoAv1gbnx09Js8YcVMD96mpTJ3V/MK5YfIv10dbtrDhGug3IS1V2J+0BB9orbQja554N+4S0I9rFBgVCpvPmQqddDHd/AdGkLv/zjEfGytjnvp68bEfDinkQkPfuxw01yd5MbcvLv39VVICWtKbqW263HT5LvSxwKorR7"
+```
+
 #### Randomart
 
 Generate [OpenSSH compatible](http://www.opensource.apple.com/source/OpenSSH/OpenSSH-175/openssh/key.c) ASCII art fingerprints
