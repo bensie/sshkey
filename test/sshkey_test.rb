@@ -203,6 +203,8 @@ EOF
   end
 
   def test_public_key_directives
+    assert_equal [], SSHKey.generate.directives
+
     @key1.directives = "no-pty"
     assert_equal ["no-pty"], @key1.directives
 

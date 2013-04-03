@@ -136,7 +136,7 @@ class SSHKey
   def initialize(private_key, options = {})
     @passphrase = options[:passphrase]
     @comment    = options[:comment] || ""
-    self.directives = options[:directives]
+    self.directives = options[:directives] || []
     begin
       @key_object = OpenSSL::PKey::RSA.new(private_key, passphrase)
       @type = "rsa"
@@ -253,7 +253,7 @@ class SSHKey
   end
 
   def directives=(directives)
-    @directives = Array[directives].flatten
+    @directives = Array[directives].flatten.compact
   end
   attr_reader :directives
 
