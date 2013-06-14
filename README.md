@@ -13,7 +13,7 @@ Tested on the following Rubies: MRI 1.8.7, 1.9.2, 1.9.3, 2.0.0, REE, JRuby (1.7.
 ### Generate a new key
 
 When generating a new keypair the default key type is 2048-bit RSA, but you can supply the `type` (RSA or DSA) and `bits` in the options.
-You can also (optionally) supply a `comment` or `passphrase`:
+You can also (optionally) supply a `comment` or `passphrase`.
 
 ```ruby
 k = SSHKey.generate
@@ -23,7 +23,7 @@ k = SSHKey.generate(:type => "DSA", :bits => 1024, :comment => "foo@bar.com", :p
 
 ### Use your existing key
 
-Return an SSHKey object from an existing RSA or DSA private key (provided as a string)
+Return an SSHKey object from an existing RSA or DSA private key (provided as a string).
 
 ```ruby
 k = SSHKey.new(File.read("~/.ssh/id_rsa"), :comment => "foo@bar.com")
