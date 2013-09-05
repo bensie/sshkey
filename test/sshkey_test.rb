@@ -253,6 +253,24 @@ EOF
     assert !SSHKey.valid_ssh_public_key?(invalid5)
   end
 
+  def test_ssh_public_key_bits
+    expected1 = "ssh-rsa #{SSH_PUBLIC_KEY1} me@example.com"
+    expected2 = "ssh-rsa #{SSH_PUBLIC_KEY2} me@example.com"
+    expected3 = "ssh-dss #{SSH_PUBLIC_KEY3} me@example.com"
+    expected4 = "ssh-rsa #{SSH_PUBLIC_KEY1}"
+    expected5 = %Q{from="trusted.eng.cam.ac.uk",no-port-forwarding,no-pty ssh-rsa #{SSH_PUBLIC_KEY1}}
+
+    assert_equal 2048, SSHKey.ssh_public_key_bits(expected1)
+    assert_equal 2048, SSHKey.ssh_public_key_bits(expected2)
+    assert_equal 1024, SSHKey.ssh_public_key_bits(expected3)
+    assert_equal 2048, SSHKey.ssh_public_key_bits(expected4)
+    assert_equal 2048, SSHKey.ssh_public_key_bits(expected5)
+    assert_equal 512,  SSHKey.ssh_public_key_bits(SSHKey.generate(:bits => 512).ssh_public_key)
+
+    assert_raises(RuntimeError) { SSHKey.ssh_public_key_bits( expected1[0..-20] ) }
+    assert_raises(NoMethodError) { SSHKey.ssh_public_key_bits( expected1.gsub('A','.') ) }
+  end
+
   def test_exponent
     assert_equal 35, @key1.key_object.e.to_i
     assert_equal 35, @key2.key_object.e.to_i
