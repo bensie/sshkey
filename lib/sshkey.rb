@@ -1,7 +1,10 @@
+$:.unshift File.dirname(__FILE__)
+
 require 'openssl'
 require 'base64'
 require 'digest/md5'
 require 'digest/sha1'
+require 'sshkey/exception'
 
 class SSHKey
   SSH_TYPES      = {"rsa" => "ssh-rsa", "dsa" => "ssh-dss"}
@@ -92,8 +95,9 @@ class SSHKey
       decoded = Base64.decode64(encoded_key)
 
       # Base64 decoding is too permissive, so we should validate if encoding is correct
-      return false unless Base64.encode64(decoded).gsub("\n", "") == encoded_key
-      return false unless decoded.sub!(/^#{prefix}#{ssh_type}/, "")
+      if Base64.encode64(decoded).gsub("\n", "") != encoded_key || decoded.sub!(/^#{prefix}#{ssh_type}/, "").nil?
+        raise PublicKeyError, "validation error"
+      end
 
       unpacked = decoded.unpack("C*")
       data = []
@@ -109,8 +113,8 @@ class SSHKey
     end
 
     def from_byte_array(byte_array, expected_size = nil)
+      raise PublicKeyError, "byte array too short" if !expected_size.nil? && expected_size != byte_array.size
       num = 0
-      raise "Byte array too short" if !expected_size.nil? && expected_size != byte_array.size
       byte_array.reverse.each_with_index do |item, index|
         num += item * 256**(index)
       end
@@ -128,8 +132,9 @@ class SSHKey
     def parse_ssh_public_key(public_key)
       parsed = public_key.split(" ")
       parsed.each_with_index do |el, index|
-        break parsed[index..(index+1)] if !SSH_TYPES.invert[el].nil?
+        return parsed[index..(index+1)] if SSH_TYPES.invert[el]
       end
+      raise PublicKeyError, "cannot determine key type"
     end
   end
 
