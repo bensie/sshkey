@@ -1,7 +1,10 @@
+$:.unshift File.dirname(__FILE__)
+
 require 'openssl'
 require 'base64'
 require 'digest/md5'
 require 'digest/sha1'
+require 'sshkey/exception'
 
 class SSHKey
   SSH_TYPES      = {"rsa" => "ssh-rsa", "dsa" => "ssh-dss"}
@@ -46,29 +49,20 @@ class SSHKey
     #
     def valid_ssh_public_key?(ssh_public_key)
       ssh_type, encoded_key = parse_ssh_public_key(ssh_public_key)
-
-      type = SSH_TYPES.invert[ssh_type]
-      prefix = [0,0,0,7].pack("C*")
-      decoded = Base64.decode64(encoded_key)
-
-      # Base64 decoding is too permissive, so we should validate if encoding is correct
-      return false unless Base64.encode64(decoded).gsub("\n", "") == encoded_key
-      return false unless decoded.sub!(/^#{prefix}#{ssh_type}/, "")
-
-      unpacked = decoded.unpack("C*")
-      data = []
-      index = 0
-      until unpacked[index].nil?
-        datum_size = from_byte_array unpacked[index..index+4-1], 4
-        index = index + 4
-        datum = from_byte_array unpacked[index..index+datum_size-1], datum_size
-        data << datum
-        index = index + datum_size
-      end
-
-      SSH_CONVERSION[type].size == data.size
+      SSH_CONVERSION[SSH_TYPES.invert[ssh_type]].size == unpacked_byte_array(ssh_type, encoded_key).size
     rescue
       false
+    end
+
+    # Bits
+    #
+    # Returns ssh public key bits or false depending on the validity of the public key provided
+    #
+    # ==== Parameters
+    # * ssh_public_key<~String> - "ssh-rsa AAAAB3NzaC1yc2EA...."
+    #
+    def ssh_public_key_bits(ssh_public_key)
+      unpacked_byte_array( *parse_ssh_public_key(ssh_public_key) ).last.size * 8
     end
 
     # Fingerprints
@@ -96,9 +90,31 @@ class SSHKey
 
     private
 
+    def unpacked_byte_array(ssh_type, encoded_key)
+      prefix = [0,0,0,7].pack("C*")
+      decoded = Base64.decode64(encoded_key)
+
+      # Base64 decoding is too permissive, so we should validate if encoding is correct
+      if Base64.encode64(decoded).gsub("\n", "") != encoded_key || decoded.sub!(/^#{prefix}#{ssh_type}/, "").nil?
+        raise PublicKeyError, "validation error"
+      end
+
+      unpacked = decoded.unpack("C*")
+      data = []
+      index = 0
+      until unpacked[index].nil?
+        datum_size = from_byte_array unpacked[index..index+4-1], 4
+        index = index + 4
+        datum = from_byte_array unpacked[index..index+datum_size-1], datum_size
+        data << datum
+        index = index + datum_size
+      end
+      return data
+    end
+
     def from_byte_array(byte_array, expected_size = nil)
+      raise PublicKeyError, "byte array too short" if !expected_size.nil? && expected_size != byte_array.size
       num = 0
-      raise "Byte array too short" if !expected_size.nil? && expected_size != byte_array.size
       byte_array.reverse.each_with_index do |item, index|
         num += item * 256**(index)
       end
@@ -116,8 +132,9 @@ class SSHKey
     def parse_ssh_public_key(public_key)
       parsed = public_key.split(" ")
       parsed.each_with_index do |el, index|
-        break parsed[index..(index+1)] if !SSH_TYPES.invert[el].nil?
+        return parsed[index..(index+1)] if SSH_TYPES.invert[el]
       end
+      raise PublicKeyError, "cannot determine key type"
     end
   end
 
@@ -192,7 +209,7 @@ class SSHKey
 
   # Determine the length (bits) of the key as an integer
   def bits
-    key_object.to_text.match(/Private-Key:\s\((\d*)\sbit\)/)[1].to_i
+    self.class.ssh_public_key_bits(ssh_public_key)
   end
 
   # Randomart

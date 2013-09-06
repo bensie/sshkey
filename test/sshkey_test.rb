@@ -253,6 +253,30 @@ EOF
     assert !SSHKey.valid_ssh_public_key?(invalid5)
   end
 
+  def test_ssh_public_key_bits
+    expected1 = "ssh-rsa #{SSH_PUBLIC_KEY1} me@example.com"
+    expected2 = "ssh-rsa #{SSH_PUBLIC_KEY2} me@example.com"
+    expected3 = "ssh-dss #{SSH_PUBLIC_KEY3} me@example.com"
+    expected4 = "ssh-rsa #{SSH_PUBLIC_KEY1}"
+    expected5 = %Q{from="trusted.eng.cam.ac.uk",no-port-forwarding,no-pty ssh-rsa #{SSH_PUBLIC_KEY1}}
+    invalid1  = "#{SSH_PUBLIC_KEY1} me@example.com"
+
+    assert_equal 2048, SSHKey.ssh_public_key_bits(expected1)
+    assert_equal 2048, SSHKey.ssh_public_key_bits(expected2)
+    assert_equal 1024, SSHKey.ssh_public_key_bits(expected3)
+    assert_equal 2048, SSHKey.ssh_public_key_bits(expected4)
+    assert_equal 2048, SSHKey.ssh_public_key_bits(expected5)
+    assert_equal 512,  SSHKey.ssh_public_key_bits(SSHKey.generate(:bits => 512).ssh_public_key)
+
+    exception1 = assert_raises(SSHKey::PublicKeyError) { SSHKey.ssh_public_key_bits( expected1.gsub('A','.') ) }
+    exception2 = assert_raises(SSHKey::PublicKeyError) { SSHKey.ssh_public_key_bits( expected1[0..-20] ) }
+    exception3 = assert_raises(SSHKey::PublicKeyError) { SSHKey.ssh_public_key_bits(invalid1) }
+
+    assert_equal( "validation error",          exception1.message )
+    assert_equal( "byte array too short",      exception2.message )
+    assert_equal( "cannot determine key type", exception3.message )
+  end
+
   def test_exponent
     assert_equal 35, @key1.key_object.e.to_i
     assert_equal 35, @key2.key_object.e.to_i
