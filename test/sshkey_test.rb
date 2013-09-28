@@ -298,18 +298,18 @@ EOF
     assert_equal KEY3_SHA1_FINGERPRINT, @key3.sha1_fingerprint
 
     assert_equal KEY1_MD5_FINGERPRINT, SSHKey.md5_fingerprint(SSH_PRIVATE_KEY1)
-    assert_equal KEY1_MD5_FINGERPRINT, SSHKey.md5_fingerprint(SSH_PUBLIC_KEY1)
+    assert_equal KEY1_MD5_FINGERPRINT, SSHKey.md5_fingerprint("ssh-rsa #{SSH_PUBLIC_KEY1}")
     assert_equal KEY2_MD5_FINGERPRINT, SSHKey.md5_fingerprint(SSH_PRIVATE_KEY2)
-    assert_equal KEY2_MD5_FINGERPRINT, SSHKey.md5_fingerprint(SSH_PUBLIC_KEY2)
+    assert_equal KEY2_MD5_FINGERPRINT, SSHKey.md5_fingerprint("ssh-rsa #{SSH_PUBLIC_KEY2} me@me.com")
     assert_equal KEY3_MD5_FINGERPRINT, SSHKey.md5_fingerprint(SSH_PRIVATE_KEY3)
-    assert_equal KEY3_MD5_FINGERPRINT, SSHKey.md5_fingerprint(SSH_PUBLIC_KEY3)
+    assert_equal KEY3_MD5_FINGERPRINT, SSHKey.md5_fingerprint("ssh-dss #{SSH_PUBLIC_KEY3}")
 
     assert_equal KEY1_SHA1_FINGERPRINT, SSHKey.sha1_fingerprint(SSH_PRIVATE_KEY1)
-    assert_equal KEY1_SHA1_FINGERPRINT, SSHKey.sha1_fingerprint(SSH_PUBLIC_KEY1)
+    assert_equal KEY1_SHA1_FINGERPRINT, SSHKey.sha1_fingerprint("ssh-rsa #{SSH_PUBLIC_KEY1}")
     assert_equal KEY2_SHA1_FINGERPRINT, SSHKey.sha1_fingerprint(SSH_PRIVATE_KEY2)
-    assert_equal KEY2_SHA1_FINGERPRINT, SSHKey.sha1_fingerprint(SSH_PUBLIC_KEY2)
+    assert_equal KEY2_SHA1_FINGERPRINT, SSHKey.sha1_fingerprint("ssh-rsa #{SSH_PUBLIC_KEY2} me@me.com")
     assert_equal KEY3_SHA1_FINGERPRINT, SSHKey.sha1_fingerprint(SSH_PRIVATE_KEY3)
-    assert_equal KEY3_SHA1_FINGERPRINT, SSHKey.sha1_fingerprint(SSH_PUBLIC_KEY3)
+    assert_equal KEY3_SHA1_FINGERPRINT, SSHKey.sha1_fingerprint("ssh-dss #{SSH_PUBLIC_KEY3}")
   end
 
   def test_bits
