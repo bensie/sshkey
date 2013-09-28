@@ -122,7 +122,7 @@ class SSHKey
     end
 
     def decoded_key(key)
-      Base64.decode64(key.gsub(/^(ssh-[dr]s[as]\s+)|(\s+.+\@.+)|\n/, ''))
+      Base64.decode64(parse_ssh_public_key(key).last)
     end
 
     def fingerprint_regex
