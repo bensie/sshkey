@@ -324,15 +324,6 @@ EOF
     assert_equal KEY2_RANDOMART, @key2.randomart
     assert_equal KEY3_RANDOMART, @key3.randomart
   end
-
-  def test_to_byte_array
-    ba1 = @key1.send(:to_byte_array, 35)
-    ba2 = @key1.send(:to_byte_array, 65537)
-    ba3 = [0, 1, 255, 256, -1, -128, -256].map{|i| @key1.send(:to_byte_array, i)}
-    assert_equal [35], ba1
-    assert_equal [1, 0, 1], ba2
-    assert_equal [[0], [1], [0, 255], [1, 0], [255], [128], [255, 0]], ba3
-  end
 end
 
 class SSHKeyEncryptedTest < Test::Unit::TestCase

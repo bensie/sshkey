@@ -62,7 +62,7 @@ class SSHKey
     # * ssh_public_key<~String> - "ssh-rsa AAAAB3NzaC1yc2EA...."
     #
     def ssh_public_key_bits(ssh_public_key)
-      unpacked_byte_array( *parse_ssh_public_key(ssh_public_key) ).last.size * 8
+      unpacked_byte_array( *parse_ssh_public_key(ssh_public_key) ).last.num_bytes * 8
     end
 
     # Fingerprints
@@ -91,34 +91,28 @@ class SSHKey
     private
 
     def unpacked_byte_array(ssh_type, encoded_key)
-      prefix = [0,0,0,7].pack("C*")
-      decoded = Base64.decode64(encoded_key)
-
-      # Base64 decoding is too permissive, so we should validate if encoding is correct
-      if Base64.encode64(decoded).gsub("\n", "") != encoded_key || decoded.sub!(/^#{prefix}#{ssh_type}/, "").nil?
+      prefix = [7].pack("N") + ssh_type
+      decoded = encoded_key
+      begin
+        decoded = Base64.strict_decode64(encoded_key)
+        unless decoded.slice!(0, prefix.length) == prefix
+          raise ArgumentError, "wrong prefix"
+        end
+      rescue ArgumentError
         raise PublicKeyError, "validation error"
       end
 
-      unpacked = decoded.unpack("C*")
       data = []
-      index = 0
-      until unpacked[index].nil?
-        datum_size = from_byte_array unpacked[index..index+4-1], 4
-        index = index + 4
-        datum = from_byte_array unpacked[index..index+datum_size-1], datum_size
-        data << datum
-        index = index + datum_size
+      until decoded.empty?
+        front = decoded[0,4]
+        size = front.unpack("N").first
+        segment = decoded.slice!(0, 4+size)
+        unless front.length == 4 && segment.length - 4 == size
+          raise PublicKeyError, "byte array too short"
+        end
+        data << OpenSSL::BN.new(segment, 0)
       end
       return data
-    end
-
-    def from_byte_array(byte_array, expected_size = nil)
-      raise PublicKeyError, "byte array too short" if !expected_size.nil? && expected_size != byte_array.size
-      num = 0
-      byte_array.reverse.each_with_index do |item, index|
-        num += item * 256**(index)
-      end
-      num
     end
 
     def decoded_key(key)
@@ -191,7 +185,7 @@ class SSHKey
 
   # SSH public key
   def ssh_public_key
-    [directives.join(",").strip, SSH_TYPES[type], Base64.encode64(ssh_public_key_conversion).gsub("\n", ""), comment].join(" ").strip
+    [directives.join(",").strip, SSH_TYPES[type], Base64.strict_encode64(ssh_public_key_conversion), comment].join(" ").strip
   end
 
   # Fingerprints
@@ -286,34 +280,14 @@ class SSHKey
   # For instance, the "ssh-rsa" string is encoded as the following byte array
   # [0, 0, 0, 7, 's', 's', 'h', '-', 'r', 's', 'a']
   def ssh_public_key_conversion
-    out = [0,0,0,7].pack("C*")
-    out += SSH_TYPES[type]
-
-    SSH_CONVERSION[type].each do |method|
-      byte_array = to_byte_array(key_object.public_key.send(method).to_i)
-      out += encode_unsigned_int_32(byte_array.length).pack("c*")
-      out += byte_array.pack("C*")
+    typestr = SSH_TYPES[type]
+    methods = SSH_CONVERSION[type]
+    pub = key_object.public_key
+    return methods.inject([7].pack("N") + typestr) do |akku, m|
+      # given pub.class == OpenSSL::BN, pub.to_s(0) returns an
+      # MPI formatted string (length prefixed bytes)
+      akku + pub.send(m).to_s(0)
     end
-
-    return out
-  end
-
-  def encode_unsigned_int_32(value)
-    out = []
-    out[0] = value >> 24 & 0xff
-    out[1] = value >> 16 & 0xff
-    out[2] = value >> 8 & 0xff
-    out[3] = value & 0xff
-    return out
-  end
-
-  def to_byte_array(num)
-    result = []
-    begin
-      result << (num & 0xff)
-      num >>= 8
-    end until (num == 0 || num == -1) && (result.last[7] == num[7])
-    result.reverse
   end
 
 end
