@@ -93,8 +93,9 @@ class SSHKey
     def unpacked_byte_array(ssh_type, encoded_key)
       prefix = [7].pack("N") + ssh_type
       decoded = Base64.decode64(encoded_key)
-      unless Base64.encode64(decoded).gsub("\n", "") == encoded_key &&
-          decoded.slice!(0, prefix.length) == prefix
+
+      # Base64 decoding is too permissive, so we should validate if encoding is correct
+      unless Base64.encode64(decoded).gsub("\n", "") == encoded_key && decoded.slice!(0, prefix.length) == prefix
         raise PublicKeyError, "validation error"
       end
 
@@ -279,20 +280,21 @@ class SSHKey
     typestr = SSH_TYPES[type]
     methods = SSH_CONVERSION[type]
     pubkey = key_object.public_key
-    return methods.inject([7].pack("N") + typestr) do |pubkeystr, m|
-      # given pubkey.class == OpenSSL::BN, pubkey.to_s(0) returns an
-      # MPI formatted string (length prefixed bytes)
-      # This is not supported by JRuby, so we still have to
-      # deal with length and data separately
+    methods.inject([7].pack("N") + typestr) do |pubkeystr, m|
+      # Given pubkey.class == OpenSSL::BN, pubkey.to_s(0) returns an MPI
+      # formatted string (length prefixed bytes). This is not supported by
+      # JRuby, so we still have to deal with length and data separately.
       val = pubkey.send(m)
-      # get byte-representation of absolute value of val
+
+      # Get byte-representation of absolute value of val
       data = val.to_s(2)
+
       first_byte = data[0,1].unpack("c").first
       if val < 0
-        # for negative values, highest bit must be set
+        # For negative values, highest bit must be set
         data[0] = [0x80 & first_byte].pack("c")
       elsif first_byte < 0
-        # for positive values where highest bit would be set, prefix with \0
+        # For positive values where highest bit would be set, prefix with \0
         data = "\0" + data
       end
       pubkeystr + [data.length].pack("N") + data
