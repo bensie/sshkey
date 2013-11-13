@@ -92,13 +92,9 @@ class SSHKey
 
     def unpacked_byte_array(ssh_type, encoded_key)
       prefix = [7].pack("N") + ssh_type
-      decoded = encoded_key
-      begin
-        decoded = Base64.strict_decode64(encoded_key)
-        unless decoded.slice!(0, prefix.length) == prefix
-          raise ArgumentError, "wrong prefix"
-        end
-      rescue ArgumentError
+      decoded = Base64.decode64(encoded_key)
+      unless Base64.encode64(decoded).gsub("\n", "") == encoded_key &&
+          decoded.slice!(0, prefix.length) == prefix
         raise PublicKeyError, "validation error"
       end
 
@@ -185,7 +181,7 @@ class SSHKey
 
   # SSH public key
   def ssh_public_key
-    [directives.join(",").strip, SSH_TYPES[type], Base64.strict_encode64(ssh_public_key_conversion), comment].join(" ").strip
+    [directives.join(",").strip, SSH_TYPES[type], Base64.encode64(ssh_public_key_conversion).gsub("\n", ""), comment].join(" ").strip
   end
 
   # Fingerprints
