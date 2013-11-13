@@ -278,13 +278,13 @@ class SSHKey
   def ssh_public_key_conversion
     typestr = SSH_TYPES[type]
     methods = SSH_CONVERSION[type]
-    pub = key_object.public_key
-    return methods.inject([7].pack("N") + typestr) do |akku, m|
-      # given pub.class == OpenSSL::BN, pub.to_s(0) returns an
+    pubkey = key_object.public_key
+    return methods.inject([7].pack("N") + typestr) do |pubkeystr, m|
+      # given pubkey.class == OpenSSL::BN, pubkey.to_s(0) returns an
       # MPI formatted string (length prefixed bytes)
       # This is not supported by JRuby, so we still have to
       # deal with length and data separately
-      val = pub.send(m)
+      val = pubkey.send(m)
       # get byte-representation of absolute value of val
       data = val.to_s(2)
       first_byte = data[0,1].unpack("c").first
@@ -295,7 +295,7 @@ class SSHKey
         # for positive values where highest bit would be set, prefix with \0
         data = "\0" + data
       end
-      akku + [data.length].pack("N") + data
+      pubkeystr + [data.length].pack("N") + data
     end
   end
 end
