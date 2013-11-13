@@ -298,5 +298,4 @@ class SSHKey
       akku + [data.length].pack("N") + data
     end
   end
-
 end
