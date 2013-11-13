@@ -11,6 +11,33 @@ rvm:
   - jruby-head
   - rbx-18mode
   - rbx-19mode
+  - rbx-2.1.1
+
 matrix:
   allow_failures:
     - rvm: ruby-head
+  include:
+    - rvm: jruby-18mode
+      jdk: openjdk6
+    - rvm: jruby-18mode
+      jdk: openjdk7
+    - rvm: jruby-18mode
+      jdk: oraclejdk7
+    - rvm: jruby-19mode
+      jdk: openjdk6
+    - rvm: jruby-19mode
+      jdk: openjdk7
+    - rvm: jruby-19mode
+      jdk: oraclejdk7
+    - rvm: jruby-20mode
+      jdk: openjdk6
+    - rvm: jruby-20mode
+      jdk: openjdk7
+    - rvm: jruby-20mode
+      jdk: oraclejdk7
+    - rvm: jruby-head
+      jdk: openjdk6
+    - rvm: jruby-head
+      jdk: openjdk7
+    - rvm: jruby-head
+      jdk: oraclejdk7
