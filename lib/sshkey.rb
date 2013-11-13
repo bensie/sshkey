@@ -100,13 +100,13 @@ class SSHKey
 
       data = []
       until decoded.empty?
-        front = decoded[0,4]
+        front = decoded.slice!(0,4)
         size = front.unpack("N").first
-        segment = decoded.slice!(0, 4+size)
-        unless front.length == 4 && segment.length - 4 == size
+        segment = decoded.slice!(0, size)
+        unless front.length == 4 && segment.length == size
           raise PublicKeyError, "byte array too short"
         end
-        data << OpenSSL::BN.new(segment, 0)
+        data << OpenSSL::BN.new(segment, 2)
       end
       return data
     end
@@ -282,7 +282,20 @@ class SSHKey
     return methods.inject([7].pack("N") + typestr) do |akku, m|
       # given pub.class == OpenSSL::BN, pub.to_s(0) returns an
       # MPI formatted string (length prefixed bytes)
-      akku + pub.send(m).to_s(0)
+      # This is not supported by JRuby, so we still have to
+      # deal with length and data separately
+      val = pub.send(m)
+      # get byte-representation of absolute value of val
+      data = val.to_s(2)
+      first_byte = data[0].unpack("c").first
+      if val < 0
+        # for negative values, highest bit must be set
+        data[0] = [0x80 & first_byte].pack("c")
+      elsif first_byte < 0
+        # for positive values where highest bit would be set, prefix with \0
+        data = "\0" + data
+      end
+      akku + [data.length].pack("N") + data
     end
   end
 
