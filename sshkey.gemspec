@@ -11,6 +11,7 @@ Gem::Specification.new do |s|
   s.homepage    = "https://github.com/bensie/sshkey"
   s.summary     = %q{SSH private/public key generator in Ruby}
   s.description = %q{Generate private/public SSH keypairs using pure Ruby}
+  s.licenses    = ["MIT"]
 
   s.rubyforge_project = "sshkey"
 
