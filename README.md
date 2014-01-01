@@ -186,4 +186,4 @@ SSHKey.sha1_fingerprint "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC9HuXvYJPtQE/o/7T
 
 ## Copyright
 
-Copyright (c) 2011-2013 James Miller
+Copyright (c) 2011-2014 James Miller
