@@ -126,7 +126,7 @@ k.ssh_public_key
 
 #### Randomart
 
-Generate [OpenSSH compatible](http://www.opensource.apple.com/source/OpenSSH/OpenSSH-175/openssh/key.c) ASCII art fingerprints
+Generate [OpenSSH compatible](http://www.opensource.apple.com/source/OpenSSH/OpenSSH-175/openssh/key.c) ASCII art fingerprints.
 
 ```ruby
 puts k.randomart
