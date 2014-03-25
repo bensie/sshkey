@@ -54,6 +54,17 @@ class SSHKey
       false
     end
 
+    # Validate multiline SSH public keys (e.g. authorized_keys)
+    #
+    # Returns true or false depending on the validity of the public keys provided
+    #
+    # ==== Parameters
+    # * ssh_public_key<~String> - "ssh-rsa AAAAB3NzaC1yc2EA....\nssh-rsa AAAAB3NzaC1yc2EA...."
+    #
+    def valid_multiline_public_keys?(ssh_public_keys)
+      ssh_public_keys.split("\n").all? {|k| valid_ssh_public_key?(k) }
+    end
+
     # Bits
     #
     # Returns ssh public key bits or false depending on the validity of the public key provided
@@ -121,6 +132,8 @@ class SSHKey
     end
 
     def parse_ssh_public_key(public_key)
+      raise PublicKeyError, "invalid newlines" if public_key =~ /\n(?!$)/
+
       parsed = public_key.split(" ")
       parsed.each_with_index do |el, index|
         return parsed[index..(index+1)] if SSH_TYPES.invert[el]
