@@ -121,6 +121,8 @@ class SSHKey
     end
 
     def parse_ssh_public_key(public_key)
+      raise PublicKeyError, "newlines are not permitted between key data" if public_key =~ /\n(?!$)/
+
       parsed = public_key.split(" ")
       parsed.each_with_index do |el, index|
         return parsed[index..(index+1)] if SSH_TYPES.invert[el]

@@ -253,6 +253,19 @@ EOF
     assert !SSHKey.valid_ssh_public_key?(invalid5)
   end
 
+  def test_ssh_public_key_validation_with_newlines
+    expected1 = "ssh-rsa #{SSH_PUBLIC_KEY1}\n"
+    invalid1  = "ssh-rsa #{SSH_PUBLIC_KEY1}\nme@example.com"
+    invalid2  = "ssh-rsa #{SSH_PUBLIC_KEY1}\n me@example.com"
+    invalid3  = "ssh-rsa #{SSH_PUBLIC_KEY1} \nme@example.com"
+
+    assert SSHKey.valid_ssh_public_key?(expected1)
+
+    assert !SSHKey.valid_ssh_public_key?(invalid1)
+    assert !SSHKey.valid_ssh_public_key?(invalid2)
+    assert !SSHKey.valid_ssh_public_key?(invalid3)
+  end
+
   def test_ssh_public_key_bits
     expected1 = "ssh-rsa #{SSH_PUBLIC_KEY1} me@example.com"
     expected2 = "ssh-rsa #{SSH_PUBLIC_KEY2} me@example.com"
