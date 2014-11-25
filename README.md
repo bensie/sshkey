@@ -18,7 +18,12 @@ You can also (optionally) supply a `comment` or `passphrase`.
 ```ruby
 k = SSHKey.generate
 
-k = SSHKey.generate(:type => "DSA", :bits => 1024, :comment => "foo@bar.com", :passphrase => "foobar")
+k = SSHKey.generate(
+  type:       "DSA",
+  bits:       1024,
+  comment:    "foo@bar.com",
+  passphrase: "foobar"
+)
 ```
 
 ### Use your existing key
@@ -26,7 +31,7 @@ k = SSHKey.generate(:type => "DSA", :bits => 1024, :comment => "foo@bar.com", :p
 Return an SSHKey object from an existing RSA or DSA private key (provided as a string).
 
 ```ruby
-k = SSHKey.new(File.read("~/.ssh/id_rsa"), :comment => "foo@bar.com")
+k = SSHKey.new(File.read("~/.ssh/id_rsa"), comment: "foo@bar.com")
 ```
 
 ### The SSHKey object
