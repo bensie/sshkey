@@ -4,7 +4,7 @@ Generate private and public SSH keys (RSA and DSA supported) using pure Ruby.
 
 	gem install sshkey
 
-Tested on the following Rubies: MRI 1.8.7, 1.9.2, 1.9.3, 2.0.0, 2.1.x, REE, JRuby (1.7.2 and newer). Ruby must be compiled with OpenSSL support.
+Tested on the following Rubies: MRI 1.8.7, 1.9.2, 1.9.3, 2.0.0, 2.1.x, 2.2.x, REE. Ruby must be compiled with OpenSSL support.
 
 [![Build Status](https://secure.travis-ci.org/bensie/sshkey.svg?branch=master)](http://travis-ci.org/bensie/sshkey)
 
@@ -191,4 +191,4 @@ SSHKey.sha1_fingerprint "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC9HuXvYJPtQE/o/7T
 
 ## Copyright
 
-Copyright (c) 2011-2014 James Miller
+Copyright (c) 2011-2015 James Miller
