@@ -129,6 +129,46 @@ EOF
 +-----------------+
 EOF
 
+  SSH2_PUBLIC_KEY1 = <<-EOF.rstrip
+---- BEGIN SSH2 PUBLIC KEY ----
+Comment: me@example.com
+AAAAB3NzaC1yc2EAAAABIwAAAQEArfTA/lKVR84IMc9ZzXOCHr8DVtR8hzWuEVHF6KElav
+RHlk14g0SZu3m908Ejm/XF3EfNHjX9wN+62IMA0QBxkBMFCuLF+U/oeUs0NoDdAEKxjj4n
+6lq6Ss8aLct+anMy7D1jwvOLbcwV54w1d5JDdlZVdZ6AvHm9otwJq6rNpDgdmXY4HgC2nM
+9csFpuy0cDpL6fdJx9lcNL2RnkRC4+RMsIB+PxDw0j3vDi04dYLBXMGYjyeGH+mIFpL3PT
+PXGXwL2XDYXZ2H4SQX6bOoKmazTXq6QXuEB665njh1GxXldoIMcSshoJL0hrk3WrTOG22N
+2CQA+IfHgrXJ+A+QUzKQ==
+---- END SSH2 PUBLIC KEY ----
+EOF
+
+  SSH2_PUBLIC_KEY2 = <<-EOF.rstrip
+---- BEGIN SSH2 PUBLIC KEY ----
+AAAAB3NzaC1yc2EAAAABIwAAAQEAxl6TpN7uFiY/JZ8qDnD7UrxDP+ABeh2PVg8Du1LEgX
+Nk0+YWCeP5S6oHklqaWeDlbmAs1oHsBwCMAVpMa5tgONOLvz4JgwgkiqQEbKR8ofWJ+LAD
+UElvqRVGmGiNEMLI6GJWeneL4sjmbb8d6U+M53c6iWG0si9XE5m7teBQSsCl0Tk3qMIkQG
+w5zpJeCXjZ8KpJhIJRYgexFkGgPlYRV+UYIhxpUW90t0Ra5i6JOFYwq98k5S/6SJIZQ/A9
+F4JNzwLw3eVxZj0yVHWxkGz1+TyELNY1kOyMxnZaqSfGzSQJTrnIXpdweVHuYh1LtOgedR
+QhCyiELeSMGwio1vRPKw==
+---- END SSH2 PUBLIC KEY ----
+EOF
+
+  SSH2_PUBLIC_KEY3 = <<-EOF.rstrip
+---- BEGIN SSH2 PUBLIC KEY ----
+Comment: 1024-bit DSA with provided comment
+x-private-use-header: some value that is long enough to go to wrap aro\\
+und to a new line.
+AAAAB3NzaC1kc3MAAACBALyVy5dwVwgL3CxXzsvo8DBh58qArQLBNIPW/f9pptmy7jD5QX
+zOw+12w0/z4lZ86ncoVutRMf44OABcX9ovhRl+luxB7jjpkVXy/p2ZaqPbeyTQUtdTmXa2
+y4n053Jd61VeMG+iLP7+viT+Ib96y9aVUYQfCrl5heBDUZ9cAFjdAAAAFQDFXnO7JJpFKw
+keoor4GWGHtz0D2QAAAIEAqel0RUBO0MY5b3DZ69J/mRzUifN1O6twk4er2ph0JpryuUwZ
+ohLpcVZwqoGWmPQy/ZHmV1b3RtT9GWUa+HUqKdMhFVOx/iq1khVfLi83whjMMvXj3ecqd0
+yzGxGHnSsjVKefa2ywCLHrh4nlUVIaXI5gQpgMyVbMcromDe1WZzoAAACBAIwTRPAEcroq
+OzaebiVspFcmsXxDQ4wXQZQdho1ExW6FKS8s7/6pItmZYXTvJDwLXgq2/iK1fRRcKk2PJE
+aSuJR7WeNGsJKfWmQ2UbOhqA3wWLDazIZtcMKjFzD0hM4E8qgjHjMvKDE6WgT6SFP+tqx3
+nnh7pJWwsbGjSMQexpyR
+---- END SSH2 PUBLIC KEY ----
+EOF
+
   def setup
     @key1 = SSHKey.new(SSH_PRIVATE_KEY1, :comment => "me@example.com")
     @key2 = SSHKey.new(SSH_PRIVATE_KEY2, :comment => "me@example.com")
@@ -200,6 +240,20 @@ EOF
     assert_equal expected2, @key2.ssh_public_key
     assert_equal expected3, @key3.ssh_public_key
     assert_equal expected4, @key_without_comment.ssh_public_key
+  end
+
+  def test_ssh2_public_key_output
+    expected1 = SSH2_PUBLIC_KEY1
+    expected2 = SSH2_PUBLIC_KEY2
+    expected3 = SSH2_PUBLIC_KEY3
+    public_key1 = "ssh-rsa #{SSH_PUBLIC_KEY1} me@example.com"
+    public_key2 = "ssh-rsa #{SSH_PUBLIC_KEY2}"
+    public_key3 = "ssh-rsa #{SSH_PUBLIC_KEY3} 1024-bit DSA with provided comment"
+
+    assert_equal expected1, @key1.ssh2_public_key
+    assert_equal expected2, @key2.ssh2_public_key({})
+    assert_equal expected3, @key3.ssh2_public_key({'Comment' => '1024-bit DSA with provided comment', 
+      'x-private-use-header' => 'some value that is long enough to go to wrap around to a new line.'})
   end
 
   def test_public_key_directives
@@ -289,6 +343,17 @@ EOF
     assert_equal( "byte array too short",      exception2.message )
     assert_equal( "cannot determine key type", exception3.message )
   end
+  
+  def test_ssh2_public_key_bits
+    public_key1 = "ssh-rsa #{SSH_PUBLIC_KEY1} me@example.com"
+    public_key2 = "ssh-rsa #{SSH_PUBLIC_KEY2}"
+    public_key3 = "ssh-dss #{SSH_PUBLIC_KEY3} 1024-bit DSA with provided comment"
+
+    assert_equal(SSH2_PUBLIC_KEY1, SSHKey.ssh_public_key_to_ssh2_public_key(public_key1))
+    assert_equal(SSH2_PUBLIC_KEY2, SSHKey.ssh_public_key_to_ssh2_public_key(public_key2))
+    assert_equal(SSH2_PUBLIC_KEY2, SSHKey.ssh_public_key_to_ssh2_public_key(public_key2, {}))
+    assert_equal(SSH2_PUBLIC_KEY3, SSHKey.ssh_public_key_to_ssh2_public_key(public_key3, {'Comment' => '1024-bit DSA with provided comment', 'x-private-use-header' => 'some value that is long enough to go to wrap around to a new line.'}))
+end
 
   def test_exponent
     assert_equal 35, @key1.key_object.e.to_i
