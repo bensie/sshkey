@@ -9,6 +9,7 @@ require 'sshkey/exception'
 class SSHKey
   SSH_TYPES      = {"rsa" => "ssh-rsa", "dsa" => "ssh-dss"}
   SSH_CONVERSION = {"rsa" => ["e", "n"], "dsa" => ["p", "q", "g", "pub_key"]}
+  SSH2_LINE_LENGTH = 70 # +1 (for line wrap '/' character) must be <= 72
 
   class << self
     # Generate a new keypair and return an SSHKey object
@@ -88,6 +89,29 @@ class SSHKey
       end
     end
 
+    # Convert an existing SSH public key to SSH2 (RFC4716) public key
+    #
+    # ==== Parameters
+    # * ssh_public_key<~String> - "ssh-rsa AAAAB3NzaC1yc2EA...."
+    # * headers<~Hash> - The Key will be used as the header-tag and the value as the header-value
+    #
+    def ssh_public_key_to_ssh2_public_key(ssh_public_key, headers = nil)
+      raise PublicKeyError, "invalid ssh public key" unless SSHKey.valid_ssh_public_key?(ssh_public_key)
+
+      source_format, source_key = parse_ssh_public_key(ssh_public_key)
+
+      # Add a 'Comment' Header Field unless others are explicitly passed in
+      if source_comment = ssh_public_key.split(source_key)[1]
+        headers = {'Comment' => source_comment.strip} if headers.nil? && !source_comment.empty?
+      end
+      header_fields = build_ssh2_headers(headers)
+
+      ssh2_key = "---- BEGIN SSH2 PUBLIC KEY ----\n"
+      ssh2_key << header_fields unless header_fields.nil?
+      ssh2_key << source_key.scan(/.{1,#{SSH2_LINE_LENGTH}}/).join("\n")
+      ssh2_key << "\n---- END SSH2 PUBLIC KEY ----"
+    end
+
     private
 
     def unpacked_byte_array(ssh_type, encoded_key)
@@ -128,6 +152,20 @@ class SSHKey
         return parsed[index..(index+1)] if SSH_TYPES.invert[el]
       end
       raise PublicKeyError, "cannot determine key type"
+    end
+
+    def build_ssh2_headers(headers = {})
+      return nil if headers.nil? || headers.empty?
+
+      headers.keys.sort.collect do |header_tag|
+        # header-tag must be us-ascii & <= 64 bytes and header-data must be UTF-8 & <= 1024 bytes
+        raise PublicKeyError, "SSH2 header-tag '#{header_tag}' must be US-ASCII" unless header_tag.each_byte.all? {|b| b < 128 }
+        raise PublicKeyError, "SSH2 header-tag '#{header_tag}' must be <= 64 bytes" unless header_tag.size <= 64
+        raise PublicKeyError, "SSH2 header-value for '#{header_tag}' must be <= 1024 bytes" unless headers[header_tag].size <= 1024
+
+        header_field = "#{header_tag}: #{headers[header_tag]}"
+        header_field.scan(/.{1,#{SSH2_LINE_LENGTH}}/).join("\\\n")
+      end.join("\n") << "\n"
     end
   end
 
@@ -185,6 +223,19 @@ class SSHKey
   # SSH public key
   def ssh_public_key
     [directives.join(",").strip, SSH_TYPES[type], Base64.encode64(ssh_public_key_conversion).gsub("\n", ""), comment].join(" ").strip
+  end
+
+  # SSH2 public key (RFC4716)
+  #
+  # ==== Parameters
+  # * headers<~Hash> - Keys will be used as header-tags and values as header-values.
+  #
+  # ==== Examples
+  # {'Comment' => '2048-bit RSA created by user@example'}
+  # {'x-private-use-tag' => 'Private Use Value'}
+  #
+  def ssh2_public_key(headers = nil)
+    self.class.ssh_public_key_to_ssh2_public_key(ssh_public_key, headers)
   end
 
   # Fingerprints
