@@ -87,6 +87,10 @@ EOF
   KEY2_SHA1_FINGERPRINT = "9a:52:78:2b:6b:cb:39:b7:85:ed:90:8a:28:62:aa:b3:98:88:e6:07"
   KEY3_SHA1_FINGERPRINT = "15:68:c6:72:ac:18:d1:fc:ab:a2:b7:b5:8c:d1:fe:8f:b9:ae:a9:47"
 
+  KEY1_SHA256_FINGERPRINT = "js3llFehloxCfsVuDw5xu3NtS9AOAxcXY8WL6vkDIts="
+  KEY2_SHA256_FINGERPRINT = "23f/6U/LdxIFx1CQFKHylw76n+LIHYoY4nRxKcFoos4="
+  KEY3_SHA256_FINGERPRINT = "mPqEPQlOPGORrTJrU17sPax1jOqeutZja6MOsFIca+8="
+
   KEY1_RANDOMART = <<-EOF.rstrip
 +--[ RSA 2048]----+
 |o+ o..           |
@@ -252,7 +256,7 @@ EOF
 
     assert_equal expected1, @key1.ssh2_public_key
     assert_equal expected2, @key2.ssh2_public_key({})
-    assert_equal expected3, @key3.ssh2_public_key({'Comment' => '1024-bit DSA with provided comment', 
+    assert_equal expected3, @key3.ssh2_public_key({'Comment' => '1024-bit DSA with provided comment',
       'x-private-use-header' => 'some value that is long enough to go to wrap around to a new line.'})
   end
 
@@ -343,7 +347,7 @@ EOF
     assert_equal( "byte array too short",      exception2.message )
     assert_equal( "cannot determine key type", exception3.message )
   end
-  
+
   def test_ssh2_public_key_bits
     public_key1 = "ssh-rsa #{SSH_PUBLIC_KEY1} me@example.com"
     public_key2 = "ssh-rsa #{SSH_PUBLIC_KEY2}"
@@ -375,6 +379,10 @@ end
     assert_equal KEY2_SHA1_FINGERPRINT, @key2.sha1_fingerprint
     assert_equal KEY3_SHA1_FINGERPRINT, @key3.sha1_fingerprint
 
+    assert_equal KEY1_SHA256_FINGERPRINT, @key1.sha256_fingerprint
+    assert_equal KEY2_SHA256_FINGERPRINT, @key2.sha256_fingerprint
+    assert_equal KEY3_SHA256_FINGERPRINT, @key3.sha256_fingerprint
+
     assert_equal KEY1_MD5_FINGERPRINT, SSHKey.md5_fingerprint(SSH_PRIVATE_KEY1)
     assert_equal KEY1_MD5_FINGERPRINT, SSHKey.md5_fingerprint("ssh-rsa #{SSH_PUBLIC_KEY1}")
     assert_equal KEY2_MD5_FINGERPRINT, SSHKey.md5_fingerprint(SSH_PRIVATE_KEY2)
@@ -388,6 +396,13 @@ end
     assert_equal KEY2_SHA1_FINGERPRINT, SSHKey.sha1_fingerprint("ssh-rsa #{SSH_PUBLIC_KEY2} me@me.com")
     assert_equal KEY3_SHA1_FINGERPRINT, SSHKey.sha1_fingerprint(SSH_PRIVATE_KEY3)
     assert_equal KEY3_SHA1_FINGERPRINT, SSHKey.sha1_fingerprint("ssh-dss #{SSH_PUBLIC_KEY3}")
+
+    assert_equal KEY1_SHA256_FINGERPRINT, SSHKey.sha256_fingerprint(SSH_PRIVATE_KEY1)
+    assert_equal KEY1_SHA256_FINGERPRINT, SSHKey.sha256_fingerprint("ssh-rsa #{SSH_PUBLIC_KEY1}")
+    assert_equal KEY2_SHA256_FINGERPRINT, SSHKey.sha256_fingerprint(SSH_PRIVATE_KEY2)
+    assert_equal KEY2_SHA256_FINGERPRINT, SSHKey.sha256_fingerprint("ssh-rsa #{SSH_PUBLIC_KEY2} me@me.com")
+    assert_equal KEY3_SHA256_FINGERPRINT, SSHKey.sha256_fingerprint(SSH_PRIVATE_KEY3)
+    assert_equal KEY3_SHA256_FINGERPRINT, SSHKey.sha256_fingerprint("ssh-dss #{SSH_PUBLIC_KEY3}")
   end
 
   def test_bits

@@ -89,6 +89,15 @@ class SSHKey
       end
     end
 
+    # SHA256 fingerprint for the given SSH key
+    def sha256_fingerprint(key)
+      if key.match(/PRIVATE/)
+        new(key).sha256_fingerprint
+      else
+        Base64.encode64(Digest::SHA256.digest(decoded_key(key))).gsub("\n", "")
+      end
+    end
+
     # Convert an existing SSH public key to SSH2 (RFC4716) public key
     #
     # ==== Parameters
@@ -249,6 +258,11 @@ class SSHKey
   # SHA1 fingerprint for the given SSH public key
   def sha1_fingerprint
     Digest::SHA1.hexdigest(ssh_public_key_conversion).gsub(/(.{2})(?=.)/, '\1:\2')
+  end
+
+  # SHA256 fingerprint for the given SSH public key
+  def sha256_fingerprint
+    Base64.encode64(Digest::SHA256.digest(ssh_public_key_conversion)).gsub("\n", "")
   end
 
   # Determine the length (bits) of the key as an integer
