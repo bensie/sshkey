@@ -94,7 +94,7 @@ class SSHKey
       if key.match(/PRIVATE/)
         new(key).sha256_fingerprint
       else
-        Digest::SHA256.base64digest(decoded_key(key))
+        Base64.encode64(Digest::SHA256.digest(decoded_key(key))).gsub("\n", "")
       end
     end
 
@@ -262,7 +262,7 @@ class SSHKey
 
   # SHA256 fingerprint for the given SSH public key
   def sha256_fingerprint
-    Digest::SHA256.base64digest(ssh_public_key_conversion)
+    Base64.encode64(Digest::SHA256.digest(ssh_public_key_conversion)).gsub("\n", "")
   end
 
   # Determine the length (bits) of the key as an integer
