@@ -2,11 +2,15 @@
 
 Generate private and public SSH keys (RSA and DSA supported) using pure Ruby.
 
-	gem install sshkey
-
-Tested on the following Rubies: MRI 1.8.7, 1.9.2, 1.9.3, 2.0.0, 2.1.x, 2.2.x, REE. Ruby must be compiled with OpenSSL support.
-
 [![Build Status](https://secure.travis-ci.org/bensie/sshkey.svg?branch=master)](http://travis-ci.org/bensie/sshkey)
+
+## Requirements
+
+Tested / supported on CRuby 1.8.7+ and JRuby.
+
+## Installation
+
+	gem install sshkey
 
 ## Usage
 
@@ -98,14 +102,17 @@ k.bits
 #### Fingerprints
 
 It is often helpful to use a fingerprint to visually or programmatically check if one key
-matches another. Fetch either an MD5 (OpenSSH default) or SHA1 fingerprint of the SSH public key.
+matches another. Fetch an MD5, SHA1, or SHA256 fingerprint of the SSH public key.
 
 ```ruby
 k.md5_fingerprint
-# => "2a:89:84:c9:29:05:d1:f8:49:79:1c:ba:73:99:eb:af"
+# => "04:1b:d4:18:df:87:60:94:8c:83:8a:7b:5a:35:59:3d"
 
 k.sha1_fingerprint
-# => "e4:f9:79:f2:fe:d6:be:2d:ef:2e:c2:fa:aa:f8:b0:17:34:fe:0d:c0"
+# => "e5:c2:43:9e:e4:0c:0c:47:82:7a:3b:e9:61:13:bd:9c:43:eb:4c:b7"
+
+k.sha256_fingerprint
+# => "x1GEnx1SRY/QwxjMAoyO6mhQlaBedDHtYLEmfeUXy3o="
 ```
 
 #### Public Key Directives
@@ -172,7 +179,7 @@ SSHKey.valid_ssh_public_key? "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC9HuXvYJPtQE
 
 #### Bit length
 
-Determine the strenth of the key in bits as an integer.  Returns `SSHKey::PublicKeyError` if bits cannot be determined.
+Determine the strength of the key in bits as an integer.  Returns `SSHKey::PublicKeyError` if bits cannot be determined.
 
 ```ruby
 SSHKey.ssh_public_key_bits "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC9HuXvYJPtQE/o/7TYi63yAopsrJ6TP+lDGdyQ+nVVp+5ojAIy9h8/h99UlNxjkiFT2YhI3Fl/pgNDRO4PVo6tlgb3CwiAZjSdeE5RnF79Dkj5XsM4j+FLMoXtbRw0K9ok9RKjz6ygIs1JDmaOdXexFnq4nAYU3fSLUa6WoccqTHe8bFuJoAv1gbnx09Js8YcVMD96mpTJ3V/MK5YfIv10dbtrDhGug3IS1V2J+0BB9orbQja554N+4S0I9rFBgVCpvPmQqddDHd/AdGkLv/zjEfGytjnvp68bEfDinkQkPfuxw01yd5MbcvLv39VVICWtKbqW263HT5LvSxwKorR7"
@@ -181,14 +188,16 @@ SSHKey.ssh_public_key_bits "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC9HuXvYJPtQE/o
 
 #### Fingerprints
 
-Fetch either an MD5 (OpenSSH default) or SHA1 fingerprint of the SSH
-public key.  Returns `SSHKey::PublicKeyError` if a fingerprint cannot be determined.
+Fetch an MD5, SHA1, or SHA256 fingerprint of the SSH public key.
+Returns `SSHKey::PublicKeyError` if a fingerprint cannot be determined.
 
 ```ruby
 SSHKey.fingerprint "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC9HuXvYJPtQE/o/7TYi63yAopsrJ6TP+lDGdyQ+nVVp+5ojAIy9h8/h99UlNxjkiFT2YhI3Fl/pgNDRO4PVo6tlgb3CwiAZjSdeE5RnF79Dkj5XsM4j+FLMoXtbRw0K9ok9RKjz6ygIs1JDmaOdXexFnq4nAYU3fSLUa6WoccqTHe8bFuJoAv1gbnx09Js8YcVMD96mpTJ3V/MK5YfIv10dbtrDhGug3IS1V2J+0BB9orbQja554N+4S0I9rFBgVCpvPmQqddDHd/AdGkLv/zjEfGytjnvp68bEfDinkQkPfuxw01yd5MbcvLv39VVICWtKbqW263HT5LvSxwKorR7"
 # => "04:1b:d4:18:df:87:60:94:8c:83:8a:7b:5a:35:59:3d"
 SSHKey.sha1_fingerprint "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC9HuXvYJPtQE/o/7TYi63yAopsrJ6TP+lDGdyQ+nVVp+5ojAIy9h8/h99UlNxjkiFT2YhI3Fl/pgNDRO4PVo6tlgb3CwiAZjSdeE5RnF79Dkj5XsM4j+FLMoXtbRw0K9ok9RKjz6ygIs1JDmaOdXexFnq4nAYU3fSLUa6WoccqTHe8bFuJoAv1gbnx09Js8YcVMD96mpTJ3V/MK5YfIv10dbtrDhGug3IS1V2J+0BB9orbQja554N+4S0I9rFBgVCpvPmQqddDHd/AdGkLv/zjEfGytjnvp68bEfDinkQkPfuxw01yd5MbcvLv39VVICWtKbqW263HT5LvSxwKorR7"
 # => "e5:c2:43:9e:e4:0c:0c:47:82:7a:3b:e9:61:13:bd:9c:43:eb:4c:b7"
+SSHKey.sha256_fingerprint "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC9HuXvYJPtQE/o/7TYi63yAopsrJ6TP+lDGdyQ+nVVp+5ojAIy9h8/h99UlNxjkiFT2YhI3Fl/pgNDRO4PVo6tlgb3CwiAZjSdeE5RnF79Dkj5XsM4j+FLMoXtbRw0K9ok9RKjz6ygIs1JDmaOdXexFnq4nAYU3fSLUa6WoccqTHe8bFuJoAv1gbnx09Js8YcVMD96mpTJ3V/MK5YfIv10dbtrDhGug3IS1V2J+0BB9orbQja554N+4S0I9rFBgVCpvPmQqddDHd/AdGkLv/zjEfGytjnvp68bEfDinkQkPfuxw01yd5MbcvLv39VVICWtKbqW263HT5LvSxwKorR7"
+# => "x1GEnx1SRY/QwxjMAoyO6mhQlaBedDHtYLEmfeUXy3o="
 ```
 
 #### Convert to SSH2 Public Key
