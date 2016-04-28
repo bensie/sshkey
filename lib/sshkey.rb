@@ -7,8 +7,8 @@ require 'digest/sha1'
 require 'sshkey/exception'
 
 class SSHKey
-  SSH_TYPES      = {"rsa" => "ssh-rsa", "dsa" => "ssh-dss"}
-  SSH_CONVERSION = {"rsa" => ["e", "n"], "dsa" => ["p", "q", "g", "pub_key"]}
+  SSH_TYPES      = {"rsa" => "ssh-rsa", "dsa" => "ssh-dss", "ec" => "ecdsa-sha2-nistp256"}
+  SSH_CONVERSION = {"rsa" => ["e", "n"], "dsa" => ["p", "q", "g", "pub_key"], "ec" => []}
   SSH2_LINE_LENGTH = 70 # +1 (for line wrap '/' character) must be <= 72
 
   class << self
@@ -36,6 +36,7 @@ class SSHKey
       case type.downcase
       when "rsa" then new(OpenSSL::PKey::RSA.generate(bits).to_pem(cipher, options[:passphrase]), options)
       when "dsa" then new(OpenSSL::PKey::DSA.generate(bits).to_pem(cipher, options[:passphrase]), options)
+      when "ec"  then new(OpenSSL::PKey::EC.new("secp256k1").generate_key.to_pem)
       else
         raise "Unknown key type: #{type}"
       end
@@ -194,16 +195,30 @@ class SSHKey
     @passphrase = options[:passphrase]
     @comment    = options[:comment] || ""
     self.directives = options[:directives] || []
+
     begin
       @key_object = OpenSSL::PKey::RSA.new(private_key, passphrase)
       @type = "rsa"
-    rescue
+    rescue OpenSSL::PKey::RSAError
+      @type = nil
+    end
+
+    return if @type
+
+    begin
       @key_object = OpenSSL::PKey::DSA.new(private_key, passphrase)
       @type = "dsa"
+    rescue OpenSSL::PKey::DSAError
+      @type = nil
     end
+
+    return if @type
+
+    @key_object = OpenSSL::PKey::EC.new(private_key, passphrase)
+    @type = "ec"
   end
 
-  # Fetch the RSA/DSA private key
+  # Fetch the private key (PEM format)
   #
   # rsa_private_key and dsa_private_key are aliased for backward compatibility
   def private_key
@@ -220,14 +235,24 @@ class SSHKey
     key_object.to_pem(OpenSSL::Cipher::Cipher.new("AES-128-CBC"), passphrase)
   end
 
-  # Fetch the RSA/DSA public key
+  # Fetch the public key (PEM format)
   #
   # rsa_public_key and dsa_public_key are aliased for backward compatibility
   def public_key
-    key_object.public_key.to_pem
+    public_key_object.to_pem
   end
   alias_method :rsa_public_key, :public_key
   alias_method :dsa_public_key, :public_key
+
+  def public_key_object
+    if type == "ec"
+      pub = OpenSSL::PKey::EC.new(key_object.group)
+      pub.public_key = key_object.public_key
+      pub
+    else
+      key_object.public_key
+    end
+  end
 
   # SSH public key
   def ssh_public_key
@@ -348,10 +373,10 @@ class SSHKey
     methods = SSH_CONVERSION[type]
     pubkey = key_object.public_key
     methods.inject([7].pack("N") + typestr) do |pubkeystr, m|
-      # Given pubkey.class == OpenSSL::BN, pubkey.to_s(0) returns an MPI
-      # formatted string (length prefixed bytes). This is not supported by
-      # JRuby, so we still have to deal with length and data separately.
-      val = pubkey.send(m)
+      # Given public_key_object.class == OpenSSL::BN, public_key_object.to_s(0)
+      # returns an MPI formatted string (length prefixed bytes). This is not
+      # supported by JRuby, so we still have to deal with length and data separately.
+      val = public_key_object.send(m)
 
       # Get byte-representation of absolute value of val
       data = val.to_s(2)
