@@ -61,11 +61,11 @@ k.ssh_public_key
 
 #### Encryption
 
-If a passcode is set when a key is generated or by setting the `passcode` accessor, you can
+If a passphrase is set when a key is generated or by setting the `passphrase` accessor, you can
 fetch the encrypted version of the private key.
 
 ```ruby
-k.passcode = "foo"
+k.passphrase = "foo"
 # => "foo"
 
 k.encrypted_private_key
