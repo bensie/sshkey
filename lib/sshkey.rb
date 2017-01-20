@@ -57,7 +57,17 @@ class SSHKey
     #
     def valid_ssh_public_key?(ssh_public_key)
       ssh_type, encoded_key = parse_ssh_public_key(ssh_public_key)
-      SSH_CONVERSION[SSH_TYPES.invert[ssh_type]].size == unpacked_byte_array(ssh_type, encoded_key).size
+      sections = unpacked_byte_array(ssh_type, encoded_key)
+      case ssh_type
+        when "ssh-rsa", "ssh-dss"
+          sections.size == SSH_CONVERSION[SSH_TYPES[ssh_type]].size
+        when "ssh-ed25519"
+          sections.size == 1 && sections[0].num_bytes == 32 # https://tools.ietf.org/id/draft-bjh21-ssh-ed25519-00.html#rfc.section.4
+        when "ecdsa-sha2-nistp256", "ecdsa-sha2-nistp384", "ecdsa-sha2-nistp521"
+          sections.size == 2                                # https://tools.ietf.org/html/rfc5656#section-3.1
+        else
+          false
+      end
     rescue
       false
     end
