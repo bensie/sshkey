@@ -7,7 +7,14 @@ require 'digest/sha1'
 require 'sshkey/exception'
 
 class SSHKey
-  SSH_TYPES      = {"rsa" => "ssh-rsa", "dsa" => "ssh-dss"}
+  SSH_TYPES = {
+    "ssh-rsa" => "rsa",
+    "ssh-dss" => "dsa",
+    "ssh-ed25519" => "ed25519",
+    "ecdsa-sha2-nistp256" => "ecdsa",
+    "ecdsa-sha2-nistp384" => "ecdsa",
+    "ecdsa-sha2-nistp521" => "ecdsa",
+  }
   SSH_CONVERSION = {"rsa" => ["e", "n"], "dsa" => ["p", "q", "g", "pub_key"]}
   SSH2_LINE_LENGTH = 70 # +1 (for line wrap '/' character) must be <= 72
 
@@ -158,7 +165,7 @@ class SSHKey
 
       parsed = public_key.split(" ")
       parsed.each_with_index do |el, index|
-        return parsed[index..(index+1)] if SSH_TYPES.invert[el]
+        return parsed[index..(index+1)] if SSH_TYPES[el]
       end
       raise PublicKeyError, "cannot determine key type"
     end
@@ -231,7 +238,7 @@ class SSHKey
 
   # SSH public key
   def ssh_public_key
-    [directives.join(",").strip, SSH_TYPES[type], Base64.encode64(ssh_public_key_conversion).gsub("\n", ""), comment].join(" ").strip
+    [directives.join(",").strip, SSH_TYPES.invert[type], Base64.encode64(ssh_public_key_conversion).gsub("\n", ""), comment].join(" ").strip
   end
 
   # SSH2 public key (RFC4716)
@@ -344,7 +351,7 @@ class SSHKey
   # For instance, the "ssh-rsa" string is encoded as the following byte array
   # [0, 0, 0, 7, 's', 's', 'h', '-', 'r', 's', 'a']
   def ssh_public_key_conversion
-    typestr = SSH_TYPES[type]
+    typestr = SSH_TYPES.invert[type]
     methods = SSH_CONVERSION[type]
     pubkey = key_object.public_key
     methods.inject([7].pack("N") + typestr) do |pubkeystr, m|
