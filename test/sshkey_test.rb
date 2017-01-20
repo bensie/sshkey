@@ -79,6 +79,11 @@ EOF
   SSH_PUBLIC_KEY2 = 'AAAAB3NzaC1yc2EAAAABIwAAAQEAxl6TpN7uFiY/JZ8qDnD7UrxDP+ABeh2PVg8Du1LEgXNk0+YWCeP5S6oHklqaWeDlbmAs1oHsBwCMAVpMa5tgONOLvz4JgwgkiqQEbKR8ofWJ+LADUElvqRVGmGiNEMLI6GJWeneL4sjmbb8d6U+M53c6iWG0si9XE5m7teBQSsCl0Tk3qMIkQGw5zpJeCXjZ8KpJhIJRYgexFkGgPlYRV+UYIhxpUW90t0Ra5i6JOFYwq98k5S/6SJIZQ/A9F4JNzwLw3eVxZj0yVHWxkGz1+TyELNY1kOyMxnZaqSfGzSQJTrnIXpdweVHuYh1LtOgedRQhCyiELeSMGwio1vRPKw=='
   SSH_PUBLIC_KEY3 = 'AAAAB3NzaC1kc3MAAACBALyVy5dwVwgL3CxXzsvo8DBh58qArQLBNIPW/f9pptmy7jD5QXzOw+12w0/z4lZ86ncoVutRMf44OABcX9ovhRl+luxB7jjpkVXy/p2ZaqPbeyTQUtdTmXa2y4n053Jd61VeMG+iLP7+viT+Ib96y9aVUYQfCrl5heBDUZ9cAFjdAAAAFQDFXnO7JJpFKwkeoor4GWGHtz0D2QAAAIEAqel0RUBO0MY5b3DZ69J/mRzUifN1O6twk4er2ph0JpryuUwZohLpcVZwqoGWmPQy/ZHmV1b3RtT9GWUa+HUqKdMhFVOx/iq1khVfLi83whjMMvXj3ecqd0yzGxGHnSsjVKefa2ywCLHrh4nlUVIaXI5gQpgMyVbMcromDe1WZzoAAACBAIwTRPAEcroqOzaebiVspFcmsXxDQ4wXQZQdho1ExW6FKS8s7/6pItmZYXTvJDwLXgq2/iK1fRRcKk2PJEaSuJR7WeNGsJKfWmQ2UbOhqA3wWLDazIZtcMKjFzD0hM4E8qgjHjMvKDE6WgT6SFP+tqx3nnh7pJWwsbGjSMQexpyR'
 
+  SSH_PUBLIC_KEY_ED25519   = 'AAAAC3NzaC1lZDI1NTE5AAAAIBrNsRCISAtKXV5OVxqV6unVcdis5Uh3oiC6B7CMB7HQ'
+  SSH_PUBLIC_KEY_ECDSA_256 = 'AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBHJFDZ5qymZfIzoJcxYeu3C9HjJ08QAbqR28C2zSMLwcb3ZzWdRApnj6wEgRvizsBmr9zyPKb2u5Rp0vjJtQcZo='
+  SSH_PUBLIC_KEY_ECDSA_384 = 'AAAAE2VjZHNhLXNoYTItbmlzdHAzODQAAAAIbmlzdHAzODQAAABhBP+GtUCOR8aW7xTtpkbJS0qqNZ98PgbUNtTFhE+Oe+khgoFMX+o0JG5bckVuvtkRl8dr+63kUK0QPTtzP9O5yixB9CYnB8CgCgYo1FCXZuJIImf12wW5nWKglrCH4kV1Qg=='
+  SSH_PUBLIC_KEY_ECDSA_521 = 'AAAAE2VjZHNhLXNoYTItbmlzdHA1MjEAAAAIbmlzdHA1MjEAAACFBACsunidnIZ77AjCHSDp/xknLGDW3M0Ia7nxLdImmp0XGbxtbwYm2ga5XUzV9dMO9wF9ICC3OuH6g9DtGOBNPru1PwFDjaPISGgm0vniEzWazLsvjJVLThOA3VyYLxmtjm0WfS+/DfxgWVS6oeCTnDjjoVVpwU/fDbUbYPPRZI84/hOGNA=='
+
   KEY1_MD5_FINGERPRINT = "2a:89:84:c9:29:05:d1:f8:49:79:1c:ba:73:99:eb:af"
   KEY2_MD5_FINGERPRINT = "3c:af:74:87:cc:cc:a1:12:05:1a:09:b7:7b:ce:ed:ce"
   KEY3_MD5_FINGERPRINT = "14:f6:6a:12:96:be:44:32:e6:3c:77:43:94:52:f5:7a"
@@ -311,17 +316,34 @@ EOF
     assert !SSHKey.valid_ssh_public_key?(invalid5)
   end
 
+  def test_ssh_public_key_validation_elliptic
+    assert SSHKey.valid_ssh_public_key?("ssh-ed25519 #{SSH_PUBLIC_KEY_ED25519} me@example.com")
+    assert SSHKey.valid_ssh_public_key?("ecdsa-sha2-nistp256 #{SSH_PUBLIC_KEY_ECDSA_256}")
+    assert SSHKey.valid_ssh_public_key?("ecdsa-sha2-nistp384 #{SSH_PUBLIC_KEY_ECDSA_384} me@example.com")
+    assert SSHKey.valid_ssh_public_key?(%Q{from="trusted.eng.cam.ac.uk",no-port-forwarding,no-pty ecdsa-sha2-nistp521 #{SSH_PUBLIC_KEY_ECDSA_521} me@example.com})
+
+    assert !SSHKey.valid_ssh_public_key?("ssh-ed25519 #{SSH_PUBLIC_KEY_ED25519}= me@example.com") # bad base64
+    assert !SSHKey.valid_ssh_public_key?("ssh-ed25519 #{SSH_PUBLIC_KEY_ECDSA_384} me@example.com") # mismatched key format
+    assert !SSHKey.valid_ssh_public_key?("ecdsa-sha2-nistp256 #{SSH_PUBLIC_KEY_ECDSA_384} me@example.com") # mismatched key format
+    assert !SSHKey.valid_ssh_public_key?("ssh-ed25519 asdf me@example.com") # gibberish key data
+    assert !SSHKey.valid_ssh_public_key?("ecdsa-sha2-nistp256 asdf me@example.com") # gibberish key data
+  end
+
   def test_ssh_public_key_validation_with_newlines
     expected1 = "ssh-rsa #{SSH_PUBLIC_KEY1}\n"
+    expected2 = "ssh-ed25519 #{SSH_PUBLIC_KEY_ED25519} me@example.com\n"
     invalid1  = "ssh-rsa #{SSH_PUBLIC_KEY1}\nme@example.com"
     invalid2  = "ssh-rsa #{SSH_PUBLIC_KEY1}\n me@example.com"
     invalid3  = "ssh-rsa #{SSH_PUBLIC_KEY1} \nme@example.com"
+    invalid4  = "ecdsa-sha2-nistp256 #{SSH_PUBLIC_KEY_ECDSA_256}\nme@example.com"
 
     assert SSHKey.valid_ssh_public_key?(expected1)
+    assert SSHKey.valid_ssh_public_key?(expected2)
 
     assert !SSHKey.valid_ssh_public_key?(invalid1)
     assert !SSHKey.valid_ssh_public_key?(invalid2)
     assert !SSHKey.valid_ssh_public_key?(invalid3)
+    assert !SSHKey.valid_ssh_public_key?(invalid4)
   end
 
   def test_ssh_public_key_bits
