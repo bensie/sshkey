@@ -124,7 +124,7 @@ class SSHKey
     private
 
     def unpacked_byte_array(ssh_type, encoded_key)
-      prefix = [7].pack("N") + ssh_type
+      prefix = [ssh_type.length].pack("N") + ssh_type
       decoded = Base64.decode64(encoded_key)
 
       # Base64 decoding is too permissive, so we should validate if encoding is correct
