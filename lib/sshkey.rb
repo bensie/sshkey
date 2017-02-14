@@ -1,10 +1,7 @@
-$:.unshift File.dirname(__FILE__)
-
 require 'openssl'
 require 'base64'
 require 'digest/md5'
 require 'digest/sha1'
-require 'sshkey/exception'
 
 class SSHKey
   SSH_TYPES = {
@@ -384,4 +381,6 @@ class SSHKey
       pubkeystr + [data.length].pack("N") + data
     end
   end
+
+  class PublicKeyError < StandardError; end
 end
