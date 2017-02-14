@@ -35,7 +35,8 @@ k = SSHKey.generate(
 Return an SSHKey object from an existing RSA or DSA private key (provided as a string).
 
 ```ruby
-k = SSHKey.new(File.read("~/.ssh/id_rsa"), comment: "foo@bar.com")
+f = File.read(File.expand_path("~/.ssh/id_rsa"))
+k = SSHKey.new(f, comment: "foo@bar.com")
 ```
 
 ### The SSHKey object
