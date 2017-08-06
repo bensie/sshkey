@@ -121,7 +121,7 @@ class SSHKey
     def ssh_public_key_to_ssh2_public_key(ssh_public_key, headers = nil)
       raise PublicKeyError, "invalid ssh public key" unless SSHKey.valid_ssh_public_key?(ssh_public_key)
 
-      source_format, source_key = parse_ssh_public_key(ssh_public_key)
+      _source_format, source_key = parse_ssh_public_key(ssh_public_key)
 
       # Add a 'Comment' Header Field unless others are explicitly passed in
       if source_comment = ssh_public_key.split(source_key)[1]

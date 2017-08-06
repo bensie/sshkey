@@ -261,9 +261,6 @@ EOF
     expected1 = SSH2_PUBLIC_KEY1
     expected2 = SSH2_PUBLIC_KEY2
     expected3 = SSH2_PUBLIC_KEY3
-    public_key1 = "ssh-rsa #{SSH_PUBLIC_KEY1} me@example.com"
-    public_key2 = "ssh-rsa #{SSH_PUBLIC_KEY2}"
-    public_key3 = "ssh-rsa #{SSH_PUBLIC_KEY3} 1024-bit DSA with provided comment"
 
     assert_equal expected1, @key1.ssh2_public_key
     assert_equal expected2, @key2.ssh2_public_key({})
