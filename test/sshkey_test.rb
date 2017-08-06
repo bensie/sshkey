@@ -261,9 +261,6 @@ EOF
     expected1 = SSH2_PUBLIC_KEY1
     expected2 = SSH2_PUBLIC_KEY2
     expected3 = SSH2_PUBLIC_KEY3
-    public_key1 = "ssh-rsa #{SSH_PUBLIC_KEY1} me@example.com"
-    public_key2 = "ssh-rsa #{SSH_PUBLIC_KEY2}"
-    public_key3 = "ssh-rsa #{SSH_PUBLIC_KEY3} 1024-bit DSA with provided comment"
 
     assert_equal expected1, @key1.ssh2_public_key
     assert_equal expected2, @key2.ssh2_public_key({})
@@ -385,7 +382,7 @@ EOF
     assert_equal(SSH2_PUBLIC_KEY2, SSHKey.ssh_public_key_to_ssh2_public_key(public_key2))
     assert_equal(SSH2_PUBLIC_KEY2, SSHKey.ssh_public_key_to_ssh2_public_key(public_key2, {}))
     assert_equal(SSH2_PUBLIC_KEY3, SSHKey.ssh_public_key_to_ssh2_public_key(public_key3, {'Comment' => '1024-bit DSA with provided comment', 'x-private-use-header' => 'some value that is long enough to go to wrap around to a new line.'}))
-end
+  end
 
   def test_exponent
     assert_equal 35, @key1.key_object.e.to_i
