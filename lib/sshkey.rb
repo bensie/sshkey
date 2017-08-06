@@ -35,7 +35,7 @@ class SSHKey
       default_bits = type == "rsa" ? 2048 : 1024
 
       bits   = options[:bits] || default_bits
-      cipher = OpenSSL::Cipher::Cipher.new("AES-128-CBC") if options[:passphrase]
+      cipher = OpenSSL::Cipher.new("AES-128-CBC") if options[:passphrase]
 
       case type.downcase
       when "rsa" then new(OpenSSL::PKey::RSA.generate(bits).to_pem(cipher, options[:passphrase]), options)
@@ -231,7 +231,7 @@ class SSHKey
   # If no passphrase is set, returns the unencrypted private key
   def encrypted_private_key
     return private_key unless passphrase
-    key_object.to_pem(OpenSSL::Cipher::Cipher.new("AES-128-CBC"), passphrase)
+    key_object.to_pem(OpenSSL::Cipher.new("AES-128-CBC"), passphrase)
   end
 
   # Fetch the RSA/DSA public key
