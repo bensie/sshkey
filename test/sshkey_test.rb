@@ -144,6 +144,21 @@ EOF
 +-----------------+
 EOF
 
+  KEY1_SSHFP = <<-EOF.rstrip
+localhost IN SSHFP 1 1 e4f979f2fed6be2def2ec2faaaf8b01734fe0dc0
+localhost IN SSHFP 1 2 8ecde59457a1968c427ec56e0f0e71bb736d4bd00e03171763c58beaf90322db
+EOF
+
+  KEY2_SSHFP = <<-EOF.rstrip
+localhost IN SSHFP 1 1 9a52782b6bcb39b785ed908a2862aab39888e607
+localhost IN SSHFP 1 2 db77ffe94fcb771205c7509014a1f2970efa9fe2c81d8a18e2747129c168a2ce
+EOF
+
+  KEY3_SSHFP = <<-EOF.rstrip
+localhost IN SSHFP 2 1 1568c672ac18d1fcaba2b7b58cd1fe8fb9aea947
+localhost IN SSHFP 2 2 98fa843d094e3c6391ad326b535eec3dac758cea9ebad6636ba30eb0521c6bef
+EOF
+
   SSH2_PUBLIC_KEY1 = <<-EOF.rstrip
 ---- BEGIN SSH2 PUBLIC KEY ----
 Comment: me@example.com
@@ -349,6 +364,15 @@ EOF
     assert !SSHKey.valid_ssh_public_key?(invalid4)
   end
 
+  def test_ssh_public_key_sshfp
+    assert_equal KEY1_SSHFP, SSHKey.sshfp("localhost", "ssh-rsa #{SSH_PUBLIC_KEY1}\n")
+    assert_equal KEY2_SSHFP, SSHKey.sshfp("localhost", "ssh-rsa #{SSH_PUBLIC_KEY2}\n")
+    assert_equal KEY3_SSHFP, SSHKey.sshfp("localhost", "ssh-dss #{SSH_PUBLIC_KEY3}\n")
+    assert_equal KEY1_SSHFP, SSHKey.sshfp("localhost", SSH_PRIVATE_KEY1)
+    assert_equal KEY2_SSHFP, SSHKey.sshfp("localhost", SSH_PRIVATE_KEY2)
+    assert_equal KEY3_SSHFP, SSHKey.sshfp("localhost", SSH_PRIVATE_KEY3)
+  end
+
   def test_ssh_public_key_bits
     expected1 = "ssh-rsa #{SSH_PUBLIC_KEY1} me@example.com"
     expected2 = "ssh-rsa #{SSH_PUBLIC_KEY2} me@example.com"
@@ -448,6 +472,13 @@ EOF
     assert_equal KEY2_RANDOMART, @key2.randomart
     assert_equal KEY3_RANDOMART, @key3.randomart
   end
+
+  def test_sshfp
+    assert_equal KEY1_SSHFP, @key1.sshfp("localhost")
+    assert_equal KEY2_SSHFP, @key2.sshfp("localhost")
+    assert_equal KEY3_SSHFP, @key3.sshfp("localhost")
+  end
+
 end
 
 class SSHKeyEncryptedTest < Test::Unit::TestCase

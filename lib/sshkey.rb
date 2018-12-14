@@ -2,6 +2,7 @@ require 'openssl'
 require 'base64'
 require 'digest/md5'
 require 'digest/sha1'
+require 'digest/sha2'
 
 class SSHKey
   SSH_TYPES = {
@@ -11,6 +12,13 @@ class SSHKey
     "ecdsa-sha2-nistp256" => "ecdsa",
     "ecdsa-sha2-nistp384" => "ecdsa",
     "ecdsa-sha2-nistp521" => "ecdsa",
+  }
+
+  SSHFP_TYPES = {
+    "rsa"     => 1,
+    "dsa"     => 2,
+    "ecdsa"   => 3,
+    "ed25519" => 4,
   }
   SSH_CONVERSION = {"rsa" => ["e", "n"], "dsa" => ["p", "q", "g", "pub_key"]}
   SSH2_LINE_LENGTH = 70 # +1 (for line wrap '/' character) must be <= 72
@@ -112,6 +120,16 @@ class SSHKey
       end
     end
 
+    # SSHFP records for the given SSH key
+    def sshfp(hostname, key)
+      if key.match(/PRIVATE/)
+        new(key).sshfp hostname
+      else
+        type, encoded_key = parse_ssh_public_key(key)
+        format_sshfp_record(hostname, SSH_TYPES[type], Base64.decode64(encoded_key))
+      end
+    end
+
     # Convert an existing SSH public key to SSH2 (RFC4716) public key
     #
     # ==== Parameters
@@ -133,6 +151,13 @@ class SSHKey
       ssh2_key << header_fields unless header_fields.nil?
       ssh2_key << source_key.scan(/.{1,#{SSH2_LINE_LENGTH}}/).join("\n")
       ssh2_key << "\n---- END SSH2 PUBLIC KEY ----"
+    end
+
+    def format_sshfp_record(hostname, type, key)
+      [[Digest::SHA1, 1], [Digest::SHA256, 2]].map { |f, num|
+        fpr = f.hexdigest(key)
+        "#{hostname} IN SSHFP #{SSHFP_TYPES[type]} #{num} #{fpr}"
+      }.join("\n")
     end
 
     private
@@ -339,6 +364,10 @@ class SSHKey
     end
     output << "+#{"-" * fieldsize_x}+"
     output
+  end
+
+  def sshfp(hostname)
+    SSHKey.format_sshfp_record(hostname, @type, ssh_public_key_conversion)
   end
 
   def directives=(directives)
