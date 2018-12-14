@@ -10,7 +10,7 @@ Tested / supported on CRuby 1.9.3+ and JRuby.
 
 ## Installation
 
-	gem install sshkey
+    gem install sshkey
 
 ## Usage
 
@@ -91,6 +91,7 @@ k.ssh_public_key
 k.ssh2_public_key
 # => "---- BEGIN SSH2 PUBLIC KEY ----\nComment: me@me.com\nAAAAB3NzaC1yc2EAAAADAQABAAABAQC9HuXvYJPtQE/o/7TYi63yAopsrJ6TP+lDGdyQ+n\nVVp+5ojAIy9h8/h99UlNxjkiFT2YhI3Fl/pgNDRO4PVo6tlgb3CwiAZjSdeE5RnF79Dkj5\nXsM4j+FLMoXtbRw0K9ok9RKjz6ygIs1JDmaOdXexFnq4nAYU3fSLUa6WoccqTHe8bFuJoA\nv1gbnx09Js8YcVMD96mpTJ3V/MK5YfIv10dbtrDhGug3IS1V2J+0BB9orbQja554N+4S0I\n9rFBgVCpvPmQqddDHd/AdGkLv/zjEfGytjnvp68bEfDinkQkPfuxw01yd5MbcvLv39VVIC\nWtKbqW263HT5LvSxwKorR7\n---- END SSH2 PUBLIC KEY ----"
 ```
+
 #### Bit length
 
 Determine the strength of the key in bits as an integer.
@@ -180,7 +181,7 @@ SSHKey.valid_ssh_public_key? "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC9HuXvYJPtQE
 
 #### Bit length
 
-Determine the strength of the key in bits as an integer.  Returns `SSHKey::PublicKeyError` if bits cannot be determined.
+Determine the strength of the key in bits as an integer. Returns `SSHKey::PublicKeyError` if bits cannot be determined.
 
 ```ruby
 SSHKey.ssh_public_key_bits "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC9HuXvYJPtQE/o/7TYi63yAopsrJ6TP+lDGdyQ+nVVp+5ojAIy9h8/h99UlNxjkiFT2YhI3Fl/pgNDRO4PVo6tlgb3CwiAZjSdeE5RnF79Dkj5XsM4j+FLMoXtbRw0K9ok9RKjz6ygIs1JDmaOdXexFnq4nAYU3fSLUa6WoccqTHe8bFuJoAv1gbnx09Js8YcVMD96mpTJ3V/MK5YfIv10dbtrDhGug3IS1V2J+0BB9orbQja554N+4S0I9rFBgVCpvPmQqddDHd/AdGkLv/zjEfGytjnvp68bEfDinkQkPfuxw01yd5MbcvLv39VVICWtKbqW263HT5LvSxwKorR7"
@@ -203,7 +204,7 @@ SSHKey.sha256_fingerprint "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC9HuXvYJPtQE/o/
 
 #### Convert to SSH2 Public Key
 
-Convert an existing SSH Public Key into an SSH2 Public key.  Returns `SSHKey::PublicKeyError` if a valid key cannot be generated.
+Convert an existing SSH Public Key into an SSH2 Public key. Returns `SSHKey::PublicKeyError` if a valid key cannot be generated.
 
 ```ruby
 SSHKey.ssh_public_key_to_ssh2_public_key "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC9HuXvYJPtQE/o/7TYi63yAopsrJ6TP+lDGdyQ+nVVp+5ojAIy9h8/h99UlNxjkiFT2YhI3Fl/pgNDRO4PVo6tlgb3CwiAZjSdeE5RnF79Dkj5XsM4j+FLMoXtbRw0K9ok9RKjz6ygIs1JDmaOdXexFnq4nAYU3fSLUa6WoccqTHe8bFuJoAv1gbnx09Js8YcVMD96mpTJ3V/MK5YfIv10dbtrDhGug3IS1V2J+0BB9orbQja554N+4S0I9rFBgVCpvPmQqddDHd/AdGkLv/zjEfGytjnvp68bEfDinkQkPfuxw01yd5MbcvLv39VVICWtKbqW263HT5LvSxwKorR7 me@me.com"
@@ -212,4 +213,4 @@ SSHKey.ssh_public_key_to_ssh2_public_key "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQ
 
 ## Copyright
 
-Copyright (c) 2011-2016 James Miller
+Copyright (c) 2011-2018 James Miller

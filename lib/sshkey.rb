@@ -367,7 +367,7 @@ class SSHKey
   end
 
   def sshfp(hostname)
-    SSHKey.format_sshfp_record(hostname, @type, ssh_public_key_conversion)
+    self.class.format_sshfp_record(hostname, @type, ssh_public_key_conversion)
   end
 
   def directives=(directives)
