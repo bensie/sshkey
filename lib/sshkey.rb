@@ -67,7 +67,7 @@ class SSHKey
         when "ssh-rsa", "ssh-dss"
           sections.size == SSH_CONVERSION[SSH_TYPES[ssh_type]].size
         when "ssh-ed25519"
-          sections.size == 1 && sections[0].num_bytes == 32 # https://tools.ietf.org/id/draft-bjh21-ssh-ed25519-00.html#rfc.section.4
+          sections.size == 1                                # https://tools.ietf.org/id/draft-bjh21-ssh-ed25519-00.html#rfc.section.4
         when "ecdsa-sha2-nistp256", "ecdsa-sha2-nistp384", "ecdsa-sha2-nistp521"
           sections.size == 2                                # https://tools.ietf.org/html/rfc5656#section-3.1
         else
@@ -171,16 +171,26 @@ class SSHKey
         raise PublicKeyError, "validation error"
       end
 
+      byte_count = 0
       data = []
       until decoded.empty?
         front = decoded.slice!(0,4)
         size = front.unpack("N").first
         segment = decoded.slice!(0, size)
+        byte_count += segment.length
         unless front.length == 4 && segment.length == size
           raise PublicKeyError, "byte array too short"
         end
         data << OpenSSL::BN.new(segment, 2)
       end
+
+
+      if ssh_type == "ssh-ed25519"
+        unless byte_count == 32
+          raise PublicKeyError, "validation error, ed25519 key length not OK"
+        end
+      end
+
       return data
     end
 
