@@ -383,6 +383,9 @@ EOF
     expected4 = "ssh-rsa #{SSH_PUBLIC_KEY1}"
     expected5 = %Q{from="trusted.eng.cam.ac.uk",no-port-forwarding,no-pty ssh-rsa #{SSH_PUBLIC_KEY1}}
     invalid1  = "#{SSH_PUBLIC_KEY1} me@example.com"
+    ecdsa256 = "ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBHJFDZ5qymZfIzoJcxYeu3C9HjJ08QAbqR28C2zSMLwcb3ZzWdRApnj6wEgRvizsBmr9zyPKb2u5Rp0vjJtQcZo="
+    ecdsa384 = "ecdsa-sha2-nistp384 AAAAE2VjZHNhLXNoYTItbmlzdHAzODQAAAAIbmlzdHAzODQAAABhBP+GtUCOR8aW7xTtpkbJS0qqNZ98PgbUNtTFhE+Oe+khgoFMX+o0JG5bckVuvtkRl8dr+63kUK0QPTtzP9O5yixB9CYnB8CgCgYo1FCXZuJIImf12wW5nWKglrCH4kV1Qg=="
+    ecdsa521 = "ecdsa-sha2-nistp521 AAAAE2VjZHNhLXNoYTItbmlzdHA1MjEAAAAIbmlzdHA1MjEAAACFBACsunidnIZ77AjCHSDp/xknLGDW3M0Ia7nxLdImmp0XGbxtbwYm2ga5XUzV9dMO9wF9ICC3OuH6g9DtGOBNPru1PwFDjaPISGgm0vniEzWazLsvjJVLThOA3VyYLxmtjm0WfS+/DfxgWVS6oeCTnDjjoVVpwU/fDbUbYPPRZI84/hOGNA=="
 
     assert_equal 2048, SSHKey.ssh_public_key_bits(expected1)
     assert_equal 2048, SSHKey.ssh_public_key_bits(expected2)
@@ -390,6 +393,9 @@ EOF
     assert_equal 2048, SSHKey.ssh_public_key_bits(expected4)
     assert_equal 2048, SSHKey.ssh_public_key_bits(expected5)
     assert_equal 512,  SSHKey.ssh_public_key_bits(SSHKey.generate(:bits => 512).ssh_public_key)
+    assert_equal 256, SSHKey.ssh_public_key_bits(ecdsa256)
+    assert_equal 384, SSHKey.ssh_public_key_bits(ecdsa384)
+    assert_equal 521, SSHKey.ssh_public_key_bits(ecdsa521)
 
     exception1 = assert_raises(SSHKey::PublicKeyError) { SSHKey.ssh_public_key_bits( expected1.gsub('A','.') ) }
     exception2 = assert_raises(SSHKey::PublicKeyError) { SSHKey.ssh_public_key_bits( expected1[0..-20] ) }
