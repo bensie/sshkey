@@ -6,7 +6,7 @@ Generate private and public SSH keys (RSA and DSA supported) using pure Ruby.
 
 ## Requirements
 
-Tested / supported on CRuby 1.9.3+ and JRuby.
+Tested / supported on CRuby 2.0.0+ and JRuby.
 
 ## Installation
 
