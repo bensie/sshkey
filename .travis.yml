@@ -19,4 +19,4 @@ matrix:
     - rvm: jruby-head
 
 sudo: required
-dist: trusty
+dist: xenial
