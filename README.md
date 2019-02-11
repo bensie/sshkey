@@ -213,4 +213,4 @@ SSHKey.ssh_public_key_to_ssh2_public_key "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQ
 
 ## Copyright
 
-Copyright (c) 2011-2018 James Miller
+Copyright (c) 2011-2019 James Miller
