@@ -204,7 +204,7 @@ class SSHKey
 
     def parse_ssh_public_key(public_key)
       # lines starting with a '#' and empty lines are ignored as comments (as in ssh AuthorizedKeysFile)
-      public_key = public_key.gsub(/^#.*$/,'')
+      public_key = public_key.gsub(/^#.*$/, '')
       public_key = public_key.strip # leading and trailing whitespaces wiped out
 
       raise PublicKeyError, "newlines are not permitted between key data" if public_key =~ /\n(?!$)/
