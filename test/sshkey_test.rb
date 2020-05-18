@@ -367,6 +367,19 @@ EOF
     assert !SSHKey.valid_ssh_public_key?(invalid4)
   end
 
+  def test_ssh_public_key_validation_with_comments
+    expected1 = "# Comment\nssh-rsa #{SSH_PUBLIC_KEY1}"
+    expected2 = "# First comment\n\n# Second comment\n\nssh-ed25519 #{SSH_PUBLIC_KEY_ED25519} me@example.com"
+    invalid1  = "No starting hash # Valid comment\nssh-rsa #{SSH_PUBLIC_KEY1} me@example.com"
+    invalid2  = "# First comment\n\nSecond comment without hash\n\necdsa-sha2-nistp256 #{SSH_PUBLIC_KEY_ECDSA_256}\nme@example.com"
+
+    assert SSHKey.valid_ssh_public_key?(expected1)
+    assert SSHKey.valid_ssh_public_key?(expected2)
+
+    assert !SSHKey.valid_ssh_public_key?(invalid1)
+    assert !SSHKey.valid_ssh_public_key?(invalid2)
+  end
+
   def test_ssh_public_key_sshfp
     assert_equal KEY1_SSHFP, SSHKey.sshfp("localhost", "ssh-rsa #{SSH_PUBLIC_KEY1}\n")
     assert_equal KEY2_SSHFP, SSHKey.sshfp("localhost", "ssh-rsa #{SSH_PUBLIC_KEY2}\n")
