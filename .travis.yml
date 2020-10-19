@@ -11,11 +11,13 @@ rvm:
   - ruby-head
   - jruby
   - jruby-head
+  - truffleruby-head
 
 matrix:
   allow_failures:
     - rvm: ruby-head
     - rvm: jruby-head
+    - rvm: truffleruby-head
 
 sudo: required
 dist: xenial
