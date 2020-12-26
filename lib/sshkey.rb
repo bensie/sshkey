@@ -83,9 +83,27 @@ class SSHKey
     #
     # ==== Parameters
     # * ssh_public_key<~String> - "ssh-rsa AAAAB3NzaC1yc2EA...."
+    # * ssh_public_key<~String> - "ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTY...."
     #
     def ssh_public_key_bits(ssh_public_key)
-      unpacked_byte_array( *parse_ssh_public_key(ssh_public_key) ).last.num_bytes * 8
+      ssh_type, encoded_key = parse_ssh_public_key(ssh_public_key)
+      sections = unpacked_byte_array(ssh_type, encoded_key)
+
+      case ssh_type
+      when "ssh-rsa", "ssh-dss", "ssh-ed25519"
+        sections.last.num_bytes * 8
+
+      when "ecdsa-sha2-nistp256", "ecdsa-sha2-nistp384", "ecdsa-sha2-nistp521"
+        raise PublicKeyError, "invalid ECDSA key" unless sections.count == 2
+
+        # https://tools.ietf.org/html/rfc5656#section-3.1
+        identifier = sections[0].to_s(2)
+        q = sections[1].to_s(2)
+        ecdsa_bits(ssh_type, identifier, q)
+
+      else
+        raise PublicKeyError, "unsupported key type #{ssh_type}"
+      end
     end
 
     # Fingerprints
@@ -192,6 +210,48 @@ class SSHKey
       end
 
       return data
+    end
+
+    def ecdsa_bits(ssh_type, identifier, q)
+      raise PublicKeyError, "invalid ssh type" unless ssh_type == "ecdsa-sha2-#{identifier}"
+
+      len_q = q.length
+
+      compression_octet = q.slice(0, 1)
+      if compression_octet == "\x04"
+        # Point compression is off
+        # Summary from https://www.secg.org/sec1-v2.pdf "2.3.3  Elliptic-Curve-Point-to-Octet-String Conversion"
+        # - the leftmost octet indicates that point compression is off
+        #   (first octet 0x04 as specified in "3.3. Output M = 04 base 16 ‖ X ‖ Y.")
+        # - the remainder of the octet string contains the x-coordinate followed by the y-coordinate.
+        len_x = (len_q - 1) / 2
+
+      else
+        # Point compression is on
+        # Summary from https://www.secg.org/sec1-v2.pdf "2.3.3  Elliptic-Curve-Point-to-Octet-String Conversion"
+        # - the compressed y-coordinate is recovered from the leftmost octet
+        # - the x-coordinate is recovered from the remainder of the octet string
+        raise PublicKeyError, "invalid compression octet" unless compression_octet == "\x02" || compression_octet == "\x03"
+        len_x = len_q - 1
+      end
+
+      # https://www.secg.org/sec2-v2.pdf "2.1  Properties of Elliptic Curve Domain Parameters over Fp" defines
+      # five discrete bit lengths: 192, 224, 256, 384, 521
+      # These bit lengths can be ascertained from the length of the packed x-coordinate.
+      # Alternatively, these bit lengths can be derived from their associated prime constants using Math.log2(prime).ceil
+      # against the prime constants defined in https://www.secg.org/sec2-v2.pdf
+      case len_x
+      when 24 then bits = 192
+      when 28 then bits = 224
+      when 32 then bits = 256
+      when 48 then bits = 384
+      when 66 then bits = 521
+      else
+        raise PublicKeyError, "invalid x-coordinate length #{len_x}"
+      end
+
+      raise PublicKeyError, "invalid identifier #{identifier}" unless identifier =~ /#{bits}/
+      return bits
     end
 
     def decoded_key(key)
