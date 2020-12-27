@@ -14,7 +14,7 @@ class OpenSSL::PKey::EC
     when "secp384r1"  then "nistp384"
     when "secp521r1"  then "nistp521"
     else
-      raise "Unknown curve name: #{group.curve_name}"
+      raise "Unknown curve name: #{public_key.group.curve_name}"
     end
   end
 
