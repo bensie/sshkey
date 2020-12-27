@@ -1,13 +1,25 @@
-$:.unshift File.dirname(__FILE__)
-
 require 'openssl'
 require 'base64'
 require 'digest/md5'
 require 'digest/sha1'
-require 'sshkey/exception'
+require 'digest/sha2'
 
 class SSHKey
-  SSH_TYPES      = {"rsa" => "ssh-rsa", "dsa" => "ssh-dss", "ec" => "ecdsa-sha2-nistp256"}
+  SSH_TYPES = {
+    "ssh-rsa" => "rsa",
+    "ssh-dss" => "dsa",
+    "ssh-ed25519" => "ed25519",
+    "ecdsa-sha2-nistp256" => "ecdsa",
+    "ecdsa-sha2-nistp384" => "ecdsa",
+    "ecdsa-sha2-nistp521" => "ecdsa",
+  }
+
+  SSHFP_TYPES = {
+    "rsa"     => 1,
+    "dsa"     => 2,
+    "ecdsa"   => 3,
+    "ed25519" => 4,
+  }
   SSH_CONVERSION = {"rsa" => ["e", "n"], "dsa" => ["p", "q", "g", "pub_key"], "ec" => []}
   SSH2_LINE_LENGTH = 70 # +1 (for line wrap '/' character) must be <= 72
 
@@ -31,7 +43,7 @@ class SSHKey
       default_bits = type == "rsa" ? 2048 : 1024
 
       bits   = options[:bits] || default_bits
-      cipher = OpenSSL::Cipher::Cipher.new("AES-128-CBC") if options[:passphrase]
+      cipher = OpenSSL::Cipher.new("AES-128-CBC") if options[:passphrase]
 
       case type.downcase
       when "rsa" then new(OpenSSL::PKey::RSA.generate(bits).to_pem(cipher, options[:passphrase]), options)
@@ -51,7 +63,17 @@ class SSHKey
     #
     def valid_ssh_public_key?(ssh_public_key)
       ssh_type, encoded_key = parse_ssh_public_key(ssh_public_key)
-      SSH_CONVERSION[SSH_TYPES.invert[ssh_type]].size == unpacked_byte_array(ssh_type, encoded_key).size
+      sections = unpacked_byte_array(ssh_type, encoded_key)
+      case ssh_type
+        when "ssh-rsa", "ssh-dss"
+          sections.size == SSH_CONVERSION[SSH_TYPES[ssh_type]].size
+        when "ssh-ed25519"
+          sections.size == 1                                # https://tools.ietf.org/id/draft-bjh21-ssh-ed25519-00.html#rfc.section.4
+        when "ecdsa-sha2-nistp256", "ecdsa-sha2-nistp384", "ecdsa-sha2-nistp521"
+          sections.size == 2                                # https://tools.ietf.org/html/rfc5656#section-3.1
+        else
+          false
+      end
     rescue
       false
     end
@@ -99,6 +121,16 @@ class SSHKey
       end
     end
 
+    # SSHFP records for the given SSH key
+    def sshfp(hostname, key)
+      if key.match(/PRIVATE/)
+        new(key).sshfp hostname
+      else
+        type, encoded_key = parse_ssh_public_key(key)
+        format_sshfp_record(hostname, SSH_TYPES[type], Base64.decode64(encoded_key))
+      end
+    end
+
     # Convert an existing SSH public key to SSH2 (RFC4716) public key
     #
     # ==== Parameters
@@ -108,7 +140,7 @@ class SSHKey
     def ssh_public_key_to_ssh2_public_key(ssh_public_key, headers = nil)
       raise PublicKeyError, "invalid ssh public key" unless SSHKey.valid_ssh_public_key?(ssh_public_key)
 
-      source_format, source_key = parse_ssh_public_key(ssh_public_key)
+      _source_format, source_key = parse_ssh_public_key(ssh_public_key)
 
       # Add a 'Comment' Header Field unless others are explicitly passed in
       if source_comment = ssh_public_key.split(source_key)[1]
@@ -122,10 +154,17 @@ class SSHKey
       ssh2_key << "\n---- END SSH2 PUBLIC KEY ----"
     end
 
+    def format_sshfp_record(hostname, type, key)
+      [[Digest::SHA1, 1], [Digest::SHA256, 2]].map { |f, num|
+        fpr = f.hexdigest(key)
+        "#{hostname} IN SSHFP #{SSHFP_TYPES[type]} #{num} #{fpr}"
+      }.join("\n")
+    end
+
     private
 
     def unpacked_byte_array(ssh_type, encoded_key)
-      prefix = [7].pack("N") + ssh_type
+      prefix = [ssh_type.length].pack("N") + ssh_type
       decoded = Base64.decode64(encoded_key)
 
       # Base64 decoding is too permissive, so we should validate if encoding is correct
@@ -133,16 +172,26 @@ class SSHKey
         raise PublicKeyError, "validation error"
       end
 
+      byte_count = 0
       data = []
       until decoded.empty?
         front = decoded.slice!(0,4)
         size = front.unpack("N").first
         segment = decoded.slice!(0, size)
+        byte_count += segment.length
         unless front.length == 4 && segment.length == size
           raise PublicKeyError, "byte array too short"
         end
         data << OpenSSL::BN.new(segment, 2)
       end
+
+
+      if ssh_type == "ssh-ed25519"
+        unless byte_count == 32
+          raise PublicKeyError, "validation error, ed25519 key length not OK"
+        end
+      end
+
       return data
     end
 
@@ -155,11 +204,15 @@ class SSHKey
     end
 
     def parse_ssh_public_key(public_key)
+      # lines starting with a '#' and empty lines are ignored as comments (as in ssh AuthorizedKeysFile)
+      public_key = public_key.gsub(/^#.*$/, '')
+      public_key = public_key.strip # leading and trailing whitespaces wiped out
+
       raise PublicKeyError, "newlines are not permitted between key data" if public_key =~ /\n(?!$)/
 
       parsed = public_key.split(" ")
       parsed.each_with_index do |el, index|
-        return parsed[index..(index+1)] if SSH_TYPES.invert[el]
+        return parsed[index..(index+1)] if SSH_TYPES[el]
       end
       raise PublicKeyError, "cannot determine key type"
     end
@@ -232,7 +285,7 @@ class SSHKey
   # If no passphrase is set, returns the unencrypted private key
   def encrypted_private_key
     return private_key unless passphrase
-    key_object.to_pem(OpenSSL::Cipher::Cipher.new("AES-128-CBC"), passphrase)
+    key_object.to_pem(OpenSSL::Cipher.new("AES-128-CBC"), passphrase)
   end
 
   # Fetch the public key (PEM format)
@@ -256,7 +309,7 @@ class SSHKey
 
   # SSH public key
   def ssh_public_key
-    [directives.join(",").strip, SSH_TYPES[type], Base64.encode64(ssh_public_key_conversion).gsub("\n", ""), comment].join(" ").strip
+    [directives.join(",").strip, SSH_TYPES.invert[type], Base64.encode64(ssh_public_key_conversion).gsub("\n", ""), comment].join(" ").strip
   end
 
   # SSH2 public key (RFC4716)
@@ -352,6 +405,10 @@ class SSHKey
     output
   end
 
+  def sshfp(hostname)
+    self.class.format_sshfp_record(hostname, @type, ssh_public_key_conversion)
+  end
+
   def directives=(directives)
     @directives = Array[directives].flatten.compact
   end
@@ -369,7 +426,7 @@ class SSHKey
   # For instance, the "ssh-rsa" string is encoded as the following byte array
   # [0, 0, 0, 7, 's', 's', 'h', '-', 'r', 's', 'a']
   def ssh_public_key_conversion
-    typestr = SSH_TYPES[type]
+    typestr = SSH_TYPES.invert[type]
     methods = SSH_CONVERSION[type]
     pubkey = key_object.public_key
     methods.inject([7].pack("N") + typestr) do |pubkeystr, m|
@@ -392,4 +449,6 @@ class SSHKey
       pubkeystr + [data.length].pack("N") + data
     end
   end
+
+  class PublicKeyError < StandardError; end
 end
