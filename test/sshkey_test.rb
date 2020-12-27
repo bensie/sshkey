@@ -292,7 +292,7 @@ EOF
   def test_generator_with_type
     assert_equal "rsa", SSHKey.generate(:type => "rsa").type
     assert_equal "dsa", SSHKey.generate(:type => "dsa").type
-    assert_equal "ec", SSHKey.generate(:type => "ec").type
+    assert_equal "ecdsa", SSHKey.generate(:type => "ecdsa").type
   end
 
   def test_generator_with_passphrase
