@@ -141,6 +141,17 @@ EOF
   SSH_PUBLIC_KEY_ECDSA_384 = 'AAAAE2VjZHNhLXNoYTItbmlzdHAzODQAAAAIbmlzdHAzODQAAABhBP+GtUCOR8aW7xTtpkbJS0qqNZ98PgbUNtTFhE+Oe+khgoFMX+o0JG5bckVuvtkRl8dr+63kUK0QPTtzP9O5yixB9CYnB8CgCgYo1FCXZuJIImf12wW5nWKglrCH4kV1Qg=='
   SSH_PUBLIC_KEY_ECDSA_521 = 'AAAAE2VjZHNhLXNoYTItbmlzdHA1MjEAAAAIbmlzdHA1MjEAAACFBACsunidnIZ77AjCHSDp/xknLGDW3M0Ia7nxLdImmp0XGbxtbwYm2ga5XUzV9dMO9wF9ICC3OuH6g9DtGOBNPru1PwFDjaPISGgm0vniEzWazLsvjJVLThOA3VyYLxmtjm0WfS+/DfxgWVS6oeCTnDjjoVVpwU/fDbUbYPPRZI84/hOGNA=='
 
+  SSH_PUBLIC_KEY_ED25519        = 'AAAAC3NzaC1lZDI1NTE5AAAAIBrNsRCISAtKXV5OVxqV6unVcdis5Uh3oiC6B7CMB7HQ'
+  SSH_PUBLIC_KEY_ED25519_0_BYTE = 'AAAAC3NzaC1lZDI1NTE5AAAAIADK9x9t3yQQH7h4OEJpUa7l2j7mcmKf4LAsNXHxNbSm'
+
+  SSH_PUBLIC_KEY_ECDSA_256 = 'AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBHJFDZ5qymZfIzoJcxYeu3C9HjJ08QAbqR28C2zSMLwcb3ZzWdRApnj6wEgRvizsBmr9zyPKb2u5Rp0vjJtQcZo='
+  SSH_PUBLIC_KEY_ECDSA_384 = 'AAAAE2VjZHNhLXNoYTItbmlzdHAzODQAAAAIbmlzdHAzODQAAABhBP+GtUCOR8aW7xTtpkbJS0qqNZ98PgbUNtTFhE+Oe+khgoFMX+o0JG5bckVuvtkRl8dr+63kUK0QPTtzP9O5yixB9CYnB8CgCgYo1FCXZuJIImf12wW5nWKglrCH4kV1Qg=='
+  SSH_PUBLIC_KEY_ECDSA_521 = 'AAAAE2VjZHNhLXNoYTItbmlzdHA1MjEAAAAIbmlzdHA1MjEAAACFBACsunidnIZ77AjCHSDp/xknLGDW3M0Ia7nxLdImmp0XGbxtbwYm2ga5XUzV9dMO9wF9ICC3OuH6g9DtGOBNPru1PwFDjaPISGgm0vniEzWazLsvjJVLThOA3VyYLxmtjm0WfS+/DfxgWVS6oeCTnDjjoVVpwU/fDbUbYPPRZI84/hOGNA=='
+
+  SSH_PUBLIC_KEY_ECDSA_256_COMPRESSED = 'AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAAAhA+YNpJJrrUsu5OLLvqGX5pAH3+x6/yEFU2AYdxb54Jk8'
+  SSH_PUBLIC_KEY_ECDSA_384_COMPRESSED = 'AAAAE2VjZHNhLXNoYTItbmlzdHAzODQAAAAIbmlzdHAzODQAAAAxAgMhp0cNvtzncxXF0W5nrkBCTrxJIcYqUTX4RcKWIM74FfxizmWJqP/C+looEz6dLQ=='
+  SSH_PUBLIC_KEY_ECDSA_521_COMPRESSED = 'AAAAE2VjZHNhLXNoYTItbmlzdHA1MjEAAAAIbmlzdHA1MjEAAABDAgDoeNR4bndT24BosNaTKCLOALjL6tXrpNHn0HJzHO5z30L4SvH0Gz9jvAiqehNHOgmK3/bFbwLVW1W4TJbNsp8BVA=='
+
   KEY1_MD5_FINGERPRINT = "2a:89:84:c9:29:05:d1:f8:49:79:1c:ba:73:99:eb:af"
   KEY2_MD5_FINGERPRINT = "3c:af:74:87:cc:cc:a1:12:05:1a:09:b7:7b:ce:ed:ce"
   KEY3_MD5_FINGERPRINT = "14:f6:6a:12:96:be:44:32:e6:3c:77:43:94:52:f5:7a"
@@ -383,9 +394,6 @@ EOF
     expected1 = SSH2_PUBLIC_KEY1
     expected2 = SSH2_PUBLIC_KEY2
     expected3 = SSH2_PUBLIC_KEY3
-    public_key1 = "ssh-rsa #{SSH_PUBLIC_KEY1} me@example.com"
-    public_key2 = "ssh-rsa #{SSH_PUBLIC_KEY2}"
-    public_key3 = "ssh-rsa #{SSH_PUBLIC_KEY3} 1024-bit DSA with provided comment"
 
     assert_equal expected1, @key1.ssh2_public_key
     assert_equal expected2, @key2.ssh2_public_key({})
@@ -504,6 +512,12 @@ EOF
     expected4 = "ssh-rsa #{SSH_PUBLIC_KEY1}"
     expected5 = %Q{from="trusted.eng.cam.ac.uk",no-port-forwarding,no-pty ssh-rsa #{SSH_PUBLIC_KEY1}}
     invalid1  = "#{SSH_PUBLIC_KEY1} me@example.com"
+    ecdsa256 = "ecdsa-sha2-nistp256 #{SSH_PUBLIC_KEY_ECDSA_256}"
+    ecdsa384 = "ecdsa-sha2-nistp384 #{SSH_PUBLIC_KEY_ECDSA_384}"
+    ecdsa521 = "ecdsa-sha2-nistp521 #{SSH_PUBLIC_KEY_ECDSA_521}"
+    ecdsa256_compressed = "ecdsa-sha2-nistp256 #{SSH_PUBLIC_KEY_ECDSA_256_COMPRESSED}"
+    ecdsa384_compressed = "ecdsa-sha2-nistp384 #{SSH_PUBLIC_KEY_ECDSA_384_COMPRESSED}"
+    ecdsa521_compressed = "ecdsa-sha2-nistp521 #{SSH_PUBLIC_KEY_ECDSA_521_COMPRESSED}"
 
     assert_equal 2048, SSHKey.ssh_public_key_bits(expected1)
     assert_equal 2048, SSHKey.ssh_public_key_bits(expected2)
@@ -511,6 +525,12 @@ EOF
     assert_equal 2048, SSHKey.ssh_public_key_bits(expected4)
     assert_equal 2048, SSHKey.ssh_public_key_bits(expected5)
     assert_equal 512,  SSHKey.ssh_public_key_bits(SSHKey.generate(:bits => 512).ssh_public_key)
+    assert_equal 256, SSHKey.ssh_public_key_bits(ecdsa256)
+    assert_equal 384, SSHKey.ssh_public_key_bits(ecdsa384)
+    assert_equal 521, SSHKey.ssh_public_key_bits(ecdsa521)
+    assert_equal 256, SSHKey.ssh_public_key_bits(ecdsa256_compressed)
+    assert_equal 384, SSHKey.ssh_public_key_bits(ecdsa384_compressed)
+    assert_equal 521, SSHKey.ssh_public_key_bits(ecdsa521_compressed)
 
     exception1 = assert_raises(SSHKey::PublicKeyError) { SSHKey.ssh_public_key_bits( expected1.gsub('A','.') ) }
     exception2 = assert_raises(SSHKey::PublicKeyError) { SSHKey.ssh_public_key_bits( expected1[0..-20] ) }

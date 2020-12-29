@@ -1,21 +1,23 @@
 language: ruby
 
 rvm:
-  - 1.8.7
-  - 1.9.2
-  - 1.9.3
   - 2.0
   - 2.1
   - 2.2
   - 2.3
+  - 2.4
+  - 2.5
+  - 2.6
   - ruby-head
-  - ree
   - jruby
   - jruby-head
+  - truffleruby-head
 
 matrix:
   allow_failures:
     - rvm: ruby-head
     - rvm: jruby-head
+    - rvm: truffleruby-head
 
-sudo: false
+sudo: required
+dist: xenial

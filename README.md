@@ -6,11 +6,11 @@ Generate private and public SSH keys (RSA and DSA supported) using pure Ruby.
 
 ## Requirements
 
-Tested / supported on CRuby 1.8.7+ and JRuby.
+Tested / supported on CRuby 2.0.0+ and JRuby.
 
 ## Installation
 
-	gem install sshkey
+    gem install sshkey
 
 ## Usage
 
@@ -35,7 +35,8 @@ k = SSHKey.generate(
 Return an SSHKey object from an existing RSA or DSA private key (provided as a string).
 
 ```ruby
-k = SSHKey.new(File.read("~/.ssh/id_rsa"), comment: "foo@bar.com")
+f = File.read(File.expand_path("~/.ssh/id_rsa"))
+k = SSHKey.new(f, comment: "foo@bar.com")
 ```
 
 ### The SSHKey object
@@ -61,11 +62,11 @@ k.ssh_public_key
 
 #### Encryption
 
-If a passcode is set when a key is generated or by setting the `passcode` accessor, you can
+If a passphrase is set when a key is generated or by setting the `passphrase` accessor, you can
 fetch the encrypted version of the private key.
 
 ```ruby
-k.passcode = "foo"
+k.passphrase = "foo"
 # => "foo"
 
 k.encrypted_private_key
@@ -90,6 +91,7 @@ k.ssh_public_key
 k.ssh2_public_key
 # => "---- BEGIN SSH2 PUBLIC KEY ----\nComment: me@me.com\nAAAAB3NzaC1yc2EAAAADAQABAAABAQC9HuXvYJPtQE/o/7TYi63yAopsrJ6TP+lDGdyQ+n\nVVp+5ojAIy9h8/h99UlNxjkiFT2YhI3Fl/pgNDRO4PVo6tlgb3CwiAZjSdeE5RnF79Dkj5\nXsM4j+FLMoXtbRw0K9ok9RKjz6ygIs1JDmaOdXexFnq4nAYU3fSLUa6WoccqTHe8bFuJoA\nv1gbnx09Js8YcVMD96mpTJ3V/MK5YfIv10dbtrDhGug3IS1V2J+0BB9orbQja554N+4S0I\n9rFBgVCpvPmQqddDHd/AdGkLv/zjEfGytjnvp68bEfDinkQkPfuxw01yd5MbcvLv39VVIC\nWtKbqW263HT5LvSxwKorR7\n---- END SSH2 PUBLIC KEY ----"
 ```
+
 #### Bit length
 
 Determine the strength of the key in bits as an integer.
@@ -179,7 +181,7 @@ SSHKey.valid_ssh_public_key? "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC9HuXvYJPtQE
 
 #### Bit length
 
-Determine the strength of the key in bits as an integer.  Returns `SSHKey::PublicKeyError` if bits cannot be determined.
+Determine the strength of the key in bits as an integer. Returns `SSHKey::PublicKeyError` if bits cannot be determined.
 
 ```ruby
 SSHKey.ssh_public_key_bits "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC9HuXvYJPtQE/o/7TYi63yAopsrJ6TP+lDGdyQ+nVVp+5ojAIy9h8/h99UlNxjkiFT2YhI3Fl/pgNDRO4PVo6tlgb3CwiAZjSdeE5RnF79Dkj5XsM4j+FLMoXtbRw0K9ok9RKjz6ygIs1JDmaOdXexFnq4nAYU3fSLUa6WoccqTHe8bFuJoAv1gbnx09Js8YcVMD96mpTJ3V/MK5YfIv10dbtrDhGug3IS1V2J+0BB9orbQja554N+4S0I9rFBgVCpvPmQqddDHd/AdGkLv/zjEfGytjnvp68bEfDinkQkPfuxw01yd5MbcvLv39VVICWtKbqW263HT5LvSxwKorR7"
@@ -202,7 +204,7 @@ SSHKey.sha256_fingerprint "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC9HuXvYJPtQE/o/
 
 #### Convert to SSH2 Public Key
 
-Convert an existing SSH Public Key into an SSH2 Public key.  Returns `SSHKey::PublicKeyError` if a valid key cannot be generated.
+Convert an existing SSH Public Key into an SSH2 Public key. Returns `SSHKey::PublicKeyError` if a valid key cannot be generated.
 
 ```ruby
 SSHKey.ssh_public_key_to_ssh2_public_key "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC9HuXvYJPtQE/o/7TYi63yAopsrJ6TP+lDGdyQ+nVVp+5ojAIy9h8/h99UlNxjkiFT2YhI3Fl/pgNDRO4PVo6tlgb3CwiAZjSdeE5RnF79Dkj5XsM4j+FLMoXtbRw0K9ok9RKjz6ygIs1JDmaOdXexFnq4nAYU3fSLUa6WoccqTHe8bFuJoAv1gbnx09Js8YcVMD96mpTJ3V/MK5YfIv10dbtrDhGug3IS1V2J+0BB9orbQja554N+4S0I9rFBgVCpvPmQqddDHd/AdGkLv/zjEfGytjnvp68bEfDinkQkPfuxw01yd5MbcvLv39VVICWtKbqW263HT5LvSxwKorR7 me@me.com"
@@ -211,4 +213,4 @@ SSHKey.ssh_public_key_to_ssh2_public_key "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQ
 
 ## Copyright
 
-Copyright (c) 2011-2015 James Miller
+Copyright (c) 2011-2019 James Miller
