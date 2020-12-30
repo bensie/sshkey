@@ -155,23 +155,29 @@ EOF
   KEY1_MD5_FINGERPRINT = "2a:89:84:c9:29:05:d1:f8:49:79:1c:ba:73:99:eb:af"
   KEY2_MD5_FINGERPRINT = "3c:af:74:87:cc:cc:a1:12:05:1a:09:b7:7b:ce:ed:ce"
   KEY3_MD5_FINGERPRINT = "14:f6:6a:12:96:be:44:32:e6:3c:77:43:94:52:f5:7a"
-  KEY4_MD5_FINGERPRINT = ""
+  KEY4_MD5_FINGERPRINT = "38:0b:0f:63:36:64:b6:f0:43:94:de:32:75:eb:57:68"
   ED25519_MD5_FINGERPRINT = "6f:1a:8a:c1:4f:13:5c:36:6e:3f:be:eb:49:3b:8e:3e"
   ECDSA_256_MD5_FINGERPRINT = "d9:3a:7f:de:b2:65:04:ac:62:05:1a:1e:97:e9:2b:9d"
+  ECDSA_384_MD5_FINGERPRINT = "b5:bb:3e:f6:eb:3b:0f:1e:18:37:1f:36:ac:7c:87:0d"
+  ECDSA_521_MD5_FINGERPRINT = "98:8e:a9:4c:b9:aa:58:35:d1:42:65:c3:41:dd:04:e1"
 
   KEY1_SHA1_FINGERPRINT = "e4:f9:79:f2:fe:d6:be:2d:ef:2e:c2:fa:aa:f8:b0:17:34:fe:0d:c0"
   KEY2_SHA1_FINGERPRINT = "9a:52:78:2b:6b:cb:39:b7:85:ed:90:8a:28:62:aa:b3:98:88:e6:07"
   KEY3_SHA1_FINGERPRINT = "15:68:c6:72:ac:18:d1:fc:ab:a2:b7:b5:8c:d1:fe:8f:b9:ae:a9:47"
-  KEY4_SHA1_FINGERPRINT = ""
+  KEY4_SHA1_FINGERPRINT = "aa:b5:e6:62:27:87:b8:05:f6:d6:8f:31:dc:83:81:d9:8f:f8:71:29"
   ED25519_SHA1_FINGERPRINT = "57:41:7c:d0:e2:53:28:87:7e:87:53:d4:69:ef:ef:63:ec:c0:0e:5e"
   ECDSA_256_SHA1_FINGERPRINT = "94:e8:92:2b:1b:ec:49:de:ff:85:ea:6e:10:d6:8d:87:7a:67:40:ee"
+  ECDSA_384_SHA1_FINGERPRINT = "cc:fb:4c:d6:e9:d0:03:ae:2d:82:e1:fc:70:d8:47:98:25:e1:83:2b"
+  ECDSA_521_SHA1_FINGERPRINT = "6b:2c:a2:6e:3a:82:6c:73:28:57:91:20:71:82:bc:8f:f8:9d:6c:41"
 
   KEY1_SHA256_FINGERPRINT = "js3llFehloxCfsVuDw5xu3NtS9AOAxcXY8WL6vkDIts="
   KEY2_SHA256_FINGERPRINT = "23f/6U/LdxIFx1CQFKHylw76n+LIHYoY4nRxKcFoos4="
   KEY3_SHA256_FINGERPRINT = "mPqEPQlOPGORrTJrU17sPax1jOqeutZja6MOsFIca+8="
-  KEY4_SHA256_FINGERPRINT = "foUpf1ox3KfG3eKgJxGoSdZFRxHPsBYJgfD+CMYky6Y"
+  KEY4_SHA256_FINGERPRINT = "foUpf1ox3KfG3eKgJxGoSdZFRxHPsBYJgfD+CMYky6Y="
   ED25519_SHA256_FINGERPRINT = "gyzHUKl1eO8Bk1Cvn4joRgxRlXo1+1HJ3Vho/hAtKEg="
   ECDSA_256_SHA256_FINGERPRINT = "ncy2crhoL44R58GCZPQ5chPRrjlQKKgu07FDNelDmdk="
+  ECDSA_384_SHA256_FINGERPRINT = "mrr4QcP6qD05DUS6Rwefb9f0uuvjyMcO28LSiq2283U="
+  ECDSA_521_SHA256_FINGERPRINT = "QnaiGMIVDZyTG47hMWK6Y1z/yUzHIcTBGpNNuUwlhAk="
 
   KEY1_RANDOMART = <<-EOF.rstrip
 +--[ RSA 2048]----+
@@ -567,10 +573,12 @@ EOF
     assert_equal KEY1_MD5_FINGERPRINT, @key1.fingerprint # Aliased method
     assert_equal KEY2_MD5_FINGERPRINT, @key2.md5_fingerprint
     assert_equal KEY3_MD5_FINGERPRINT, @key3.md5_fingerprint
+    assert_equal KEY4_MD5_FINGERPRINT, @key4.md5_fingerprint
 
     assert_equal KEY1_SHA1_FINGERPRINT, @key1.sha1_fingerprint
     assert_equal KEY2_SHA1_FINGERPRINT, @key2.sha1_fingerprint
     assert_equal KEY3_SHA1_FINGERPRINT, @key3.sha1_fingerprint
+    assert_equal KEY4_SHA1_FINGERPRINT, @key4.sha1_fingerprint
 
     assert_equal KEY1_SHA256_FINGERPRINT, @key1.sha256_fingerprint
     assert_equal KEY2_SHA256_FINGERPRINT, @key2.sha256_fingerprint
@@ -583,8 +591,11 @@ EOF
     assert_equal KEY2_MD5_FINGERPRINT, SSHKey.md5_fingerprint("ssh-rsa #{SSH_PUBLIC_KEY2} me@me.com")
     assert_equal KEY3_MD5_FINGERPRINT, SSHKey.md5_fingerprint(SSH_PRIVATE_KEY3)
     assert_equal KEY3_MD5_FINGERPRINT, SSHKey.md5_fingerprint("ssh-dss #{SSH_PUBLIC_KEY3}")
+    assert_equal KEY4_MD5_FINGERPRINT, SSHKey.md5_fingerprint("ecdsa-sha2-nistp256 #{SSH_PUBLIC_KEY4}")
     assert_equal ED25519_MD5_FINGERPRINT, SSHKey.md5_fingerprint("ssh-ed25519 #{SSH_PUBLIC_KEY_ED25519}")
     assert_equal ECDSA_256_MD5_FINGERPRINT, SSHKey.md5_fingerprint("ecdsa-sha2-nistp256 #{SSH_PUBLIC_KEY_ECDSA_256} me@me.com")
+    assert_equal ECDSA_384_MD5_FINGERPRINT, SSHKey.md5_fingerprint("ecdsa-sha2-nistp384 #{SSH_PUBLIC_KEY_ECDSA_384} me@me.com")
+    assert_equal ECDSA_521_MD5_FINGERPRINT, SSHKey.md5_fingerprint("ecdsa-sha2-nistp521 #{SSH_PUBLIC_KEY_ECDSA_521} me@me.com")
 
     assert_equal KEY1_SHA1_FINGERPRINT, SSHKey.sha1_fingerprint(SSH_PRIVATE_KEY1)
     assert_equal KEY1_SHA1_FINGERPRINT, SSHKey.sha1_fingerprint("ssh-rsa #{SSH_PUBLIC_KEY1}")
@@ -592,8 +603,11 @@ EOF
     assert_equal KEY2_SHA1_FINGERPRINT, SSHKey.sha1_fingerprint("ssh-rsa #{SSH_PUBLIC_KEY2} me@me.com")
     assert_equal KEY3_SHA1_FINGERPRINT, SSHKey.sha1_fingerprint(SSH_PRIVATE_KEY3)
     assert_equal KEY3_SHA1_FINGERPRINT, SSHKey.sha1_fingerprint("ssh-dss #{SSH_PUBLIC_KEY3}")
+    assert_equal KEY4_SHA1_FINGERPRINT, SSHKey.sha1_fingerprint("ecdsa-sha2-nistp256 #{SSH_PUBLIC_KEY4}")
     assert_equal ED25519_SHA1_FINGERPRINT, SSHKey.sha1_fingerprint("ssh-ed25519 #{SSH_PUBLIC_KEY_ED25519}")
     assert_equal ECDSA_256_SHA1_FINGERPRINT, SSHKey.sha1_fingerprint("ecdsa-sha2-nistp256 #{SSH_PUBLIC_KEY_ECDSA_256} me@me.com")
+    assert_equal ECDSA_384_SHA1_FINGERPRINT, SSHKey.sha1_fingerprint("ecdsa-sha2-nistp384 #{SSH_PUBLIC_KEY_ECDSA_384} me@me.com")
+    assert_equal ECDSA_521_SHA1_FINGERPRINT, SSHKey.sha1_fingerprint("ecdsa-sha2-nistp521 #{SSH_PUBLIC_KEY_ECDSA_521} me@me.com")
 
     assert_equal KEY1_SHA256_FINGERPRINT, SSHKey.sha256_fingerprint(SSH_PRIVATE_KEY1)
     assert_equal KEY1_SHA256_FINGERPRINT, SSHKey.sha256_fingerprint("ssh-rsa #{SSH_PUBLIC_KEY1}")
@@ -601,8 +615,11 @@ EOF
     assert_equal KEY2_SHA256_FINGERPRINT, SSHKey.sha256_fingerprint("ssh-rsa #{SSH_PUBLIC_KEY2} me@me.com")
     assert_equal KEY3_SHA256_FINGERPRINT, SSHKey.sha256_fingerprint(SSH_PRIVATE_KEY3)
     assert_equal KEY3_SHA256_FINGERPRINT, SSHKey.sha256_fingerprint("ssh-dss #{SSH_PUBLIC_KEY3}")
+    assert_equal KEY4_SHA256_FINGERPRINT, SSHKey.sha256_fingerprint("ecdsa-sha2-nistp256 #{SSH_PUBLIC_KEY4}")
     assert_equal ED25519_SHA256_FINGERPRINT, SSHKey.sha256_fingerprint("ssh-ed25519 #{SSH_PUBLIC_KEY_ED25519}")
     assert_equal ECDSA_256_SHA256_FINGERPRINT, SSHKey.sha256_fingerprint("ecdsa-sha2-nistp256 #{SSH_PUBLIC_KEY_ECDSA_256} me@me.com")
+    assert_equal ECDSA_384_SHA256_FINGERPRINT, SSHKey.sha256_fingerprint("ecdsa-sha2-nistp384 #{SSH_PUBLIC_KEY_ECDSA_384} me@me.com")
+    assert_equal ECDSA_521_SHA256_FINGERPRINT, SSHKey.sha256_fingerprint("ecdsa-sha2-nistp521 #{SSH_PUBLIC_KEY_ECDSA_521} me@me.com")
   end
 
   def test_bits
