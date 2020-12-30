@@ -553,7 +553,6 @@ class SSHKey
   # [0, 0, 0, 7, 's', 's', 'h', '-', 'r', 's', 'a']
   def ssh_public_key_conversion
     methods = SSH_CONVERSION[type]
-    pubkey = key_object.public_key
     methods.inject([typestr.length].pack("N") + typestr) do |pubkeystr, m|
       # Given public_key_object.class == OpenSSL::BN, public_key_object.to_s(0)
       # returns an MPI formatted string (length prefixed bytes). This is not
