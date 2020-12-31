@@ -472,13 +472,23 @@ class SSHKey
   # |   . .           |
   # |    Eo.          |
   # +-----------------+
-  def randomart
+  def randomart(dgst_alg = "MD5")
     fieldsize_x = 17
     fieldsize_y = 9
     x = fieldsize_x / 2
     y = fieldsize_y / 2
-    raw_digest = Digest::MD5.digest(ssh_public_key_conversion)
-    num_bytes = raw_digest.bytesize
+
+    case dgst_alg
+      when "MD5"    then raw_digest = Digest::MD5.digest(ssh_public_key_conversion)
+      when "SHA256" then raw_digest = Digest::SHA2.new(256).digest(ssh_public_key_conversion)
+      when "SHA384" then raw_digest = Digest::SHA2.new(384).digest(ssh_public_key_conversion)
+      when "SHA512" then raw_digest = Digest::SHA2.new(512).digest(ssh_public_key_conversion)
+    else
+      raise "Unknown digest algorithm: #{digest}"
+    end
+
+    augmentation_string = " .o+=*BOX@%&#/^SE"
+    len = augmentation_string.length - 1
 
     field = Array.new(fieldsize_x) { Array.new(fieldsize_y) {0} }
 
@@ -490,7 +500,7 @@ class SSHKey
         x = [[x, 0].max, fieldsize_x - 1].min
         y = [[y, 0].max, fieldsize_y - 1].min
 
-        field[x][y] += 1 if (field[x][y] < num_bytes - 2)
+        field[x][y] += 1 if (field[x][y] < len - 2)
 
         byte >>= 2
       end
@@ -499,9 +509,8 @@ class SSHKey
     fieldsize_x_halved = fieldsize_x / 2
     fieldsize_y_halved = fieldsize_y / 2
 
-    field[fieldsize_x_halved][fieldsize_y_halved] = num_bytes - 1
-    field[x][y] = num_bytes
-    augmentation_string = " .o+=*BOX@%&#/^SE"
+    field[fieldsize_x_halved][fieldsize_y_halved] = len - 1
+    field[x][y] = len
 
     type_name_length_max = 4  # Note: this will need to be extended to accomodate ed25519
     bits_number_length_max = (bits < 1000 ? 3 : 4)
@@ -511,7 +520,7 @@ class SSHKey
     fieldsize_y.times do |y|
       output << "|"
       fieldsize_x.times do |x|
-        output << augmentation_string[[field[x][y], num_bytes].min]
+        output << augmentation_string[[field[x][y], len].min]
       end
       output << "|"
       output << "\n"

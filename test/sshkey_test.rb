@@ -244,6 +244,36 @@ EOF
 +-----------------+
 EOF
 
+  # ssh-keygen -lv -E sha384 -f ./id_ecdsa_ssh_public_key4.pub
+  KEY4_RANDOMART_USING_SHA384_DIGEST = <<-EOF.rstrip
++--[ECDSA 256]----+
+|           o++.  |
+| .        *oo. . |
+|o       .o+B.o.. |
+|+o      ooB+O *..|
+|.=+    .SB== ^.+.|
+|+  o    +o .O Xo.|
+| .  ...   .. + .o|
+|  . E. o +  + +..|
+|   .... . o..Bo..|
++-----------------+
+EOF
+
+  # ssh-keygen -lv -E sha512 -f ./id_ecdsa_ssh_public_key4.pub
+  KEY4_RANDOMART_USING_SHA512_DIGEST = <<-EOF.rstrip
++--[ECDSA 256]----+
+|       +*+o    oo|
+|      . .o o  . +|
+|     . o.   oo oo|
+|.. .+ .    .*.o+ |
+|..Bo.*  S  ..=o..|
+| .+X+ Oo    ...+ |
+| +o.B*+=o    .+ +|
+|+=+O.+=+.+. +.o+.|
+|@**EB*O++=o+ =o.+|
++-----------------+
+EOF
+
   KEY1_SSHFP = <<-EOF.rstrip
 localhost IN SSHFP 1 1 e4f979f2fed6be2def2ec2faaaf8b01734fe0dc0
 localhost IN SSHFP 1 2 8ecde59457a1968c427ec56e0f0e71bb736d4bd00e03171763c58beaf90322db
@@ -644,6 +674,10 @@ EOF
     assert_equal KEY2_RANDOMART, @key2.randomart
     assert_equal KEY3_RANDOMART, @key3.randomart
     assert_equal KEY4_RANDOMART, @key4.randomart
+
+    assert_equal KEY4_RANDOMART_USING_SHA256_DIGEST, @key4.randomart("SHA256")
+    assert_equal KEY4_RANDOMART_USING_SHA384_DIGEST, @key4.randomart("SHA384")
+    assert_equal KEY4_RANDOMART_USING_SHA512_DIGEST, @key4.randomart("SHA512")
   end
 
   def test_sshfp
