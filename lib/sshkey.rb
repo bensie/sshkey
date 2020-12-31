@@ -458,6 +458,7 @@ class SSHKey
   #
   # Generate OpenSSH compatible ASCII art fingerprints
   # See http://www.opensource.apple.com/source/OpenSSH/OpenSSH-175/openssh/key.c (key_fingerprint_randomart function)
+  # or https://mirrors.mit.edu/pub/OpenBSD/OpenSSH/ (sshkey.c fingerprint_randomart function)
   #
   # Example:
   # +--[ RSA 2048]----+
@@ -498,7 +499,12 @@ class SSHKey
     field[fieldsize_x / 2][fieldsize_y / 2] = num_bytes - 1
     field[x][y] = num_bytes
     augmentation_string = " .o+=*BOX@%&#/^SE"
-    output = "+--#{sprintf("[%4s %4u]", type.upcase, bits)}----+\n"
+
+    type_name_length_max = 4  # Note: this will need to be extended to accomodate ed25519
+    bits_number_length_max = (bits < 1000 ? 3 : 4)
+    formatstr = "[%#{type_name_length_max}s %#{bits_number_length_max}u]"
+    output = "+--#{sprintf(formatstr, type.upcase, bits)}----+\n"
+
     fieldsize_y.times do |y|
       output << "|"
       fieldsize_x.times do |x|

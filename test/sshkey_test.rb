@@ -214,8 +214,24 @@ EOF
 +-----------------+
 EOF
 
+  # ssh-keygen -lv -E md5 -f ./id_ecdsa_ssh_public_key4.pub
   KEY4_RANDOMART = <<-EOF.rstrip
-+---[ECDSA 256]---+
++--[ECDSA 256]----+
+|    ..           |
+|   .. . .        |
+|  ..=o . . .     |
+|   B+.... E .    |
+|    @oo.S. .     |
+|   o B o. .      |
+|      o  .       |
+|                 |
+|                 |
++-----------------+
+EOF
+
+  # ssh-keygen -lv -E sha256 -f ./id_ecdsa_ssh_public_key4.pub
+  KEY4_RANDOMART_USING_SHA256_DIGEST = <<-EOF.rstrip
++--[ECDSA 256]----+
 |      .. o++B+   |
 |       .. ...*   |
 |    . ...o  o o  |
@@ -225,7 +241,7 @@ EOF
 |  E     o +.+ = o|
 |         ..=.+ . |
 |          oo  .  |
-+----[SHA256]-----+
++-----------------+
 EOF
 
   KEY1_SSHFP = <<-EOF.rstrip
