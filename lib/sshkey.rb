@@ -496,7 +496,10 @@ class SSHKey
       end
     end
 
-    field[fieldsize_x / 2][fieldsize_y / 2] = num_bytes - 1
+    fieldsize_x_halved = fieldsize_x / 2
+    fieldsize_y_halved = fieldsize_y / 2
+
+    field[fieldsize_x_halved][fieldsize_y_halved] = num_bytes - 1
     field[x][y] = num_bytes
     augmentation_string = " .o+=*BOX@%&#/^SE"
 
