@@ -10,14 +10,16 @@ Gem::Specification.new do |s|
   s.email       = ["bensie@gmail.com"]
   s.homepage    = "https://github.com/bensie/sshkey"
   s.summary     = %q{SSH private/public key generator in Ruby}
-  s.description = %q{Generate private/public SSH keypairs using pure Ruby}
+  s.description = %q{Generate private/public SSH keypairs using Ruby}
   s.licenses    = ["MIT"]
 
-  s.files         = `git ls-files`.split("\n")
+  s.extensions    = ["ext/openssl_sshkey/extconf.rb"] unless RUBY_PLATFORM == "java"
+  s.files         = `git ls-files`.split("\n") + Dir["ext/**/*.{c,h,rb}"]
   s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
   s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
   s.require_paths = ["lib"]
 
   s.add_development_dependency("rake")
+  s.add_development_dependency("rake-compiler") unless RUBY_PLATFORM == "java"
   s.add_development_dependency("test-unit")
 end
