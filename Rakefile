@@ -45,7 +45,7 @@ desc "Default: run unit tests."
 task :default => :test
 
 desc "Test the sshkey gem"
-Rake::TestTask.new(:test) do |t|
+Rake::TestTask.new(:test => [:compile]) do |t|
   t.libs << "lib"
   t.libs << "ext"
   t.libs << "test"
