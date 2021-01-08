@@ -2,13 +2,6 @@ require 'test/unit'
 require 'sshkey'
 
 class SSHKeyTest < Test::Unit::TestCase
-
-  # https://github.com/jruby/jruby-openssl/issues/189
-  # https://github.com/jruby/jruby-openssl/issues/226
-  def ecdsa_supported?
-    RUBY_PLATFORM != "java"
-  end
-
   SSH_PRIVATE_KEY1 = <<-EOF
 -----BEGIN RSA PRIVATE KEY-----
 MIIEogIBAAKCAQEArfTA/lKVR84IMc9ZzXOCHr8DVtR8hzWuEVHF6KElavRHlk14
@@ -355,12 +348,7 @@ EOF
   def test_generator_with_type
     assert_equal "rsa", SSHKey.generate(:type => "rsa").type
     assert_equal "dsa", SSHKey.generate(:type => "dsa").type
-
-    if ecdsa_supported?
-      assert_equal "ecdsa", SSHKey.generate(:type => "ecdsa").type
-    else
-      assert_raises(NotImplementedError) { SSHKey.generate(:type => "ecdsa").type }
-    end
+    assert_equal "ecdsa", SSHKey.generate(:type => "ecdsa").type
   end
 
   def test_generator_with_passphrase
@@ -383,11 +371,7 @@ EOF
   end
 
   def test_private_key4
-    if ecdsa_supported?
-      assert_equal SSH_PRIVATE_KEY4, @key4.private_key
-    else
-      assert_raises(NotImplementedError) { @key4.private_key }
-    end
+    assert_equal SSH_PRIVATE_KEY4, @key4.private_key
   end
 
   def test_public_key_1
@@ -419,11 +403,7 @@ EOF
   end
 
   def test_ssh_public_key_decoded4
-    if ecdsa_supported?
-      assert_equal Base64.decode64(SSH_PUBLIC_KEY4), @key4.send(:ssh_public_key_conversion)
-    else
-      assert_raises(NotImplementedError) { @key4.send(:ssh_public_key_conversion) }
-    end
+    assert_equal Base64.decode64(SSH_PUBLIC_KEY4), @key4.send(:ssh_public_key_conversion)
   end
 
   def test_ssh_public_key_encoded1
@@ -439,11 +419,7 @@ EOF
   end
 
   def test_ssh_public_key_encoded4
-    if ecdsa_supported?
-      assert_equal SSH_PUBLIC_KEY4, Base64.encode64(@key4.send(:ssh_public_key_conversion)).gsub("\n", "")
-    else
-      assert_raises(NotImplementedError) { Base64.encode64(@key4.send(:ssh_public_key_conversion)) }
-    end
+    assert_equal SSH_PUBLIC_KEY4, Base64.encode64(@key4.send(:ssh_public_key_conversion)).gsub("\n", "")
   end
 
   def test_ssh_public_key_output
@@ -455,13 +431,7 @@ EOF
     assert_equal expected1, @key1.ssh_public_key
     assert_equal expected2, @key2.ssh_public_key
     assert_equal expected3, @key3.ssh_public_key
-
-    if ecdsa_supported?
-      assert_equal expected4, @key4.ssh_public_key
-    else
-      assert_raises(NotImplementedError) { @key4.ssh_public_key }
-    end
-
+    assert_equal expected4, @key4.ssh_public_key
     assert_equal expected1b, @key_without_comment.ssh_public_key
   end
 
@@ -642,32 +612,17 @@ EOF
     assert_equal KEY1_MD5_FINGERPRINT, @key1.fingerprint # Aliased method
     assert_equal KEY2_MD5_FINGERPRINT, @key2.md5_fingerprint
     assert_equal KEY3_MD5_FINGERPRINT, @key3.md5_fingerprint
-
-    if ecdsa_supported?
-      assert_equal KEY4_MD5_FINGERPRINT, @key4.md5_fingerprint
-    else
-      assert_raises(NotImplementedError) { @key4.md5_fingerprint }
-    end
+    assert_equal KEY4_MD5_FINGERPRINT, @key4.md5_fingerprint
 
     assert_equal KEY1_SHA1_FINGERPRINT, @key1.sha1_fingerprint
     assert_equal KEY2_SHA1_FINGERPRINT, @key2.sha1_fingerprint
     assert_equal KEY3_SHA1_FINGERPRINT, @key3.sha1_fingerprint
-
-    if ecdsa_supported?
-      assert_equal KEY4_SHA1_FINGERPRINT, @key4.sha1_fingerprint
-    else
-      assert_raises(NotImplementedError) { @key4.sha1_fingerprint }
-    end
+    assert_equal KEY4_SHA1_FINGERPRINT, @key4.sha1_fingerprint
 
     assert_equal KEY1_SHA256_FINGERPRINT, @key1.sha256_fingerprint
     assert_equal KEY2_SHA256_FINGERPRINT, @key2.sha256_fingerprint
     assert_equal KEY3_SHA256_FINGERPRINT, @key3.sha256_fingerprint
-
-    if ecdsa_supported?
-      assert_equal KEY4_SHA256_FINGERPRINT, @key4.sha256_fingerprint
-    else
-      assert_raises(NotImplementedError) { @key4.sha256_fingerprint }
-    end
+    assert_equal KEY4_SHA256_FINGERPRINT, @key4.sha256_fingerprint
 
     assert_equal KEY1_MD5_FINGERPRINT, SSHKey.md5_fingerprint(SSH_PRIVATE_KEY1)
     assert_equal KEY1_MD5_FINGERPRINT, SSHKey.md5_fingerprint("ssh-rsa #{SSH_PUBLIC_KEY1}")
@@ -710,13 +665,7 @@ EOF
     assert_equal 2048, @key1.bits
     assert_equal 2048, @key2.bits
     assert_equal 1024, @key3.bits
-
-    if ecdsa_supported?
-      assert_equal 256, @key4.bits
-    else
-      assert_raises(NotImplementedError) { @key4.bits }
-    end
-
+    assert_equal 256, @key4.bits
     assert_equal 512, SSHKey.generate(:bits => 512).bits
   end
 
@@ -724,19 +673,11 @@ EOF
     assert_equal KEY1_RANDOMART, @key1.randomart
     assert_equal KEY2_RANDOMART, @key2.randomart
     assert_equal KEY3_RANDOMART, @key3.randomart
+    assert_equal KEY4_RANDOMART, @key4.randomart
 
-    if ecdsa_supported?
-      assert_equal KEY4_RANDOMART, @key4.randomart
-    else
-      assert_raises(NotImplementedError) { @key4.randomart }
-    end
-
-    if ecdsa_supported?
-      assert_equal KEY4_RANDOMART_USING_SHA256_DIGEST, @key4.randomart("SHA256")
-      assert_equal KEY4_RANDOMART_USING_SHA384_DIGEST, @key4.randomart("SHA384")
-      assert_equal KEY4_RANDOMART_USING_SHA512_DIGEST, @key4.randomart("SHA512")
-    end
-
+    assert_equal KEY4_RANDOMART_USING_SHA256_DIGEST, @key4.randomart("SHA256")
+    assert_equal KEY4_RANDOMART_USING_SHA384_DIGEST, @key4.randomart("SHA384")
+    assert_equal KEY4_RANDOMART_USING_SHA512_DIGEST, @key4.randomart("SHA512")
   end
 
   def test_sshfp

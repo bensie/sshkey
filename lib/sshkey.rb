@@ -3,11 +3,6 @@ require 'base64'
 require 'digest/md5'
 require 'digest/sha1'
 require 'digest/sha2'
-require 'openssl_sshkey/openssl_sshkey' unless RUBY_PLATFORM == "java" # C extension
-
-def jruby_not_implemented(msg)
-  raise NotImplementedError.new "jruby-openssl #{JOpenSSL::VERSION}: #{msg}" if RUBY_PLATFORM == "java"
-end
 
 # Monkey patch OpenSSL::PKey::EC to provide convenience methods usable in this gem
 class OpenSSL::PKey::EC
@@ -16,7 +11,6 @@ class OpenSSL::PKey::EC
     # Curve names can be inferred from https://github.com/ruby/openssl/blob/master/ext/openssl/openssl_missing.c
     case public_key.group.curve_name
     when "prime256v1" then "nistp256"  # https://stackoverflow.com/a/41953717
-    when "secp256r1"  then "nistp256"  # JRuby
     when "secp384r1"  then "nistp384"
     when "secp521r1"  then "nistp521"
     else
@@ -25,21 +19,7 @@ class OpenSSL::PKey::EC
   end
 
   def q
-    # to_octet_string was added in ruby/openssl 2.1.0
-    # https://github.com/ruby/openssl/blob/master/History.md#version-210
-    if public_key.respond_to?(:to_octet_string)
-      public_key.to_octet_string(:uncompressed)
-
-    else
-      # jruby-openssl does not currently support to_octet_string
-      # https://github.com/jruby/jruby-openssl/issues/226
-      #
-      # JRuby does not support native C extensions
-      # https://github.com/jruby/jruby/wiki/C-Extension-Alternatives
-      jruby_not_implemented("to_octet_string is not implemented")
-
-      public_key.to_octet_string_extension(:uncompressed)
-    end
+    public_key.to_octet_string(:uncompressed)
   end
 end
 
@@ -110,16 +90,10 @@ class SSHKey
       case type.downcase
       when "rsa" then new(OpenSSL::PKey::RSA.generate(bits).to_pem(cipher, options[:passphrase]), options)
       when "dsa" then new(OpenSSL::PKey::DSA.generate(bits).to_pem(cipher, options[:passphrase]), options)
-      when "ecdsa"
-        # jruby-openssl OpenSSL::PKey::EC support isn't complete
-        # https://github.com/jruby/jruby-openssl/issues/189
-        jruby_not_implemented("OpenSSL::PKey::EC is not fully implemented")
-
-        new(OpenSSL::PKey::EC.new(ECDSA_CURVES[bits]).generate_key.to_pem(cipher, options[:passphrase]))
+      when "ecdsa" then new(OpenSSL::PKey::EC.new(ECDSA_CURVES[bits]).generate_key.to_pem(cipher, options[:passphrase]))
       else
         raise "Unknown key type: #{type}"
       end
-
     end
 
     # Validate an existing SSH public key
@@ -407,10 +381,6 @@ class SSHKey
   #
   # rsa_private_key and dsa_private_key are aliased for backward compatibility
   def private_key
-    # jruby-openssl OpenSSL::PKey::EC support isn't complete
-    # https://github.com/jruby/jruby-openssl/issues/189
-    jruby_not_implemented("OpenSSL::PKey::EC is not fully implemented") if type == "ecdsa"
-
     key_object.to_pem
   end
   alias_method :rsa_private_key, :private_key
