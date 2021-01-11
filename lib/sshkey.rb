@@ -104,7 +104,7 @@ class SSHKey
         # https://github.com/jruby/jruby-openssl/issues/189
         jruby_not_implemented("OpenSSL::PKey::EC is not fully implemented")
 
-        new(OpenSSL::PKey::EC.new(ECDSA_CURVES[bits]).generate_key.to_pem(cipher, options[:passphrase]))
+        new(OpenSSL::PKey::EC.new(ECDSA_CURVES[bits]).generate_key.to_pem(cipher, options[:passphrase]), options)
       else
         raise "Unknown key type: #{type}"
       end

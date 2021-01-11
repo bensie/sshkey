@@ -476,6 +476,24 @@ EOF
       'x-private-use-header' => 'some value that is long enough to go to wrap around to a new line.'})
   end
 
+  def test_ssh_public_key_output_from_generated
+    generated_rsa   = SSHKey.generate(:type => "rsa",   :comment => "rsa key")
+    generated_dsa   = SSHKey.generate(:type => "dsa",   :comment => "dsa key")
+    generated_ecdsa = SSHKey.generate(:type => "ecdsa", :comment => "ecdsa key") if ecdsa_supported?
+
+    encoded_rsa   = Base64.encode64(generated_rsa.send(:ssh_public_key_conversion)).gsub("\n", "")
+    encoded_dsa   = Base64.encode64(generated_dsa.send(:ssh_public_key_conversion)).gsub("\n", "")
+    encoded_ecdsa = Base64.encode64(generated_ecdsa.send(:ssh_public_key_conversion)).gsub("\n", "") if ecdsa_supported?
+
+    expected_rsa   = "ssh-rsa #{encoded_rsa} rsa key"
+    expected_dsa   = "ssh-dss #{encoded_dsa} dsa key"
+    expected_ecdsa = "ecdsa-sha2-nistp256 #{encoded_ecdsa} ecdsa key"
+
+    assert_equal expected_rsa,   generated_rsa.ssh_public_key
+    assert_equal expected_dsa,   generated_dsa.ssh_public_key
+    assert_equal expected_ecdsa, generated_ecdsa.ssh_public_key if ecdsa_supported?
+  end
+
   def test_public_key_directives
     assert_equal [], SSHKey.generate.directives
 
