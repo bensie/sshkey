@@ -13,6 +13,8 @@ rvm:
   - jruby-head
   - truffleruby-head
 
+cache: bundler
+
 matrix:
   allow_failures:
     - rvm: ruby-head
