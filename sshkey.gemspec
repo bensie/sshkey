@@ -13,7 +13,10 @@ Gem::Specification.new do |s|
   s.description = %q{Generate private/public SSH keypairs using pure Ruby}
   s.licenses    = ["MIT"]
 
-  s.rubyforge_project = "sshkey"
+  # ECDSA requires OpenSSL::PKey::EC::Point#to_octet_string
+  # to_octet string was added in Ruby/OpenSSL 2.1.0 https://github.com/ruby/openssl/blob/master/History.md#version-210
+  # Ruby 2.5 Updated Ruby/OpenSSL from to 2.1.0 https://github.com/ruby/ruby/blob/v2_5_0/NEWS
+  s.required_ruby_version = '>= 2.5'
 
   s.files         = `git ls-files`.split("\n")
   s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
