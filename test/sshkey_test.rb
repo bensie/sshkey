@@ -2,6 +2,13 @@ require 'test/unit'
 require 'sshkey'
 
 class SSHKeyTest < Test::Unit::TestCase
+
+  # https://github.com/jruby/jruby-openssl/issues/189
+  # https://github.com/jruby/jruby-openssl/issues/226
+  def ecdsa_supported?
+    RUBY_PLATFORM != "java"
+  end
+
   SSH_PRIVATE_KEY1 = <<-EOF
 -----BEGIN RSA PRIVATE KEY-----
 MIIEogIBAAKCAQEArfTA/lKVR84IMc9ZzXOCHr8DVtR8hzWuEVHF6KElavRHlk14
@@ -75,9 +82,64 @@ GzM8qwTcXd06uIZAJdTHIQ==
 -----END DSA PRIVATE KEY-----
 EOF
 
+  SSH_PRIVATE_KEY4 = <<-EOF
+-----BEGIN EC PRIVATE KEY-----
+MHcCAQEEIByjVCRawGxEd/L/VblGjnJTJeOgk6vGFYnolYWHg+JkoAoGCCqGSM49
+AwEHoUQDQgAEQOAmNzXT3XN5DQdHBYCgflosVlHd6MUB1n9n6CCijvVJCQGJAA0p
+6+3o91ccyA0zHXuUno2eMzBUDghfNZYnHg==
+-----END EC PRIVATE KEY-----
+EOF
+
+  PUBLIC_KEY1 = <<-EOF
+-----BEGIN PUBLIC KEY-----
+MIIBIDANBgkqhkiG9w0BAQEFAAOCAQ0AMIIBCAKCAQEArfTA/lKVR84IMc9ZzXOC
+Hr8DVtR8hzWuEVHF6KElavRHlk14g0SZu3m908Ejm/XF3EfNHjX9wN+62IMA0QBx
+kBMFCuLF+U/oeUs0NoDdAEKxjj4n6lq6Ss8aLct+anMy7D1jwvOLbcwV54w1d5JD
+dlZVdZ6AvHm9otwJq6rNpDgdmXY4HgC2nM9csFpuy0cDpL6fdJx9lcNL2RnkRC4+
+RMsIB+PxDw0j3vDi04dYLBXMGYjyeGH+mIFpL3PTPXGXwL2XDYXZ2H4SQX6bOoKm
+azTXq6QXuEB665njh1GxXldoIMcSshoJL0hrk3WrTOG22N2CQA+IfHgrXJ+A+QUz
+KQIBIw==
+-----END PUBLIC KEY-----
+EOF
+
+  PUBLIC_KEY2 = <<-EOF
+-----BEGIN PUBLIC KEY-----
+MIIBIDANBgkqhkiG9w0BAQEFAAOCAQ0AMIIBCAKCAQEAxl6TpN7uFiY/JZ8qDnD7
+UrxDP+ABeh2PVg8Du1LEgXNk0+YWCeP5S6oHklqaWeDlbmAs1oHsBwCMAVpMa5tg
+ONOLvz4JgwgkiqQEbKR8ofWJ+LADUElvqRVGmGiNEMLI6GJWeneL4sjmbb8d6U+M
+53c6iWG0si9XE5m7teBQSsCl0Tk3qMIkQGw5zpJeCXjZ8KpJhIJRYgexFkGgPlYR
+V+UYIhxpUW90t0Ra5i6JOFYwq98k5S/6SJIZQ/A9F4JNzwLw3eVxZj0yVHWxkGz1
++TyELNY1kOyMxnZaqSfGzSQJTrnIXpdweVHuYh1LtOgedRQhCyiELeSMGwio1vRP
+KwIBIw==
+-----END PUBLIC KEY-----
+EOF
+
+  PUBLIC_KEY3 = <<-EOF
+-----BEGIN PUBLIC KEY-----
+MIIBuDCCASwGByqGSM44BAEwggEfAoGBALyVy5dwVwgL3CxXzsvo8DBh58qArQLB
+NIPW/f9pptmy7jD5QXzOw+12w0/z4lZ86ncoVutRMf44OABcX9ovhRl+luxB7jjp
+kVXy/p2ZaqPbeyTQUtdTmXa2y4n053Jd61VeMG+iLP7+viT+Ib96y9aVUYQfCrl5
+heBDUZ9cAFjdAhUAxV5zuySaRSsJHqKK+Blhh7c9A9kCgYEAqel0RUBO0MY5b3DZ
+69J/mRzUifN1O6twk4er2ph0JpryuUwZohLpcVZwqoGWmPQy/ZHmV1b3RtT9GWUa
++HUqKdMhFVOx/iq1khVfLi83whjMMvXj3ecqd0yzGxGHnSsjVKefa2ywCLHrh4nl
+UVIaXI5gQpgMyVbMcromDe1WZzoDgYUAAoGBAIwTRPAEcroqOzaebiVspFcmsXxD
+Q4wXQZQdho1ExW6FKS8s7/6pItmZYXTvJDwLXgq2/iK1fRRcKk2PJEaSuJR7WeNG
+sJKfWmQ2UbOhqA3wWLDazIZtcMKjFzD0hM4E8qgjHjMvKDE6WgT6SFP+tqx3nnh7
+pJWwsbGjSMQexpyR
+-----END PUBLIC KEY-----
+EOF
+
+  PUBLIC_KEY4 = <<-EOF
+-----BEGIN PUBLIC KEY-----
+MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEQOAmNzXT3XN5DQdHBYCgflosVlHd
+6MUB1n9n6CCijvVJCQGJAA0p6+3o91ccyA0zHXuUno2eMzBUDghfNZYnHg==
+-----END PUBLIC KEY-----
+EOF
+
   SSH_PUBLIC_KEY1 = 'AAAAB3NzaC1yc2EAAAABIwAAAQEArfTA/lKVR84IMc9ZzXOCHr8DVtR8hzWuEVHF6KElavRHlk14g0SZu3m908Ejm/XF3EfNHjX9wN+62IMA0QBxkBMFCuLF+U/oeUs0NoDdAEKxjj4n6lq6Ss8aLct+anMy7D1jwvOLbcwV54w1d5JDdlZVdZ6AvHm9otwJq6rNpDgdmXY4HgC2nM9csFpuy0cDpL6fdJx9lcNL2RnkRC4+RMsIB+PxDw0j3vDi04dYLBXMGYjyeGH+mIFpL3PTPXGXwL2XDYXZ2H4SQX6bOoKmazTXq6QXuEB665njh1GxXldoIMcSshoJL0hrk3WrTOG22N2CQA+IfHgrXJ+A+QUzKQ=='
   SSH_PUBLIC_KEY2 = 'AAAAB3NzaC1yc2EAAAABIwAAAQEAxl6TpN7uFiY/JZ8qDnD7UrxDP+ABeh2PVg8Du1LEgXNk0+YWCeP5S6oHklqaWeDlbmAs1oHsBwCMAVpMa5tgONOLvz4JgwgkiqQEbKR8ofWJ+LADUElvqRVGmGiNEMLI6GJWeneL4sjmbb8d6U+M53c6iWG0si9XE5m7teBQSsCl0Tk3qMIkQGw5zpJeCXjZ8KpJhIJRYgexFkGgPlYRV+UYIhxpUW90t0Ra5i6JOFYwq98k5S/6SJIZQ/A9F4JNzwLw3eVxZj0yVHWxkGz1+TyELNY1kOyMxnZaqSfGzSQJTrnIXpdweVHuYh1LtOgedRQhCyiELeSMGwio1vRPKw=='
   SSH_PUBLIC_KEY3 = 'AAAAB3NzaC1kc3MAAACBALyVy5dwVwgL3CxXzsvo8DBh58qArQLBNIPW/f9pptmy7jD5QXzOw+12w0/z4lZ86ncoVutRMf44OABcX9ovhRl+luxB7jjpkVXy/p2ZaqPbeyTQUtdTmXa2y4n053Jd61VeMG+iLP7+viT+Ib96y9aVUYQfCrl5heBDUZ9cAFjdAAAAFQDFXnO7JJpFKwkeoor4GWGHtz0D2QAAAIEAqel0RUBO0MY5b3DZ69J/mRzUifN1O6twk4er2ph0JpryuUwZohLpcVZwqoGWmPQy/ZHmV1b3RtT9GWUa+HUqKdMhFVOx/iq1khVfLi83whjMMvXj3ecqd0yzGxGHnSsjVKefa2ywCLHrh4nlUVIaXI5gQpgMyVbMcromDe1WZzoAAACBAIwTRPAEcroqOzaebiVspFcmsXxDQ4wXQZQdho1ExW6FKS8s7/6pItmZYXTvJDwLXgq2/iK1fRRcKk2PJEaSuJR7WeNGsJKfWmQ2UbOhqA3wWLDazIZtcMKjFzD0hM4E8qgjHjMvKDE6WgT6SFP+tqx3nnh7pJWwsbGjSMQexpyR'
+  SSH_PUBLIC_KEY4 = 'AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBEDgJjc1091zeQ0HRwWAoH5aLFZR3ejFAdZ/Z+ggoo71SQkBiQANKevt6PdXHMgNMx17lJ6NnjMwVA4IXzWWJx4='
 
   SSH_PUBLIC_KEY_ED25519        = 'AAAAC3NzaC1lZDI1NTE5AAAAIBrNsRCISAtKXV5OVxqV6unVcdis5Uh3oiC6B7CMB7HQ'
   SSH_PUBLIC_KEY_ED25519_0_BYTE = 'AAAAC3NzaC1lZDI1NTE5AAAAIADK9x9t3yQQH7h4OEJpUa7l2j7mcmKf4LAsNXHxNbSm'
@@ -93,20 +155,29 @@ EOF
   KEY1_MD5_FINGERPRINT = "2a:89:84:c9:29:05:d1:f8:49:79:1c:ba:73:99:eb:af"
   KEY2_MD5_FINGERPRINT = "3c:af:74:87:cc:cc:a1:12:05:1a:09:b7:7b:ce:ed:ce"
   KEY3_MD5_FINGERPRINT = "14:f6:6a:12:96:be:44:32:e6:3c:77:43:94:52:f5:7a"
+  KEY4_MD5_FINGERPRINT = "38:0b:0f:63:36:64:b6:f0:43:94:de:32:75:eb:57:68"
   ED25519_MD5_FINGERPRINT = "6f:1a:8a:c1:4f:13:5c:36:6e:3f:be:eb:49:3b:8e:3e"
   ECDSA_256_MD5_FINGERPRINT = "d9:3a:7f:de:b2:65:04:ac:62:05:1a:1e:97:e9:2b:9d"
+  ECDSA_384_MD5_FINGERPRINT = "b5:bb:3e:f6:eb:3b:0f:1e:18:37:1f:36:ac:7c:87:0d"
+  ECDSA_521_MD5_FINGERPRINT = "98:8e:a9:4c:b9:aa:58:35:d1:42:65:c3:41:dd:04:e1"
 
   KEY1_SHA1_FINGERPRINT = "e4:f9:79:f2:fe:d6:be:2d:ef:2e:c2:fa:aa:f8:b0:17:34:fe:0d:c0"
   KEY2_SHA1_FINGERPRINT = "9a:52:78:2b:6b:cb:39:b7:85:ed:90:8a:28:62:aa:b3:98:88:e6:07"
   KEY3_SHA1_FINGERPRINT = "15:68:c6:72:ac:18:d1:fc:ab:a2:b7:b5:8c:d1:fe:8f:b9:ae:a9:47"
+  KEY4_SHA1_FINGERPRINT = "aa:b5:e6:62:27:87:b8:05:f6:d6:8f:31:dc:83:81:d9:8f:f8:71:29"
   ED25519_SHA1_FINGERPRINT = "57:41:7c:d0:e2:53:28:87:7e:87:53:d4:69:ef:ef:63:ec:c0:0e:5e"
   ECDSA_256_SHA1_FINGERPRINT = "94:e8:92:2b:1b:ec:49:de:ff:85:ea:6e:10:d6:8d:87:7a:67:40:ee"
+  ECDSA_384_SHA1_FINGERPRINT = "cc:fb:4c:d6:e9:d0:03:ae:2d:82:e1:fc:70:d8:47:98:25:e1:83:2b"
+  ECDSA_521_SHA1_FINGERPRINT = "6b:2c:a2:6e:3a:82:6c:73:28:57:91:20:71:82:bc:8f:f8:9d:6c:41"
 
   KEY1_SHA256_FINGERPRINT = "js3llFehloxCfsVuDw5xu3NtS9AOAxcXY8WL6vkDIts="
   KEY2_SHA256_FINGERPRINT = "23f/6U/LdxIFx1CQFKHylw76n+LIHYoY4nRxKcFoos4="
   KEY3_SHA256_FINGERPRINT = "mPqEPQlOPGORrTJrU17sPax1jOqeutZja6MOsFIca+8="
+  KEY4_SHA256_FINGERPRINT = "foUpf1ox3KfG3eKgJxGoSdZFRxHPsBYJgfD+CMYky6Y="
   ED25519_SHA256_FINGERPRINT = "gyzHUKl1eO8Bk1Cvn4joRgxRlXo1+1HJ3Vho/hAtKEg="
   ECDSA_256_SHA256_FINGERPRINT = "ncy2crhoL44R58GCZPQ5chPRrjlQKKgu07FDNelDmdk="
+  ECDSA_384_SHA256_FINGERPRINT = "mrr4QcP6qD05DUS6Rwefb9f0uuvjyMcO28LSiq2283U="
+  ECDSA_521_SHA256_FINGERPRINT = "QnaiGMIVDZyTG47hMWK6Y1z/yUzHIcTBGpNNuUwlhAk="
 
   KEY1_RANDOMART = <<-EOF.rstrip
 +--[ RSA 2048]----+
@@ -147,6 +218,66 @@ EOF
 |      .          |
 |                 |
 |                 |
++-----------------+
+EOF
+
+  # ssh-keygen -lv -E md5 -f ./id_ecdsa_ssh_public_key4.pub
+  KEY4_RANDOMART = <<-EOF.rstrip
++--[ECDSA 256]----+
+|    ..           |
+|   .. . .        |
+|  ..=o . . .     |
+|   B+.... E .    |
+|    @oo.S. .     |
+|   o B o. .      |
+|      o  .       |
+|                 |
+|                 |
++-----------------+
+EOF
+
+  # ssh-keygen -lv -E sha256 -f ./id_ecdsa_ssh_public_key4.pub
+  KEY4_RANDOMART_USING_SHA256_DIGEST = <<-EOF.rstrip
++--[ECDSA 256]----+
+|      .. o++B+   |
+|       .. ...*   |
+|    . ...o  o o  |
+|   . =o.o .= .   |
+|    +o+oS o.= . .|
+|   o .oo =.. + +.|
+|  E     o +.+ = o|
+|         ..=.+ . |
+|          oo  .  |
++-----------------+
+EOF
+
+  # ssh-keygen -lv -E sha384 -f ./id_ecdsa_ssh_public_key4.pub
+  KEY4_RANDOMART_USING_SHA384_DIGEST = <<-EOF.rstrip
++--[ECDSA 256]----+
+|           o++.  |
+| .        *oo. . |
+|o       .o+B.o.. |
+|+o      ooB+O *..|
+|.=+    .SB== ^.+.|
+|+  o    +o .O Xo.|
+| .  ...   .. + .o|
+|  . E. o +  + +..|
+|   .... . o..Bo..|
++-----------------+
+EOF
+
+  # ssh-keygen -lv -E sha512 -f ./id_ecdsa_ssh_public_key4.pub
+  KEY4_RANDOMART_USING_SHA512_DIGEST = <<-EOF.rstrip
++--[ECDSA 256]----+
+|       +*+o    oo|
+|      . .o o  . +|
+|     . o.   oo oo|
+|.. .+ .    .*.o+ |
+|..Bo.*  S  ..=o..|
+| .+X+ Oo    ...+ |
+| +o.B*+=o    .+ +|
+|+=+O.+=+.+. +.o+.|
+|@**EB*O++=o+ =o.+|
 +-----------------+
 EOF
 
@@ -209,6 +340,7 @@ EOF
     @key1 = SSHKey.new(SSH_PRIVATE_KEY1, :comment => "me@example.com")
     @key2 = SSHKey.new(SSH_PRIVATE_KEY2, :comment => "me@example.com")
     @key3 = SSHKey.new(SSH_PRIVATE_KEY3, :comment => "me@example.com")
+    @key4 = SSHKey.new(SSH_PRIVATE_KEY4, :comment => "me@example.com")
     @key_without_comment = SSHKey.new(SSH_PRIVATE_KEY1)
   end
 
@@ -221,7 +353,14 @@ EOF
   end
 
   def test_generator_with_type
+    assert_equal "rsa", SSHKey.generate(:type => "rsa").type
     assert_equal "dsa", SSHKey.generate(:type => "dsa").type
+
+    if ecdsa_supported?
+      assert_equal "ecdsa", SSHKey.generate(:type => "ecdsa").type
+    else
+      assert_raises(NotImplementedError) { SSHKey.generate(:type => "ecdsa").type }
+    end
   end
 
   def test_generator_with_passphrase
@@ -243,6 +382,30 @@ EOF
     assert_equal SSH_PRIVATE_KEY3, @key3.dsa_private_key
   end
 
+  def test_private_key4
+    if ecdsa_supported?
+      assert_equal SSH_PRIVATE_KEY4, @key4.private_key
+    else
+      assert_raises(NotImplementedError) { @key4.private_key }
+    end
+  end
+
+  def test_public_key_1
+    assert_equal PUBLIC_KEY1, @key1.public_key
+  end
+
+  def test_public_key_2
+    assert_equal PUBLIC_KEY2, @key2.public_key
+  end
+
+  def test_public_key_3
+    assert_equal PUBLIC_KEY3, @key3.public_key
+  end
+
+  def test_public_key_4
+    assert_equal PUBLIC_KEY4, @key4.public_key
+  end
+
   def test_ssh_public_key_decoded1
     assert_equal Base64.decode64(SSH_PUBLIC_KEY1), @key1.send(:ssh_public_key_conversion)
   end
@@ -253,6 +416,14 @@ EOF
 
   def test_ssh_public_key_decoded3
     assert_equal Base64.decode64(SSH_PUBLIC_KEY3), @key3.send(:ssh_public_key_conversion)
+  end
+
+  def test_ssh_public_key_decoded4
+    if ecdsa_supported?
+      assert_equal Base64.decode64(SSH_PUBLIC_KEY4), @key4.send(:ssh_public_key_conversion)
+    else
+      assert_raises(NotImplementedError) { @key4.send(:ssh_public_key_conversion) }
+    end
   end
 
   def test_ssh_public_key_encoded1
@@ -267,15 +438,31 @@ EOF
     assert_equal SSH_PUBLIC_KEY3, Base64.encode64(@key3.send(:ssh_public_key_conversion)).gsub("\n", "")
   end
 
+  def test_ssh_public_key_encoded4
+    if ecdsa_supported?
+      assert_equal SSH_PUBLIC_KEY4, Base64.encode64(@key4.send(:ssh_public_key_conversion)).gsub("\n", "")
+    else
+      assert_raises(NotImplementedError) { Base64.encode64(@key4.send(:ssh_public_key_conversion)) }
+    end
+  end
+
   def test_ssh_public_key_output
     expected1 = "ssh-rsa #{SSH_PUBLIC_KEY1} me@example.com"
     expected2 = "ssh-rsa #{SSH_PUBLIC_KEY2} me@example.com"
     expected3 = "ssh-dss #{SSH_PUBLIC_KEY3} me@example.com"
-    expected4 = "ssh-rsa #{SSH_PUBLIC_KEY1}"
+    expected4 = "ecdsa-sha2-nistp256 #{SSH_PUBLIC_KEY4} me@example.com"
+    expected1b = "ssh-rsa #{SSH_PUBLIC_KEY1}"
     assert_equal expected1, @key1.ssh_public_key
     assert_equal expected2, @key2.ssh_public_key
     assert_equal expected3, @key3.ssh_public_key
-    assert_equal expected4, @key_without_comment.ssh_public_key
+
+    if ecdsa_supported?
+      assert_equal expected4, @key4.ssh_public_key
+    else
+      assert_raises(NotImplementedError) { @key4.ssh_public_key }
+    end
+
+    assert_equal expected1b, @key_without_comment.ssh_public_key
   end
 
   def test_ssh2_public_key_output
@@ -287,6 +474,24 @@ EOF
     assert_equal expected2, @key2.ssh2_public_key({})
     assert_equal expected3, @key3.ssh2_public_key({'Comment' => '1024-bit DSA with provided comment',
       'x-private-use-header' => 'some value that is long enough to go to wrap around to a new line.'})
+  end
+
+  def test_ssh_public_key_output_from_generated
+    generated_rsa   = SSHKey.generate(:type => "rsa",   :comment => "rsa key")
+    generated_dsa   = SSHKey.generate(:type => "dsa",   :comment => "dsa key")
+    generated_ecdsa = SSHKey.generate(:type => "ecdsa", :comment => "ecdsa key") if ecdsa_supported?
+
+    encoded_rsa   = Base64.encode64(generated_rsa.send(:ssh_public_key_conversion)).gsub("\n", "")
+    encoded_dsa   = Base64.encode64(generated_dsa.send(:ssh_public_key_conversion)).gsub("\n", "")
+    encoded_ecdsa = Base64.encode64(generated_ecdsa.send(:ssh_public_key_conversion)).gsub("\n", "") if ecdsa_supported?
+
+    expected_rsa   = "ssh-rsa #{encoded_rsa} rsa key"
+    expected_dsa   = "ssh-dss #{encoded_dsa} dsa key"
+    expected_ecdsa = "ecdsa-sha2-nistp256 #{encoded_ecdsa} ecdsa key"
+
+    assert_equal expected_rsa,   generated_rsa.ssh_public_key
+    assert_equal expected_dsa,   generated_dsa.ssh_public_key
+    assert_equal expected_ecdsa, generated_ecdsa.ssh_public_key if ecdsa_supported?
   end
 
   def test_public_key_directives
@@ -456,13 +661,31 @@ EOF
     assert_equal KEY2_MD5_FINGERPRINT, @key2.md5_fingerprint
     assert_equal KEY3_MD5_FINGERPRINT, @key3.md5_fingerprint
 
+    if ecdsa_supported?
+      assert_equal KEY4_MD5_FINGERPRINT, @key4.md5_fingerprint
+    else
+      assert_raises(NotImplementedError) { @key4.md5_fingerprint }
+    end
+
     assert_equal KEY1_SHA1_FINGERPRINT, @key1.sha1_fingerprint
     assert_equal KEY2_SHA1_FINGERPRINT, @key2.sha1_fingerprint
     assert_equal KEY3_SHA1_FINGERPRINT, @key3.sha1_fingerprint
 
+    if ecdsa_supported?
+      assert_equal KEY4_SHA1_FINGERPRINT, @key4.sha1_fingerprint
+    else
+      assert_raises(NotImplementedError) { @key4.sha1_fingerprint }
+    end
+
     assert_equal KEY1_SHA256_FINGERPRINT, @key1.sha256_fingerprint
     assert_equal KEY2_SHA256_FINGERPRINT, @key2.sha256_fingerprint
     assert_equal KEY3_SHA256_FINGERPRINT, @key3.sha256_fingerprint
+
+    if ecdsa_supported?
+      assert_equal KEY4_SHA256_FINGERPRINT, @key4.sha256_fingerprint
+    else
+      assert_raises(NotImplementedError) { @key4.sha256_fingerprint }
+    end
 
     assert_equal KEY1_MD5_FINGERPRINT, SSHKey.md5_fingerprint(SSH_PRIVATE_KEY1)
     assert_equal KEY1_MD5_FINGERPRINT, SSHKey.md5_fingerprint("ssh-rsa #{SSH_PUBLIC_KEY1}")
@@ -470,8 +693,11 @@ EOF
     assert_equal KEY2_MD5_FINGERPRINT, SSHKey.md5_fingerprint("ssh-rsa #{SSH_PUBLIC_KEY2} me@me.com")
     assert_equal KEY3_MD5_FINGERPRINT, SSHKey.md5_fingerprint(SSH_PRIVATE_KEY3)
     assert_equal KEY3_MD5_FINGERPRINT, SSHKey.md5_fingerprint("ssh-dss #{SSH_PUBLIC_KEY3}")
+    assert_equal KEY4_MD5_FINGERPRINT, SSHKey.md5_fingerprint("ecdsa-sha2-nistp256 #{SSH_PUBLIC_KEY4}")
     assert_equal ED25519_MD5_FINGERPRINT, SSHKey.md5_fingerprint("ssh-ed25519 #{SSH_PUBLIC_KEY_ED25519}")
     assert_equal ECDSA_256_MD5_FINGERPRINT, SSHKey.md5_fingerprint("ecdsa-sha2-nistp256 #{SSH_PUBLIC_KEY_ECDSA_256} me@me.com")
+    assert_equal ECDSA_384_MD5_FINGERPRINT, SSHKey.md5_fingerprint("ecdsa-sha2-nistp384 #{SSH_PUBLIC_KEY_ECDSA_384} me@me.com")
+    assert_equal ECDSA_521_MD5_FINGERPRINT, SSHKey.md5_fingerprint("ecdsa-sha2-nistp521 #{SSH_PUBLIC_KEY_ECDSA_521} me@me.com")
 
     assert_equal KEY1_SHA1_FINGERPRINT, SSHKey.sha1_fingerprint(SSH_PRIVATE_KEY1)
     assert_equal KEY1_SHA1_FINGERPRINT, SSHKey.sha1_fingerprint("ssh-rsa #{SSH_PUBLIC_KEY1}")
@@ -479,8 +705,11 @@ EOF
     assert_equal KEY2_SHA1_FINGERPRINT, SSHKey.sha1_fingerprint("ssh-rsa #{SSH_PUBLIC_KEY2} me@me.com")
     assert_equal KEY3_SHA1_FINGERPRINT, SSHKey.sha1_fingerprint(SSH_PRIVATE_KEY3)
     assert_equal KEY3_SHA1_FINGERPRINT, SSHKey.sha1_fingerprint("ssh-dss #{SSH_PUBLIC_KEY3}")
+    assert_equal KEY4_SHA1_FINGERPRINT, SSHKey.sha1_fingerprint("ecdsa-sha2-nistp256 #{SSH_PUBLIC_KEY4}")
     assert_equal ED25519_SHA1_FINGERPRINT, SSHKey.sha1_fingerprint("ssh-ed25519 #{SSH_PUBLIC_KEY_ED25519}")
     assert_equal ECDSA_256_SHA1_FINGERPRINT, SSHKey.sha1_fingerprint("ecdsa-sha2-nistp256 #{SSH_PUBLIC_KEY_ECDSA_256} me@me.com")
+    assert_equal ECDSA_384_SHA1_FINGERPRINT, SSHKey.sha1_fingerprint("ecdsa-sha2-nistp384 #{SSH_PUBLIC_KEY_ECDSA_384} me@me.com")
+    assert_equal ECDSA_521_SHA1_FINGERPRINT, SSHKey.sha1_fingerprint("ecdsa-sha2-nistp521 #{SSH_PUBLIC_KEY_ECDSA_521} me@me.com")
 
     assert_equal KEY1_SHA256_FINGERPRINT, SSHKey.sha256_fingerprint(SSH_PRIVATE_KEY1)
     assert_equal KEY1_SHA256_FINGERPRINT, SSHKey.sha256_fingerprint("ssh-rsa #{SSH_PUBLIC_KEY1}")
@@ -488,14 +717,24 @@ EOF
     assert_equal KEY2_SHA256_FINGERPRINT, SSHKey.sha256_fingerprint("ssh-rsa #{SSH_PUBLIC_KEY2} me@me.com")
     assert_equal KEY3_SHA256_FINGERPRINT, SSHKey.sha256_fingerprint(SSH_PRIVATE_KEY3)
     assert_equal KEY3_SHA256_FINGERPRINT, SSHKey.sha256_fingerprint("ssh-dss #{SSH_PUBLIC_KEY3}")
+    assert_equal KEY4_SHA256_FINGERPRINT, SSHKey.sha256_fingerprint("ecdsa-sha2-nistp256 #{SSH_PUBLIC_KEY4}")
     assert_equal ED25519_SHA256_FINGERPRINT, SSHKey.sha256_fingerprint("ssh-ed25519 #{SSH_PUBLIC_KEY_ED25519}")
     assert_equal ECDSA_256_SHA256_FINGERPRINT, SSHKey.sha256_fingerprint("ecdsa-sha2-nistp256 #{SSH_PUBLIC_KEY_ECDSA_256} me@me.com")
+    assert_equal ECDSA_384_SHA256_FINGERPRINT, SSHKey.sha256_fingerprint("ecdsa-sha2-nistp384 #{SSH_PUBLIC_KEY_ECDSA_384} me@me.com")
+    assert_equal ECDSA_521_SHA256_FINGERPRINT, SSHKey.sha256_fingerprint("ecdsa-sha2-nistp521 #{SSH_PUBLIC_KEY_ECDSA_521} me@me.com")
   end
 
   def test_bits
     assert_equal 2048, @key1.bits
     assert_equal 2048, @key2.bits
     assert_equal 1024, @key3.bits
+
+    if ecdsa_supported?
+      assert_equal 256, @key4.bits
+    else
+      assert_raises(NotImplementedError) { @key4.bits }
+    end
+
     assert_equal 512, SSHKey.generate(:bits => 512).bits
   end
 
@@ -503,6 +742,19 @@ EOF
     assert_equal KEY1_RANDOMART, @key1.randomart
     assert_equal KEY2_RANDOMART, @key2.randomart
     assert_equal KEY3_RANDOMART, @key3.randomart
+
+    if ecdsa_supported?
+      assert_equal KEY4_RANDOMART, @key4.randomart
+    else
+      assert_raises(NotImplementedError) { @key4.randomart }
+    end
+
+    if ecdsa_supported?
+      assert_equal KEY4_RANDOMART_USING_SHA256_DIGEST, @key4.randomart("SHA256")
+      assert_equal KEY4_RANDOMART_USING_SHA384_DIGEST, @key4.randomart("SHA384")
+      assert_equal KEY4_RANDOMART_USING_SHA512_DIGEST, @key4.randomart("SHA512")
+    end
+
   end
 
   def test_sshfp

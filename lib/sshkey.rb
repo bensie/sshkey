@@ -4,6 +4,34 @@ require 'digest/md5'
 require 'digest/sha1'
 require 'digest/sha2'
 
+def jruby_not_implemented(msg)
+  raise NotImplementedError.new "jruby-openssl #{JOpenSSL::VERSION}: #{msg}" if RUBY_PLATFORM == "java"
+end
+
+# Monkey patch OpenSSL::PKey::EC to provide convenience methods usable in this gem
+class OpenSSL::PKey::EC
+  def identifier
+    # NOTE: Unable to find these constants within OpenSSL, so hardcode them here.
+    # Curve names can be inferred from https://github.com/ruby/openssl/blob/master/ext/openssl/openssl_missing.c
+    case public_key.group.curve_name
+    when "prime256v1" then "nistp256"  # https://stackoverflow.com/a/41953717
+    when "secp256r1"  then "nistp256"  # JRuby
+    when "secp384r1"  then "nistp384"
+    when "secp521r1"  then "nistp521"
+    else
+      raise "Unknown curve name: #{public_key.group.curve_name}"
+    end
+  end
+
+  def q
+    # jruby-openssl does not currently support to_octet_string
+    # https://github.com/jruby/jruby-openssl/issues/226
+    jruby_not_implemented("to_octet_string is not implemented")
+
+    public_key.to_octet_string(:uncompressed)
+  end
+end
+
 class SSHKey
   SSH_TYPES = {
     "ssh-rsa" => "rsa",
@@ -20,7 +48,23 @@ class SSHKey
     "ecdsa"   => 3,
     "ed25519" => 4,
   }
-  SSH_CONVERSION = {"rsa" => ["e", "n"], "dsa" => ["p", "q", "g", "pub_key"]}
+
+  ECDSA_CURVES = {
+    256 => "prime256v1",  # https://stackoverflow.com/a/41953717
+    384 => "secp384r1",
+    521 => "secp521r1",
+  }
+
+  VALID_BITS = {
+    "ecdsa" => ECDSA_CURVES.keys,
+  }
+
+  # Accessor methods are defined in:
+  # - RSA:   https://github.com/ruby/openssl/blob/master/ext/openssl/ossl_pkey_rsa.c
+  # - DSA:   https://github.com/ruby/openssl/blob/master/ext/openssl/ossl_pkey_dsa.c
+  # - ECDSA: monkey patch OpenSSL::PKey::EC above
+  SSH_CONVERSION = {"rsa" => ["e", "n"], "dsa" => ["p", "q", "g", "pub_key"], "ecdsa" => ["identifier", "q"]}
+
   SSH2_LINE_LENGTH = 70 # +1 (for line wrap '/' character) must be <= 72
 
   class << self
@@ -40,17 +84,31 @@ class SSHKey
       type   = options[:type] || "rsa"
 
       # JRuby modulus size must range from 512 to 1024
-      default_bits = type == "rsa" ? 2048 : 1024
+      case type
+      when "rsa"   then default_bits = 2048
+      when "ecdsa" then default_bits = 256
+      else
+        default_bits = 1024
+      end
 
       bits   = options[:bits] || default_bits
       cipher = OpenSSL::Cipher.new("AES-128-CBC") if options[:passphrase]
 
+      raise "Bits must either: #{VALID_BITS[type.downcase].join(', ')}" unless VALID_BITS[type.downcase].nil? || VALID_BITS[type.downcase].include?(bits)
+
       case type.downcase
       when "rsa" then new(OpenSSL::PKey::RSA.generate(bits).to_pem(cipher, options[:passphrase]), options)
       when "dsa" then new(OpenSSL::PKey::DSA.generate(bits).to_pem(cipher, options[:passphrase]), options)
+      when "ecdsa"
+        # jruby-openssl OpenSSL::PKey::EC support isn't complete
+        # https://github.com/jruby/jruby-openssl/issues/189
+        jruby_not_implemented("OpenSSL::PKey::EC is not fully implemented")
+
+        new(OpenSSL::PKey::EC.new(ECDSA_CURVES[bits]).generate_key.to_pem(cipher, options[:passphrase]), options)
       else
         raise "Unknown key type: #{type}"
       end
+
     end
 
     # Validate an existing SSH public key
@@ -291,13 +349,13 @@ class SSHKey
     end
   end
 
-  attr_reader :key_object, :type
+  attr_reader :key_object, :type, :typestr
   attr_accessor :passphrase, :comment
 
   # Create a new SSHKey object
   #
   # ==== Parameters
-  # * private_key - Existing RSA or DSA private key
+  # * private_key - Existing RSA or DSA or ECDSA private key
   # * options<~Hash>
   #   * :comment<~String> - Comment to use for the public key, defaults to ""
   #   * :passphrase<~String> - If the key is encrypted, supply the passphrase
@@ -307,19 +365,41 @@ class SSHKey
     @passphrase = options[:passphrase]
     @comment    = options[:comment] || ""
     self.directives = options[:directives] || []
+
     begin
       @key_object = OpenSSL::PKey::RSA.new(private_key, passphrase)
       @type = "rsa"
-    rescue
+      @typestr = "ssh-rsa"
+    rescue OpenSSL::PKey::RSAError
+      @type = nil
+    end
+
+    return if @type
+
+    begin
       @key_object = OpenSSL::PKey::DSA.new(private_key, passphrase)
       @type = "dsa"
+      @typestr = "ssh-dss"
+    rescue OpenSSL::PKey::DSAError
+      @type = nil
     end
+
+    return if @type
+
+    @key_object = OpenSSL::PKey::EC.new(private_key, passphrase)
+    @type = "ecdsa"
+    bits = ECDSA_CURVES.invert[@key_object.group.curve_name]
+    @typestr = "ecdsa-sha2-nistp#{bits}"
   end
 
-  # Fetch the RSA/DSA private key
+  # Fetch the private key (PEM format)
   #
   # rsa_private_key and dsa_private_key are aliased for backward compatibility
   def private_key
+    # jruby-openssl OpenSSL::PKey::EC support isn't complete
+    # https://github.com/jruby/jruby-openssl/issues/189
+    jruby_not_implemented("OpenSSL::PKey::EC is not fully implemented") if type == "ecdsa"
+
     key_object.to_pem
   end
   alias_method :rsa_private_key, :private_key
@@ -333,18 +413,28 @@ class SSHKey
     key_object.to_pem(OpenSSL::Cipher.new("AES-128-CBC"), passphrase)
   end
 
-  # Fetch the RSA/DSA public key
+  # Fetch the public key (PEM format)
   #
   # rsa_public_key and dsa_public_key are aliased for backward compatibility
   def public_key
-    key_object.public_key.to_pem
+    public_key_object.to_pem
   end
   alias_method :rsa_public_key, :public_key
   alias_method :dsa_public_key, :public_key
 
+  def public_key_object
+    if type == "ecdsa"
+      pub = OpenSSL::PKey::EC.new(key_object.group)
+      pub.public_key = key_object.public_key
+      pub
+    else
+      key_object.public_key
+    end
+  end
+
   # SSH public key
   def ssh_public_key
-    [directives.join(",").strip, SSH_TYPES.invert[type], Base64.encode64(ssh_public_key_conversion).gsub("\n", ""), comment].join(" ").strip
+    [directives.join(",").strip, typestr, Base64.encode64(ssh_public_key_conversion).gsub("\n", ""), comment].join(" ").strip
   end
 
   # SSH2 public key (RFC4716)
@@ -387,6 +477,7 @@ class SSHKey
   #
   # Generate OpenSSH compatible ASCII art fingerprints
   # See http://www.opensource.apple.com/source/OpenSSH/OpenSSH-175/openssh/key.c (key_fingerprint_randomart function)
+  # or https://mirrors.mit.edu/pub/OpenBSD/OpenSSH/ (sshkey.c fingerprint_randomart function)
   #
   # Example:
   # +--[ RSA 2048]----+
@@ -400,13 +491,23 @@ class SSHKey
   # |   . .           |
   # |    Eo.          |
   # +-----------------+
-  def randomart
+  def randomart(dgst_alg = "MD5")
     fieldsize_x = 17
     fieldsize_y = 9
     x = fieldsize_x / 2
     y = fieldsize_y / 2
-    raw_digest = Digest::MD5.digest(ssh_public_key_conversion)
-    num_bytes = raw_digest.bytesize
+
+    case dgst_alg
+      when "MD5"    then raw_digest = Digest::MD5.digest(ssh_public_key_conversion)
+      when "SHA256" then raw_digest = Digest::SHA2.new(256).digest(ssh_public_key_conversion)
+      when "SHA384" then raw_digest = Digest::SHA2.new(384).digest(ssh_public_key_conversion)
+      when "SHA512" then raw_digest = Digest::SHA2.new(512).digest(ssh_public_key_conversion)
+    else
+      raise "Unknown digest algorithm: #{digest}"
+    end
+
+    augmentation_string = " .o+=*BOX@%&#/^SE"
+    len = augmentation_string.length - 1
 
     field = Array.new(fieldsize_x) { Array.new(fieldsize_y) {0} }
 
@@ -418,20 +519,27 @@ class SSHKey
         x = [[x, 0].max, fieldsize_x - 1].min
         y = [[y, 0].max, fieldsize_y - 1].min
 
-        field[x][y] += 1 if (field[x][y] < num_bytes - 2)
+        field[x][y] += 1 if (field[x][y] < len - 2)
 
         byte >>= 2
       end
     end
 
-    field[fieldsize_x / 2][fieldsize_y / 2] = num_bytes - 1
-    field[x][y] = num_bytes
-    augmentation_string = " .o+=*BOX@%&#/^SE"
-    output = "+--#{sprintf("[%4s %4u]", type.upcase, bits)}----+\n"
+    fieldsize_x_halved = fieldsize_x / 2
+    fieldsize_y_halved = fieldsize_y / 2
+
+    field[fieldsize_x_halved][fieldsize_y_halved] = len - 1
+    field[x][y] = len
+
+    type_name_length_max = 4  # Note: this will need to be extended to accomodate ed25519
+    bits_number_length_max = (bits < 1000 ? 3 : 4)
+    formatstr = "[%#{type_name_length_max}s %#{bits_number_length_max}u]"
+    output = "+--#{sprintf(formatstr, type.upcase, bits)}----+\n"
+
     fieldsize_y.times do |y|
       output << "|"
       fieldsize_x.times do |x|
-        output << augmentation_string[[field[x][y], num_bytes].min]
+        output << augmentation_string[[field[x][y], len].min]
       end
       output << "|"
       output << "\n"
@@ -451,6 +559,26 @@ class SSHKey
 
   private
 
+  def self.ssh_public_key_data_dsarsa(val)
+    # Get byte-representation of absolute value of val
+    data = val.to_s(2)
+
+    first_byte = data[0,1].unpack("c").first
+    if val < 0
+      # For negative values, highest bit must be set
+      data[0] = [0x80 & first_byte].pack("c")
+    elsif first_byte < 0
+      # For positive values where highest bit would be set, prefix with \0
+      data = "\0" + data
+    end
+
+    data
+  end
+
+  def self.ssh_public_key_data_ecdsa(val)
+    val
+  end
+
   # SSH Public Key Conversion
   #
   # All data type encoding is defined in the section #5 of RFC #4251.
@@ -461,26 +589,20 @@ class SSHKey
   # For instance, the "ssh-rsa" string is encoded as the following byte array
   # [0, 0, 0, 7, 's', 's', 'h', '-', 'r', 's', 'a']
   def ssh_public_key_conversion
-    typestr = SSH_TYPES.invert[type]
     methods = SSH_CONVERSION[type]
-    pubkey = key_object.public_key
-    methods.inject([7].pack("N") + typestr) do |pubkeystr, m|
-      # Given pubkey.class == OpenSSL::BN, pubkey.to_s(0) returns an MPI
-      # formatted string (length prefixed bytes). This is not supported by
-      # JRuby, so we still have to deal with length and data separately.
-      val = pubkey.send(m)
+    methods.inject([typestr.length].pack("N") + typestr) do |pubkeystr, m|
+      # Given public_key_object.class == OpenSSL::BN, public_key_object.to_s(0)
+      # returns an MPI formatted string (length prefixed bytes). This is not
+      # supported by JRuby, so we still have to deal with length and data separately.
+      val = public_key_object.send(m)
 
-      # Get byte-representation of absolute value of val
-      data = val.to_s(2)
-
-      first_byte = data[0,1].unpack("c").first
-      if val < 0
-        # For negative values, highest bit must be set
-        data[0] = [0x80 & first_byte].pack("c")
-      elsif first_byte < 0
-        # For positive values where highest bit would be set, prefix with \0
-        data = "\0" + data
+      case type
+      when "dsa","rsa" then data = self.class.ssh_public_key_data_dsarsa(val)
+      when "ecdsa"     then data = self.class.ssh_public_key_data_ecdsa(val)
+      else
+        raise "Unknown key type: #{type}"
       end
+
       pubkeystr + [data.length].pack("N") + data
     end
   end
