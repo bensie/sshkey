@@ -12,7 +12,8 @@ end
 class OpenSSL::PKey::EC
   def identifier
     # NOTE: Unable to find these constants within OpenSSL, so hardcode them here.
-    # Curve names can be inferred from https://github.com/ruby/openssl/blob/master/ext/openssl/openssl_missing.c
+    # Analogous to net-ssh OpenSSL::PKey::EC::CurveNameAliasInv
+    # https://github.com/net-ssh/net-ssh/blob/master/lib/net/ssh/transport/openssl.rb#L147-L151
     case public_key.group.curve_name
     when "prime256v1" then "nistp256"  # https://stackoverflow.com/a/41953717
     when "secp256r1"  then "nistp256"  # JRuby
