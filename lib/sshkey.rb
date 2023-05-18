@@ -14,7 +14,7 @@ class OpenSSL::PKey::EC
     # NOTE: Unable to find these constants within OpenSSL, so hardcode them here.
     # Analogous to net-ssh OpenSSL::PKey::EC::CurveNameAliasInv
     # https://github.com/net-ssh/net-ssh/blob/master/lib/net/ssh/transport/openssl.rb#L147-L151
-    case public_key.group.curve_name
+    case group.curve_name
     when "prime256v1" then "nistp256"  # https://stackoverflow.com/a/41953717
     when "secp256r1"  then "nistp256"  # JRuby
     when "secp384r1"  then "nistp384"
@@ -29,7 +29,7 @@ class OpenSSL::PKey::EC
     # https://github.com/jruby/jruby-openssl/issues/226
     jruby_not_implemented("to_octet_string is not implemented")
 
-    public_key.to_octet_string(:uncompressed)
+    public_key.to_octet_string(group.point_conversion_form)
   end
 end
 
@@ -463,7 +463,7 @@ class SSHKey
                 OpenSSL::ASN1::ObjectId(curve_name)
               ]
             ),
-            OpenSSL::ASN1::BitString(public_key_point.to_octet_string(:uncompressed))
+            OpenSSL::ASN1::BitString(public_key_point.to_octet_string(key_object.group.point_conversion_form))
           ]
         )
 
