@@ -12,8 +12,9 @@ end
 class OpenSSL::PKey::EC
   def identifier
     # NOTE: Unable to find these constants within OpenSSL, so hardcode them here.
-    # Curve names can be inferred from https://github.com/ruby/openssl/blob/master/ext/openssl/openssl_missing.c
-    case public_key.group.curve_name
+    # Analogous to net-ssh OpenSSL::PKey::EC::CurveNameAliasInv
+    # https://github.com/net-ssh/net-ssh/blob/master/lib/net/ssh/transport/openssl.rb#L147-L151
+    case group.curve_name
     when "prime256v1" then "nistp256"  # https://stackoverflow.com/a/41953717
     when "secp256r1"  then "nistp256"  # JRuby
     when "secp384r1"  then "nistp384"
@@ -28,7 +29,7 @@ class OpenSSL::PKey::EC
     # https://github.com/jruby/jruby-openssl/issues/226
     jruby_not_implemented("to_octet_string is not implemented")
 
-    public_key.to_octet_string(:uncompressed)
+    public_key.to_octet_string(group.point_conversion_form)
   end
 end
 
@@ -97,18 +98,31 @@ class SSHKey
       raise "Bits must either: #{VALID_BITS[type.downcase].join(', ')}" unless VALID_BITS[type.downcase].nil? || VALID_BITS[type.downcase].include?(bits)
 
       case type.downcase
-      when "rsa" then new(OpenSSL::PKey::RSA.generate(bits).to_pem(cipher, options[:passphrase]), options)
-      when "dsa" then new(OpenSSL::PKey::DSA.generate(bits).to_pem(cipher, options[:passphrase]), options)
+      when "rsa"
+        key_object = OpenSSL::PKey::RSA.generate(bits)
+
+      when "dsa"
+        key_object = OpenSSL::PKey::DSA.generate(bits)
+
       when "ecdsa"
         # jruby-openssl OpenSSL::PKey::EC support isn't complete
         # https://github.com/jruby/jruby-openssl/issues/189
         jruby_not_implemented("OpenSSL::PKey::EC is not fully implemented")
 
-        new(OpenSSL::PKey::EC.new(ECDSA_CURVES[bits]).generate_key.to_pem(cipher, options[:passphrase]), options)
+        if OpenSSL::OPENSSL_VERSION_NUMBER >= 0x30000000
+          # https://github.com/ruby/openssl/pull/480
+          key_object = OpenSSL::PKey::EC.generate(ECDSA_CURVES[bits])
+        else
+          key_pkey = OpenSSL::PKey::EC.new(ECDSA_CURVES[bits])
+          key_object = key_pkey.generate_key
+        end
+
       else
         raise "Unknown key type: #{type}"
       end
 
+      key_pem = key_object.to_pem(cipher, options[:passphrase])
+      new(key_pem, options)
     end
 
     # Validate an existing SSH public key
@@ -424,9 +438,44 @@ class SSHKey
 
   def public_key_object
     if type == "ecdsa"
-      pub = OpenSSL::PKey::EC.new(key_object.group)
-      pub.public_key = key_object.public_key
-      pub
+      return nil unless key_object
+      return nil unless key_object.group
+
+      if OpenSSL::OPENSSL_VERSION_NUMBER >= 0x30000000
+        # Avoid "OpenSSL::PKey::PKeyError: pkeys are immutable on OpenSSL 3.0"
+        # https://github.com/ruby/openssl/blob/master/History.md#version-300
+        # https://github.com/ruby/openssl/issues/498
+        # https://github.com/net-ssh/net-ssh/commit/4de6831dea4e922bf3052192eec143af015a3486
+        # https://github.com/ClearlyClaire/cose-ruby/commit/28ee497fa7d9d49e72d5a5e97a567c0b58fdd822
+
+        curve_name = key_object.group.curve_name
+        return nil unless curve_name
+
+        # Construct public key OpenSSL::PKey::EC from OpenSSL::PKey::EC::Point
+        public_key_point = key_object.public_key  # => OpenSSL::PKey::EC::Point
+        return nil unless public_key_point
+
+        asn1 = OpenSSL::ASN1::Sequence(
+          [
+            OpenSSL::ASN1::Sequence(
+              [
+                OpenSSL::ASN1::ObjectId("id-ecPublicKey"),
+                OpenSSL::ASN1::ObjectId(curve_name)
+              ]
+            ),
+            OpenSSL::ASN1::BitString(public_key_point.to_octet_string(key_object.group.point_conversion_form))
+          ]
+        )
+
+        pub = OpenSSL::PKey::EC.new(asn1.to_der)
+        pub
+
+      else
+        pub = OpenSSL::PKey::EC.new(key_object.group)
+        pub.public_key = key_object.public_key
+        pub
+      end
+
     else
       key_object.public_key
     end

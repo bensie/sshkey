@@ -16,7 +16,7 @@ Tested / supported on CRuby 2.0.0+ and JRuby.
 
 ### Generate a new key
 
-When generating a new keypair the default key type is 2048-bit RSA, but you can supply the `type` (RSA or DSA) and `bits` in the options.
+When generating a new keypair the default key type is 2048-bit RSA, but you can supply the `type` (RSA or DSA or ECDSA) and `bits` in the options.
 You can also (optionally) supply a `comment` or `passphrase`.
 
 ```ruby
@@ -32,7 +32,7 @@ k = SSHKey.generate(
 
 ### Use your existing key
 
-Return an SSHKey object from an existing RSA or DSA private key (provided as a string).
+Return an SSHKey object from an existing RSA or DSA or ECDSA private key (provided as a string).
 
 ```ruby
 f = File.read(File.expand_path("~/.ssh/id_rsa"))
@@ -43,7 +43,7 @@ k = SSHKey.new(f, comment: "foo@bar.com")
 
 #### Private and public keys
 
-Fetch the private and public keys as strings. Note that the `public_key` is the RSA or DSA public key, not an SSH public key.
+Fetch the private and public keys as strings. Note that the `public_key` is the RSA or DSA or ECDSA public key, not an SSH public key.
 
 ```ruby
 k.private_key
@@ -161,7 +161,7 @@ puts k.randomart
 
 #### Original OpenSSL key object
 
-Return the original [OpenSSL::PKey::RSA](http://www.ruby-doc.org/stdlib/libdoc/openssl/rdoc/classes/OpenSSL/PKey/RSA.html) or [OpenSSL::PKey::DSA](http://www.ruby-doc.org/stdlib/libdoc/openssl/rdoc/classes/OpenSSL/PKey/DSA.html) object.
+Return the original [OpenSSL::PKey::RSA](https://ruby-doc.org/3.2.2/exts/openssl/OpenSSL/PKey/RSA.html) or [OpenSSL::PKey::DSA](https://ruby-doc.org/3.2.2/exts/openssl/OpenSSL/PKey/DSA.html) or [OpenSSL::PKey::EC](https://ruby-doc.org/3.2.2/exts/openssl/OpenSSL/PKey/EC.html)object.
 
 ```ruby
 k.key_object
