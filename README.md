@@ -1,12 +1,10 @@
 # SSHKey
 
-Generate private and public SSH keys (RSA and DSA supported) using pure Ruby.
-
-[![Build Status](https://secure.travis-ci.org/bensie/sshkey.svg?branch=master)](http://travis-ci.org/bensie/sshkey)
+Generate private and public SSH keys (RSA, DSA, and ECDSA supported) using pure Ruby.
 
 ## Requirements
 
-Tested / supported on CRuby 2.0.0+ and JRuby.
+Tested / supported on CRuby 2.5+ and JRuby.
 
 ## Installation
 
@@ -213,4 +211,4 @@ SSHKey.ssh_public_key_to_ssh2_public_key "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQ
 
 ## Copyright
 
-Copyright (c) 2011-2019 James Miller
+Copyright (c) 2011-2023 James Miller
