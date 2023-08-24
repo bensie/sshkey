@@ -30,11 +30,25 @@ k = SSHKey.generate(
 
 ### Use your existing key
 
-Return an SSHKey object from an existing RSA or DSA or ECDSA private key (provided as a string).
+Return an SSHKey object from an existing RSA or DSA or ECDSA private key (provided as a string in PEM format).
 
 ```ruby
 f = File.read(File.expand_path("~/.ssh/id_rsa"))
 k = SSHKey.new(f, comment: "foo@bar.com")
+```
+
+If your existing key is in the OpenSSH format (starts with `-----BEGIN OPENSSH PRIVATE KEY-----`), you'll need to convert it to PEM format or generate a new key.
+
+Generate a new RSA key in PEM format with `ssh-keygen`:
+
+```
+ssh-keygen -t rsa -b 4096 -m PEM
+```
+
+Or convert an existing OpenSSH-formatted key with the following. This will modify the existing private key file.
+
+```
+ssh-keygen -p -N "" -m pem -f /path/to/existing/private/key
 ```
 
 ### The SSHKey object
@@ -159,7 +173,7 @@ puts k.randomart
 
 #### Original OpenSSL key object
 
-Return the original [OpenSSL::PKey::RSA](https://ruby-doc.org/3.2.2/exts/openssl/OpenSSL/PKey/RSA.html) or [OpenSSL::PKey::DSA](https://ruby-doc.org/3.2.2/exts/openssl/OpenSSL/PKey/DSA.html) or [OpenSSL::PKey::EC](https://ruby-doc.org/3.2.2/exts/openssl/OpenSSL/PKey/EC.html)object.
+Return the original [OpenSSL::PKey::RSA](https://ruby-doc.org/3.2.2/exts/openssl/OpenSSL/PKey/RSA.html) or [OpenSSL::PKey::DSA](https://ruby-doc.org/3.2.2/exts/openssl/OpenSSL/PKey/DSA.html) or [OpenSSL::PKey::EC](https://ruby-doc.org/3.2.2/exts/openssl/OpenSSL/PKey/EC.html) object.
 
 ```ruby
 k.key_object
