@@ -441,7 +441,12 @@ class SSHKey
       return nil unless key_object
       return nil unless key_object.group
 
-      if OpenSSL::OPENSSL_VERSION_NUMBER >= 0x30000000
+      if OpenSSL::OPENSSL_VERSION_NUMBER >= 0x30000000 && RUBY_PLATFORM != "java"
+
+        # jruby-openssl does not currently support point_conversion_form
+        # (futureproofing for if/when JRuby requires this technique to determine public key)
+        jruby_not_implemented("point_conversion_form is not implemented")
+
         # Avoid "OpenSSL::PKey::PKeyError: pkeys are immutable on OpenSSL 3.0"
         # https://github.com/ruby/openssl/blob/master/History.md#version-300
         # https://github.com/ruby/openssl/issues/498
@@ -450,6 +455,11 @@ class SSHKey
 
         curve_name = key_object.group.curve_name
         return nil unless curve_name
+
+        # Map to different curve_name for JRuby
+        # (futureproofing for if/when JRuby requires this technique to determine public key)
+        # https://github.com/jwt/ruby-jwt/issues/362#issuecomment-722938409
+        curve_name = "prime256v1" if curve_name == "secp256r1" && RUBY_PLATFORM == "java"
 
         # Construct public key OpenSSL::PKey::EC from OpenSSL::PKey::EC::Point
         public_key_point = key_object.public_key  # => OpenSSL::PKey::EC::Point
