@@ -12,7 +12,7 @@ class KeyTest < Test::Unit::TestCase
       @key3 => {private_key: SSH_PRIVATE_KEY3, public_key: PUBLIC_KEY3, ssh_public_key: SSH_PUBLIC_KEY3, typestr: "ssh-dss", bits: 1024,
                 md5: KEY3_MD5_FINGERPRINT, sha1: KEY3_SHA1_FINGERPRINT, sha256: KEY3_SHA256_FINGERPRINT},
       @key4 => {private_key: SSH_PRIVATE_KEY4, public_key: PUBLIC_KEY4, ssh_public_key: SSH_PUBLIC_KEY4, typestr: "ecdsa-sha2-nistp256", bits: 256,
-                md5: KEY4_MD5_FINGERPRINT, sha1: KEY4_SHA1_FINGERPRINT, sha256: KEY4_SHA256_FINGERPRINT},
+                md5: KEY4_MD5_FINGERPRINT, sha1: KEY4_SHA1_FINGERPRINT, sha256: KEY4_SHA256_FINGERPRINT}
     }
   end
 
@@ -113,11 +113,11 @@ class KeyTest < Test::Unit::TestCase
   end
 
   def test_new_with_unsupported_key_type
-    ed448 = <<-EOF
------BEGIN PRIVATE KEY-----
-MEcCAQAwBQYDK2VxBDsEOWJvW9C6Mp1k8gXi3l4EwtgQOHV+rXfFfwVXED2Jadbd
-Pz2VU714rzAPK/SA+zsAk2EFsVILnX5m6w==
------END PRIVATE KEY-----
+    ed448 = <<~EOF
+      -----BEGIN PRIVATE KEY-----
+      MEcCAQAwBQYDK2VxBDsEOWJvW9C6Mp1k8gXi3l4EwtgQOHV+rXfFfwVXED2Jadbd
+      Pz2VU714rzAPK/SA+zsAk2EFsVILnX5m6w==
+      -----END PRIVATE KEY-----
     EOF
     assert_raises(SSHKey::UnsupportedError) { SSHKey.new(ed448) }
   end

@@ -7,9 +7,9 @@ class SSHKey
   # https://github.com/openssh/openssh-portable/blob/master/PROTOCOL.key
   module OpenSSHPrivateKey
     BEGIN_LABEL = "-----BEGIN OPENSSH PRIVATE KEY-----"
-    END_LABEL   = "-----END OPENSSH PRIVATE KEY-----"
-    MAGIC       = "openssh-key-v1\0".b
-    BLOCK_SIZE  = 8   # cipher block size for "none"
+    END_LABEL = "-----END OPENSSH PRIVATE KEY-----"
+    MAGIC = "openssh-key-v1\0".b
+    BLOCK_SIZE = 8   # cipher block size for "none"
     LINE_LENGTH = 70  # matches ssh-keygen
 
     # DER prefix for a PKCS#8 Ed25519 private key, followed by the 32-byte seed (RFC 8410)
@@ -28,7 +28,7 @@ class SSHKey
 
       def uint32 = read(4).unpack1("N")
       def string = read(uint32)
-      def mpint  = OpenSSL::BN.new(string, 2)
+      def mpint = OpenSSL::BN.new(string, 2)
     end
     private_constant :Reader
 
@@ -57,7 +57,9 @@ class SSHKey
       reader.string # public key
 
       private_section = Reader.new(reader.string)
-      raise PrivateKeyError, "corrupt OpenSSH private key" unless private_section.uint32 == private_section.uint32
+      checkint1 = private_section.uint32
+      checkint2 = private_section.uint32
+      raise PrivateKeyError, "corrupt OpenSSH private key" unless checkint1 == checkint2
 
       key = read_private_key(private_section)
       comment = private_section.string.force_encoding(Encoding::UTF_8)
@@ -72,9 +74,9 @@ class SSHKey
 
       fields =
         case sshkey.type
-        when "rsa"     then [key.n, key.e, key.d, key.iqmp, key.p, key.q].map { |bn| bn.to_s(0) }.join
-        when "dsa"     then [key.p, key.q, key.g, key.pub_key, key.priv_key].map { |bn| bn.to_s(0) }.join
-        when "ecdsa"   then public_fields + key.private_key.to_s(0)
+        when "rsa" then [key.n, key.e, key.d, key.iqmp, key.p, key.q].map { |bn| bn.to_s(0) }.join
+        when "dsa" then [key.p, key.q, key.g, key.pub_key, key.priv_key].map { |bn| bn.to_s(0) }.join
+        when "ecdsa" then public_fields + key.private_key.to_s(0)
         when "ed25519" then public_fields + ssh_string(key.raw_private_key + key.raw_public_key)
         end
 
@@ -113,7 +115,7 @@ class SSHKey
           OpenSSL::ASN1::Integer(1),
           OpenSSL::ASN1::OctetString(d.to_s(2).rjust(field_bytes, "\0".b)),
           OpenSSL::ASN1::ObjectId(curve, 0, :EXPLICIT),
-          OpenSSL::ASN1::BitString(point, 1, :EXPLICIT),
+          OpenSSL::ASN1::BitString(point, 1, :EXPLICIT)
         ]).to_der)
       when "ssh-ed25519"
         reader.string # public key

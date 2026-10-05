@@ -5,9 +5,9 @@ class OpenSSHPrivateKeyTest < Test::Unit::TestCase
 
   def test_load_openssh_private_keys
     {
-      ED25519_PRIVATE_KEY  => ED25519_PUBLIC_KEY,
+      ED25519_PRIVATE_KEY => ED25519_PUBLIC_KEY,
       ECDSA384_PRIVATE_KEY => ECDSA384_PUBLIC_KEY,
-      RSA_PRIVATE_KEY      => RSA_PUBLIC_KEY,
+      RSA_PRIVATE_KEY => RSA_PUBLIC_KEY
     }.each do |private_key, public_key|
       key = SSHKey.new(private_key)
       assert_equal public_key, key.ssh_public_key # includes the comment stored in the key
@@ -54,7 +54,7 @@ class OpenSSHPrivateKeyTest < Test::Unit::TestCase
       Tempfile.create("sshkey") do |file|
         file.write(key.openssh_private_key)
         file.close
-        File.chmod(0600, file.path)
+        File.chmod(0o600, file.path)
         assert_equal key.ssh_public_key, `ssh-keygen -y -f #{file.path}`.strip
       end
     end

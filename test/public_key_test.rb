@@ -8,12 +8,12 @@ class PublicKeyTest < Test::Unit::TestCase
     expected2 = "ssh-rsa #{SSH_PUBLIC_KEY2} me@example.com"
     expected3 = "ssh-dss #{SSH_PUBLIC_KEY3} me@example.com"
     expected4 = "ssh-rsa #{SSH_PUBLIC_KEY1}"
-    expected5 = %Q{from="trusted.eng.cam.ac.uk",no-port-forwarding,no-pty ssh-rsa #{SSH_PUBLIC_KEY1}}
-    invalid1  = "ssh-rsa #{SSH_PUBLIC_KEY1}= me@example.com"
-    invalid2  = "ssh-rsa #{SSH_PUBLIC_KEY2}= me@example.com"
-    invalid3  = "ssh-dss #{SSH_PUBLIC_KEY3}= me@example.com"
-    invalid4  = "ssh-rsa A#{SSH_PUBLIC_KEY1}"
-    invalid5  = "ssh-rsa #{SSH_PUBLIC_KEY3} me@example.com"
+    expected5 = %(from="trusted.eng.cam.ac.uk",no-port-forwarding,no-pty ssh-rsa #{SSH_PUBLIC_KEY1})
+    invalid1 = "ssh-rsa #{SSH_PUBLIC_KEY1}= me@example.com"
+    invalid2 = "ssh-rsa #{SSH_PUBLIC_KEY2}= me@example.com"
+    invalid3 = "ssh-dss #{SSH_PUBLIC_KEY3}= me@example.com"
+    invalid4 = "ssh-rsa A#{SSH_PUBLIC_KEY1}"
+    invalid5 = "ssh-rsa #{SSH_PUBLIC_KEY3} me@example.com"
 
     assert SSHKey.valid_ssh_public_key?(expected1)
     assert SSHKey.valid_ssh_public_key?(expected2)
@@ -33,7 +33,7 @@ class PublicKeyTest < Test::Unit::TestCase
     assert SSHKey.valid_ssh_public_key?("ssh-ed25519 #{SSH_PUBLIC_KEY_ED25519_0_BYTE} me@example.com")
     assert SSHKey.valid_ssh_public_key?("ecdsa-sha2-nistp256 #{SSH_PUBLIC_KEY_ECDSA_256}")
     assert SSHKey.valid_ssh_public_key?("ecdsa-sha2-nistp384 #{SSH_PUBLIC_KEY_ECDSA_384} me@example.com")
-    assert SSHKey.valid_ssh_public_key?(%Q{from="trusted.eng.cam.ac.uk",no-port-forwarding,no-pty ecdsa-sha2-nistp521 #{SSH_PUBLIC_KEY_ECDSA_521} me@example.com})
+    assert SSHKey.valid_ssh_public_key?(%(from="trusted.eng.cam.ac.uk",no-port-forwarding,no-pty ecdsa-sha2-nistp521 #{SSH_PUBLIC_KEY_ECDSA_521} me@example.com))
 
     assert !SSHKey.valid_ssh_public_key?("ssh-ed25519 #{SSH_PUBLIC_KEY_ED25519}= me@example.com") # bad base64
     assert !SSHKey.valid_ssh_public_key?("ssh-ed25519 #{SSH_PUBLIC_KEY_ECDSA_384} me@example.com") # mismatched key format
@@ -45,10 +45,10 @@ class PublicKeyTest < Test::Unit::TestCase
   def test_ssh_public_key_validation_with_newlines
     expected1 = "ssh-rsa #{SSH_PUBLIC_KEY1}\n"
     expected2 = "ssh-ed25519 #{SSH_PUBLIC_KEY_ED25519} me@example.com\n"
-    invalid1  = "ssh-rsa #{SSH_PUBLIC_KEY1}\nme@example.com"
-    invalid2  = "ssh-rsa #{SSH_PUBLIC_KEY1}\n me@example.com"
-    invalid3  = "ssh-rsa #{SSH_PUBLIC_KEY1} \nme@example.com"
-    invalid4  = "ecdsa-sha2-nistp256 #{SSH_PUBLIC_KEY_ECDSA_256}\nme@example.com"
+    invalid1 = "ssh-rsa #{SSH_PUBLIC_KEY1}\nme@example.com"
+    invalid2 = "ssh-rsa #{SSH_PUBLIC_KEY1}\n me@example.com"
+    invalid3 = "ssh-rsa #{SSH_PUBLIC_KEY1} \nme@example.com"
+    invalid4 = "ecdsa-sha2-nistp256 #{SSH_PUBLIC_KEY_ECDSA_256}\nme@example.com"
 
     assert SSHKey.valid_ssh_public_key?(expected1)
     assert SSHKey.valid_ssh_public_key?(expected2)
@@ -62,8 +62,8 @@ class PublicKeyTest < Test::Unit::TestCase
   def test_ssh_public_key_validation_with_comments
     expected1 = "# Comment\nssh-rsa #{SSH_PUBLIC_KEY1}"
     expected2 = "# First comment\n\n# Second comment\n\nssh-ed25519 #{SSH_PUBLIC_KEY_ED25519} me@example.com"
-    invalid1  = "No starting hash # Valid comment\nssh-rsa #{SSH_PUBLIC_KEY1} me@example.com"
-    invalid2  = "# First comment\n\nSecond comment without hash\n\necdsa-sha2-nistp256 #{SSH_PUBLIC_KEY_ECDSA_256}\nme@example.com"
+    invalid1 = "No starting hash # Valid comment\nssh-rsa #{SSH_PUBLIC_KEY1} me@example.com"
+    invalid2 = "# First comment\n\nSecond comment without hash\n\necdsa-sha2-nistp256 #{SSH_PUBLIC_KEY_ECDSA_256}\nme@example.com"
 
     assert SSHKey.valid_ssh_public_key?(expected1)
     assert SSHKey.valid_ssh_public_key?(expected2)
@@ -86,8 +86,8 @@ class PublicKeyTest < Test::Unit::TestCase
     expected2 = "ssh-rsa #{SSH_PUBLIC_KEY2} me@example.com"
     expected3 = "ssh-dss #{SSH_PUBLIC_KEY3} me@example.com"
     expected4 = "ssh-rsa #{SSH_PUBLIC_KEY1}"
-    expected5 = %Q{from="trusted.eng.cam.ac.uk",no-port-forwarding,no-pty ssh-rsa #{SSH_PUBLIC_KEY1}}
-    invalid1  = "#{SSH_PUBLIC_KEY1} me@example.com"
+    expected5 = %(from="trusted.eng.cam.ac.uk",no-port-forwarding,no-pty ssh-rsa #{SSH_PUBLIC_KEY1})
+    invalid1 = "#{SSH_PUBLIC_KEY1} me@example.com"
     ecdsa256 = "ecdsa-sha2-nistp256 #{SSH_PUBLIC_KEY_ECDSA_256}"
     ecdsa384 = "ecdsa-sha2-nistp384 #{SSH_PUBLIC_KEY_ECDSA_384}"
     ecdsa521 = "ecdsa-sha2-nistp521 #{SSH_PUBLIC_KEY_ECDSA_521}"
@@ -108,13 +108,13 @@ class PublicKeyTest < Test::Unit::TestCase
     assert_equal 384, SSHKey.ssh_public_key_bits(ecdsa384_compressed)
     assert_equal 521, SSHKey.ssh_public_key_bits(ecdsa521_compressed)
 
-    exception1 = assert_raises(SSHKey::PublicKeyError) { SSHKey.ssh_public_key_bits( expected1.gsub('A','.') ) }
-    exception2 = assert_raises(SSHKey::PublicKeyError) { SSHKey.ssh_public_key_bits( expected1[0..-20] ) }
+    exception1 = assert_raises(SSHKey::PublicKeyError) { SSHKey.ssh_public_key_bits(expected1.tr("A", ".")) }
+    exception2 = assert_raises(SSHKey::PublicKeyError) { SSHKey.ssh_public_key_bits(expected1[0..-20]) }
     exception3 = assert_raises(SSHKey::PublicKeyError) { SSHKey.ssh_public_key_bits(invalid1) }
 
-    assert_equal( "validation error",          exception1.message )
-    assert_equal( "byte array too short",      exception2.message )
-    assert_equal( "cannot determine key type", exception3.message )
+    assert_equal("validation error", exception1.message)
+    assert_equal("byte array too short", exception2.message)
+    assert_equal("cannot determine key type", exception3.message)
   end
 
   def test_ssh_public_key_to_ssh2_public_key
@@ -125,7 +125,7 @@ class PublicKeyTest < Test::Unit::TestCase
     assert_equal(SSH2_PUBLIC_KEY1, SSHKey.ssh_public_key_to_ssh2_public_key(public_key1))
     assert_equal(SSH2_PUBLIC_KEY2, SSHKey.ssh_public_key_to_ssh2_public_key(public_key2))
     assert_equal(SSH2_PUBLIC_KEY2, SSHKey.ssh_public_key_to_ssh2_public_key(public_key2, {}))
-    assert_equal(SSH2_PUBLIC_KEY3, SSHKey.ssh_public_key_to_ssh2_public_key(public_key3, {'Comment' => '1024-bit DSA with provided comment', 'x-private-use-header' => 'some value that is long enough to go to wrap around to a new line.'}))
+    assert_equal(SSH2_PUBLIC_KEY3, SSHKey.ssh_public_key_to_ssh2_public_key(public_key3, {"Comment" => "1024-bit DSA with provided comment", "x-private-use-header" => "some value that is long enough to go to wrap around to a new line."}))
   end
 
   def test_dsa_bits_use_p_not_public_value
@@ -137,14 +137,14 @@ class PublicKeyTest < Test::Unit::TestCase
 
   def test_fingerprints
     {
-      "ssh-rsa #{SSH_PUBLIC_KEY1}"                             => [KEY1_MD5_FINGERPRINT, KEY1_SHA1_FINGERPRINT, KEY1_SHA256_FINGERPRINT],
-      "ssh-rsa #{SSH_PUBLIC_KEY2} me@me.com"                   => [KEY2_MD5_FINGERPRINT, KEY2_SHA1_FINGERPRINT, KEY2_SHA256_FINGERPRINT],
-      "ssh-dss #{SSH_PUBLIC_KEY3}"                             => [KEY3_MD5_FINGERPRINT, KEY3_SHA1_FINGERPRINT, KEY3_SHA256_FINGERPRINT],
-      "ecdsa-sha2-nistp256 #{SSH_PUBLIC_KEY4}"                 => [KEY4_MD5_FINGERPRINT, KEY4_SHA1_FINGERPRINT, KEY4_SHA256_FINGERPRINT],
-      "ssh-ed25519 #{SSH_PUBLIC_KEY_ED25519}"                  => [ED25519_MD5_FINGERPRINT, ED25519_SHA1_FINGERPRINT, ED25519_SHA256_FINGERPRINT],
+      "ssh-rsa #{SSH_PUBLIC_KEY1}" => [KEY1_MD5_FINGERPRINT, KEY1_SHA1_FINGERPRINT, KEY1_SHA256_FINGERPRINT],
+      "ssh-rsa #{SSH_PUBLIC_KEY2} me@me.com" => [KEY2_MD5_FINGERPRINT, KEY2_SHA1_FINGERPRINT, KEY2_SHA256_FINGERPRINT],
+      "ssh-dss #{SSH_PUBLIC_KEY3}" => [KEY3_MD5_FINGERPRINT, KEY3_SHA1_FINGERPRINT, KEY3_SHA256_FINGERPRINT],
+      "ecdsa-sha2-nistp256 #{SSH_PUBLIC_KEY4}" => [KEY4_MD5_FINGERPRINT, KEY4_SHA1_FINGERPRINT, KEY4_SHA256_FINGERPRINT],
+      "ssh-ed25519 #{SSH_PUBLIC_KEY_ED25519}" => [ED25519_MD5_FINGERPRINT, ED25519_SHA1_FINGERPRINT, ED25519_SHA256_FINGERPRINT],
       "ecdsa-sha2-nistp256 #{SSH_PUBLIC_KEY_ECDSA_256} me@me.com" => [ECDSA_256_MD5_FINGERPRINT, ECDSA_256_SHA1_FINGERPRINT, ECDSA_256_SHA256_FINGERPRINT],
       "ecdsa-sha2-nistp384 #{SSH_PUBLIC_KEY_ECDSA_384} me@me.com" => [ECDSA_384_MD5_FINGERPRINT, ECDSA_384_SHA1_FINGERPRINT, ECDSA_384_SHA256_FINGERPRINT],
-      "ecdsa-sha2-nistp521 #{SSH_PUBLIC_KEY_ECDSA_521} me@me.com" => [ECDSA_521_MD5_FINGERPRINT, ECDSA_521_SHA1_FINGERPRINT, ECDSA_521_SHA256_FINGERPRINT],
+      "ecdsa-sha2-nistp521 #{SSH_PUBLIC_KEY_ECDSA_521} me@me.com" => [ECDSA_521_MD5_FINGERPRINT, ECDSA_521_SHA1_FINGERPRINT, ECDSA_521_SHA256_FINGERPRINT]
     }.each do |public_key, (md5, sha1, sha256)|
       assert_equal md5, SSHKey.md5_fingerprint(public_key)
       assert_equal sha1, SSHKey.sha1_fingerprint(public_key)

@@ -17,46 +17,46 @@ class SSHKey
     "ssh-ed25519" => "ed25519",
     "ecdsa-sha2-nistp256" => "ecdsa",
     "ecdsa-sha2-nistp384" => "ecdsa",
-    "ecdsa-sha2-nistp521" => "ecdsa",
+    "ecdsa-sha2-nistp521" => "ecdsa"
   }.freeze
 
   SSHFP_TYPES = {
-    "rsa"     => 1,
-    "dsa"     => 2,
-    "ecdsa"   => 3,
-    "ed25519" => 4,
+    "rsa" => 1,
+    "dsa" => 2,
+    "ecdsa" => 3,
+    "ed25519" => 4
   }.freeze
 
   ECDSA_CURVES = {
     256 => "prime256v1",  # https://stackoverflow.com/a/41953717
     384 => "secp384r1",
-    521 => "secp521r1",
+    521 => "secp521r1"
   }.freeze
 
   # OpenSSL curve name => SSH curve identifier (RFC 5656 section 10.1)
   ECDSA_IDENTIFIERS = {
     "prime256v1" => "nistp256",
-    "secp256r1"  => "nistp256",
-    "secp384r1"  => "nistp384",
-    "secp521r1"  => "nistp521",
+    "secp256r1" => "nistp256",
+    "secp384r1" => "nistp384",
+    "secp521r1" => "nistp521"
   }.freeze
 
   VALID_BITS = {
-    "ecdsa"   => ECDSA_CURVES.keys,
-    "ed25519" => [256],
+    "ecdsa" => ECDSA_CURVES.keys,
+    "ed25519" => [256]
   }.freeze
 
   DEFAULT_BITS = {
-    "rsa"     => 3072,
-    "ecdsa"   => 256,
-    "ed25519" => 256,
+    "rsa" => 3072,
+    "ecdsa" => 256,
+    "ed25519" => 256
   }.freeze
 
   RANDOMART_DIGESTS = {
-    "MD5"    => Digest::MD5,
+    "MD5" => Digest::MD5,
     "SHA256" => Digest::SHA256,
     "SHA384" => Digest::SHA384,
-    "SHA512" => Digest::SHA512,
+    "SHA512" => Digest::SHA512
   }.freeze
 
   SSH2_LINE_LENGTH = 70 # +1 (for line wrap '/' character) must be <= 72
@@ -111,13 +111,13 @@ class SSHKey
 
       bits ||= DEFAULT_BITS[type]
       if VALID_BITS[type] && !VALID_BITS[type].include?(bits)
-        raise ArgumentError, "bits must be one of: #{VALID_BITS[type].join(', ')}"
+        raise ArgumentError, "bits must be one of: #{VALID_BITS[type].join(", ")}"
       end
 
       key_object =
         case type
-        when "rsa"     then OpenSSL::PKey::RSA.generate(bits)
-        when "ecdsa"   then OpenSSL::PKey::EC.generate(ECDSA_CURVES[bits])
+        when "rsa" then OpenSSL::PKey::RSA.generate(bits)
+        when "ecdsa" then OpenSSL::PKey::EC.generate(ECDSA_CURVES[bits])
         when "ed25519" then OpenSSL::PKey.generate_key("ED25519")
         end
 
@@ -146,7 +146,7 @@ class SSHKey
       else
         false
       end
-    rescue StandardError
+    rescue
       false
     end
 
@@ -234,7 +234,7 @@ class SSHKey
         "---- BEGIN SSH2 PUBLIC KEY ----",
         *build_ssh2_headers(headers),
         *source_key.scan(/.{1,#{SSH2_LINE_LENGTH}}/o),
-        "---- END SSH2 PUBLIC KEY ----",
+        "---- END SSH2 PUBLIC KEY ----"
       ].join("\n")
     end
 
@@ -371,7 +371,7 @@ class SSHKey
       case @key_object
       when OpenSSL::PKey::RSA then ["rsa", "ssh-rsa"]
       when OpenSSL::PKey::DSA then ["dsa", "ssh-dss"]
-      when OpenSSL::PKey::EC  then ["ecdsa", "ecdsa-sha2-#{ecdsa_identifier}"]
+      when OpenSSL::PKey::EC then ["ecdsa", "ecdsa-sha2-#{ecdsa_identifier}"]
       else
         raise UnsupportedError, "unsupported key type: #{@key_object.oid}" unless @key_object.oid == "ED25519"
         ["ed25519", "ssh-ed25519"]
@@ -383,7 +383,7 @@ class SSHKey
   # RSA, DSA and ECDSA keys are returned in PEM format. Ed25519 keys are returned in
   # OpenSSH format, since OpenSSH does not read Ed25519 keys in PEM format.
   def private_key
-    type == "ed25519" ? openssh_private_key : key_object.to_pem
+    (type == "ed25519") ? openssh_private_key : key_object.to_pem
   end
 
   # Fetch the private key encrypted with the passphrase, in PKCS#8 PEM format
@@ -453,9 +453,9 @@ class SSHKey
   # Determine the length (bits) of the key as an integer
   def bits
     case type
-    when "rsa"     then key_object.n.num_bits
-    when "dsa"     then key_object.p.num_bits
-    when "ecdsa"   then key_object.group.degree
+    when "rsa" then key_object.n.num_bits
+    when "dsa" then key_object.p.num_bits
+    when "ecdsa" then key_object.group.degree
     when "ed25519" then 256
     end
   end
@@ -516,9 +516,9 @@ class SSHKey
     end
 
     [
-      "+#{"[#{type.upcase} #{bits}]".center(fieldsize_x, '-')}+",
+      "+#{"[#{type.upcase} #{bits}]".center(fieldsize_x, "-")}+",
       *rows,
-      "+#{"[#{digest}]".center(fieldsize_x, '-')}+",
+      "+#{"[#{digest}]".center(fieldsize_x, "-")}+"
     ].join("\n")
   end
 
@@ -528,7 +528,7 @@ class SSHKey
   end
 
   def directives=(directives)
-    @directives = Array[directives].flatten.compact
+    @directives = [directives].flatten.compact
   end
 
   private
