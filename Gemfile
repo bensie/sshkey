@@ -1,5 +1,7 @@
 source "https://rubygems.org"
 
-gem "jruby-openssl", ">= 0.8.2", platform: :jruby
-
 gemspec
+
+gem "rake"
+gem "test-unit"
+gem "standard"
